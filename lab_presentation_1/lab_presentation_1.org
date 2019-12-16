@@ -1,0 +1,233 @@
+#+OPTIONS: H:1 toc:nil
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [aspectratio=169]
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Experimental Bifurcation Analysis In Neurons Using Control-Based Continuation
+#+DATE: 2019-12-13 Fri
+
+* About me
+  * First year PhD student (started in September)
+  * Supervised by Lucia and Ludovic
+  * Studied EngMaths for my undergrad
+  * Research interests are in dynamical systems theory and applied nonlinear mathematics
+
+
+* Presentation plan
+  * How do neurons work?
+  * Why should mathematicians get excited by neurons?
+  * What is my research topic? Why am I doing what I'm doing?
+  * What challenges am I trying to solve, and how?
+
+
+* Whistlestop tour of electrophysiology 
+#+BEGIN_EXPORT latex
+\framesubtitle{Neurons and ionic currents}
+#+END_EXPORT
+
+** Text  :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.6
+   :END:
+
+  * Neurons are cells; they and their surrounding media contain charged ions
+  * Acive transport across the cell membrane means that, at rest, there's a voltage over the membrane
+  * At rest, this membrane potential is typically around -70 mV
+
+** Diagram :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.4
+   :END:
+#+ATTR_LATEX: :width 0.7\textwidth
+[[./neuron_diagram.png]]
+
+* Whistlestop tour of electrophysiology
+#+BEGIN_EXPORT latex
+\framesubtitle{Speedy sodium}
+#+END_EXPORT
+
+** Sodium current description :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.6
+   :END:
+   
+   * Sodium current activates as membrane potential increases
+   * Simple model: current switches on when membrane potential exceeds a threshold
+   * It's an inward current, so it brings positive ions into the cell and increases membrane potential
+   * This causes positive feedback!
+
+** Sodium activation diagram :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.4
+   :END:
+   
+[[./fastsodium.png]]
+
+* Whistlestop tour of electrophysiology
+#+BEGIN_EXPORT latex
+\framesubtitle{Procrastinating potassium}
+#+END_EXPORT
+
+** Potassium description :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.6
+   :END:
+
+   * Potassium currents activate as membrane potential increases
+   * Potassium forms an outward current - positive ions flow out, returning the membrane potential to its rest value
+   * The potassium current turns on and off slower than the sodium current
+
+** Potassium activation diagram :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.4
+   :END:
+   
+[[./slowpotassium.png]]
+
+* Whistlestop tour of electrophysiology
+#+BEGIN_EXPORT latex
+\framesubtitle{Slow-fast spiking}
+#+END_EXPORT
+
+The interplay of slow potassium and fast sodium currents causes neurons to spike, rather than settling to a steady state
+
+** A recipe for spiking                                             :B_block:
+   :PROPERTIES:
+   :BEAMER_env: block
+   :END:
+  * Sodium currents switch on and off fast
+  * Potassium currents switch on and off slowly
+  * Slow potassium activation allows the membrane potential to increase fast
+  * Once it activates, the potassium current pulls the membrane potential back down
+  * Potassium current takes a while to switch off again, so membrane potential gets pulled down to below the turn-on threshold for the two currents
+
+** :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+
+* Whistlestop tour of electrophysiology
+#+BEGIN_EXPORT latex
+\framesubtitle{Hodgkin-Huxley formalism}
+#+END_EXPORT
+
+** HH-description :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.5
+   :END:
+
+   Currents flow through different ion channels; let's consider each one separately.
+   Using current laws,
+   
+#+BEGIN_EXPORT latex
+\begin{equation}
+    C\dot{V} = I_{Na} + I_{Ca} + I_{K} + I_{Cl}~.
+\end{equation}
+#+END_EXPORT
+   
+   The Hodgkin-Huxley model gives each ionic current as a function of membrane potential.
+   This is exciting, as we now have a mathematical model of a neuron, to which we can apply a rigorous analysis.
+
+** HH-equivalent circuit :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.5
+   :END:
+   
+[[./neuroncircuit.png]]
+
+* Why are mathematicians interested in neurons?
+
+  Neurons exhibit a wide range of complex dynamics.
+  Mathematical models of these dynamics can be easily tested on physical neurons.
+  Interesting features include...
+    * Highly nonlinear
+    * High-dimensional
+    * Multi-timescale dynamics
+    * Stochastic behaviour
+
+* Aren't neurons a done science though?
+
+   * Biological literature typically describes neurons in terms of ionic currents
+   * This leads to incorrect descriptions (eg. all-or-nothing spikes, thresholds)
+   * A mathematical is useful because it let's us explain neural dynamics in a more rigorous, systematic way
+   * Many behaviours that seem confusing when explained as ionic currents, have a very natural interpretation in dynamical systems theory
+   * Dynamical neuroscience is also something of a new field, though, so there's still a big research gap in experimental bifurcation analysis
+
+
+* Neural spike trains
+#+ATTR_LATEX: :height \textheight
+[[./excitability_classes.png]]
+
+* Phase diagrams 
+#+ATTR_LATEX: :height \textheight
+[[./phaseplane.png]]
+
+* Bifurcations
+
+[[./saddlenode.png]]
+
+* Bifurcations
+  
+[[./snic.png]]
+
+* Bifurcations
+  
+[[./hopf1.png]]
+
+* Bifurcations
+  
+[[./homoclinic.png]]
+  
+
+* Project goal
+
+  Goal: develop a method of observing bifurcations in the dynamics of living neurons.
+  
+#+BEGIN_EXPORT latex
+
+\vspace{1cm}
+#+END_EXPORT
+** George Box :B_block:
+   :PROPERTIES:
+   :BEAMER_env: block
+   :END:
+   
+All models are wrong, but some are useful
+
+
+* Numerical continuation
+  
+  Consider $f(x,\lambda)=0$.
+  Numerical continuation seeks to track $x$, as $\lambda$ varies.
+  For ODEs of form
+
+  $$\dot{x} = f(x,\lambda)~~,$$
+  
+  this can be used to find bifurcations.
+
+* Numerical continuation
+#+ATTR_LATEX: :height 0.8\textheight
+[[./continuation.png]]
+
+* Control-based continuation
+  
+CBC allows us to apply continuation methods on black-box numerical or physical systems, no model needed.
+
+    * Use control theory to steer the system onto a (possibly unstable) natural invariant set
+    * Track that invariant set as the bifurcation parameter changes
+
+This tracking step can be a classical psuedo-arclength continuation, or something more problem-specific.
+
+
+* Research problems
+  
+  * How do we control a highly nonlinear black-box system?
+  * How can CBC be extended to study global bifurcations?
+  * How do we efficiently discretise spiking signals?
+  * Neurons are inherently stochastic; how do we deal with controlling and analysing this?
+  * The system has poor observability (eg. can't easily see population ion channel conductance); how do we control a system that we can't observe?
+  * We have limited control inputs; how can we use them to steer the dynamics effectively?
+  
+

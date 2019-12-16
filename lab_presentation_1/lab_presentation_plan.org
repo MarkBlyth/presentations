@@ -1,0 +1,98 @@
+* DONE Intro
+   * Studied eng maths here, research interests are ANM
+   * Working with Lucia and Ludovic
+   * Looking at experimental methods for studying neural dynamics 
+   * Going to talk about what it means for neurons to be a dynamical system, and why it's interesting to study them
+* DONE 1-minute intro to neuroscience
+** How neurons work, in terms of currents
+*** Resting neurons and ionic currents
+    * Neurons are cells, with ions in
+    * At rest, ion concentrations are different inside and outside the cell
+    * This causes a voltage between inside and outside - the membrane potential
+    * Resting membrane potential is typically somewhere around -70mV
+*** Sodium stonks
+    Consider a persistent (non-inactivating) sodium current.
+    * Sodium currents turn on as the membrane potential increases (cell depolarises)
+    * Higher membrane potential = larger sodium current
+    * Let's simplify things and say it's either on or off, and switches at a threshold value
+    * Sodium currents flow into cell (bring positive Na+ ions into cell), and bring membrane potential up
+    * This positive feedback causes the membrane potential to rises fast
+    * This activation happens fast!
+*** Potassium not-stonks
+    * Potassium currents also turn on as the membrane potential increases
+    * Higher membrane potential = larger potassium current
+    * Let's simplify things and say it's either on or off, and switches at a threshold value
+    * Potassium current is slower, so we can pretend it's lazy and forgets to switch on and off until a while after it crosses the threshold
+    * Potassium currents flow out of the cell (positive K+ ions leave the cell), and bring the membrane potential down
+    * As the membrane potential goes down, the current switches itself off again, so, negative feedback
+    * This current turns on and off more slowly
+*** Different timescales cause spiking
+    * We get spikes because the sodium current is fast and amplifying (brings membrane potential up quickly, switches off quickly), and the potassium current is slow to react, so it takes a while to turn on, allowing the sodium amplification, then keeps bringing the membrane potential down even after the sodium current switches off.
+    * These differences in current time-scales are why the neurons are spiking, rather than converging to a steady state
+** Hodgin-Huxley
+   * H-H (1952) provide a mathematical model of neurons
+   * [equivalent circuit]
+   * cv. = sum Ii
+   * Ii = f(V)
+   * H-H is interesting as it gives us a rigorous framework to study neurons
+* TODO Neural dynamics
+** Why is a mathematician studying neurons?
+   Why, as a mathematician, are neurons worth studying?
+   Summary of how they're a nice segue into a variety of interesting dynamical behaviours.
+   State how computational and mathematical biology provides a good set of problems from a wide range of areas at the frontier of dynamical systems and ANM (stochastics [this], delay [Mackey-Glass], PDEs [cable eq.], singular perturbation theory [this], chaos [heart rhythms, neural activity in seisures], etc.).
+*** Highly nonlinear
+    * Linear systems are simple and boring, nonlinear ones are fun!
+*** Typically high-dimensional
+    * Harder to visualise, and nonlinear dynamics is typically a very visual area
+*** Multi-timescale dynamics
+    * Relaxation oscillations, geysirs, other fun stuff like that
+*** Stochastic
+    * Stochastic resonance - like climate science!
+    * Stochastic dynamics are hard but also useful to study, since everything has noise
+** Aren't neurons a done science though?
+   * The literature typically describes neurons in terms of ionic currents
+   * This makes things hard to describe, leads to incorrect descriptions (all-or-nothing spikes, thresholds)
+   * Maths is useful because it let's us explain neural dynamics in a more rigorous, systematic way
+   * Dynamical neuroscience is also something of a new field, though
+* TODO Bifurcation of neural dynamics
+** Neuronal excitability
+   * Neurons can fire spikes - a small input gives rise to a big trajectory, sometimes
+   * [phase plane diagram]
+   * The neuron can also transition from resting to spiking
+   * [phase plane diagram]
+   * This can be explained by rest-states disappearing or losing stability
+** Bifurcations as an explanation for excitability
+   * Excitability occurs as a result of being near the bifurcation point
+   * They can be used to elegantly explain many experimental results from neuroscience
+** Why experimental bifurcation analysis?
+   * No one's actually seen these bifurcations in real neurons!
+   * (Because, it's hard!)
+   * Models are always wrong (but sometimes useful); let's try to go beyond the models and work on a real system!
+* TODO Numerical continuation
+** Numerical continuation as a method for tracking invariant sets
+   (Keep it simple, but also rip as much of this as possible from other presentation slides)
+   * Define a zero-problem
+   * Find solution to the zero problem as a parameter vector varies
+   * For ODEs etc., this can be used to track bifurcations
+** Model-requirement issue, and why we need more than numerical continuation
+   * All models are wrong, but some are useful
+   * Neurons are complex, with lots of coupled state variables, and currents switching on and off in various ways at various points
+   * We can't accurately model everything neurons do, so instead, let's move beyond modelling
+   * Goal: a model-free bifurcation analysis of neurons
+* TODO Control-based continuation
+** What is it?
+   * Analog of numerical continuation
+   * Uses control theory to steer system onto a (possibly unstable) invariant set of the free system
+   * Can vary a bifurcation parameter (here, input current) and track how the invariant sets change
+** Why do we do it?
+   * Model-free continuation method
+   * Applicable on physical systems, but also for black-box analysis of numerical simulations
+** How do we do it?
+   * Find a control target that drives the control effort over that target to zero
+* DONE Research problems
+** What issues need solving to make CBC work?
+*** Stochastic bifurcations
+*** Control of highly nonlinear black boxes
+*** Efficient discretisation of spiking signals
+*** Analysis of global bifurcations using CBC
+*** Controlling high-dimensional systems with only a single (bifurcating!) control input, without observing most of the state variables

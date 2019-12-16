@@ -1,0 +1,150 @@
+#+OPTIONS: H:1
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [aspectratio=169]
+#+OPTIONS: H:2 toc:nil
+#+OPTIONS: toc:nil
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Electrophysiology methods for neural bifurcation analysis
+#+DATE: 2019-12-16 Mon
+
+* Intro to my project
+** Presentation plan
+   * *30 second overview of my project*
+   * Overview of my mircrofluidics questions
+   * Review of potential solutions
+** About my project
+   * Hodgin and Huxley provided a model of neural dynamics
+   * It turns out we can explain all observations from classical neuroscience using dynamical systems theory
+   * These explanations typically focus on the bifurcations a neuron can exhibit
+   * Bifurcations are analysed from models; I'm wanting to do a bifurcation analysis on a real, living neuron
+   * Goal: consider a single neuron, and experimentally find  bifurcations in its dynamics
+
+#+BEGIN_EXPORT latex
+\end{frame}
+\begin{frame}[plain]
+#+END_EXPORT
+
+#+ATTR_LATEX: :height 1.4\textheight
+[[./homoclinic.png]]
+
+** Presentation plan
+   * 30 second overview of my project
+   * *Overview of my mircrofluidics questions*
+   * Review of potential solutions
+** The big question
+   The dynamics of any given neuron typically change when current is injected into that neuron. I'm wanting to observe and control these changes experimentally.
+   I need an experimental setup that would allow me to...
+#+ATTR_BEAMER: :overlay <+->
+     * Apply a current into a neuron
+     * Observe that neuron's membrane potential
+     * Keep the neuron alive as long as possible
+     * (If it were possible, also measure each ion channel's average conductance)
+   
+   QUESTION: what would be an appropriate experimental setup to achieve this?
+
+
+* Methods
+#+BEGIN_EXPORT latex
+% Mention here that I'm going to talk through the different methods I've researched, with the goal being to pick one of them to develop further for the next THETA project
+#+END_EXPORT
+** Presentation plan
+   * 30 second overview of my project
+   * Overview of my mircrofluidics questions
+   * *Review of potential solutions*
+** Bath MEA
+   - Idea:
+     * Use the current microfluidics device, or a minor modification of it
+   - Strengths:
+     * Builds on existing work and expertise
+   - Weaknesses:
+     * Can't isolate the dynamics of an individual neuron
+     * Can't give a specific neuron a current input
+     * Can't measure membrane potentials
+#+BEGIN_EXPORT latex
+% Why do I think it's inappropriate for my project?
+% How much would I need to change in order to use it?
+#+END_EXPORT
+
+** Glass pipette patch clamp
+   - Idea:
+     * Use the classical glass pipette method for a whole-cell patch clamp
+     * Measure membrane potential and inject current using the electrode
+   - Strengths:
+     * Allows for studying the dynamics of individual neurons
+     * Easy to inject current, and to measure membrane potential
+   - Weaknesses:
+     * Patch clamping can be difficult
+     * Neuron might not survive as long since we can't control nutrients and waste as easily
+#+BEGIN_EXPORT latex
+% Explain why patch clamping is more useful for me
+% Discuss its limitations (cells die faster, can't control exterior environment easily, hard to do)
+#+END_EXPORT
+
+** Off-the-shelf automated patch clamp
+   - Idea:
+     * Same as before, but use an automated machine to do the patch clamping
+   - Strengths:
+     * Allows for studying the dynamics of individual neurons
+     * Easy to inject current, and to measure membrane potential
+     * Much easier than manual patch clamping, no training required
+     * Allows constant perfusion for providing nutrients and removing waste 
+   - Weaknesses:
+     * More expensive than DIY methods (unless we can borrow a machine from somewhere)
+     * Might be hard to interface with a custom CBC control system
+#+BEGIN_EXPORT latex
+
+#+END_EXPORT
+
+** TODO DIY microfluidic patch clamper
+   - Idea:
+     * Combine the MEA and patch clamping methods
+     * Build a planar patch clamping microfluidics device in-house
+   - Strengths:
+     * Allows for studying the dynamics of individual neurons
+     * Easy to inject current, and to measure membrane potential
+     * Much easier than manual patch clamping, no training required
+     * Allows constant perfusion for providing nutrients and removing waste
+     * Cheaper and more customisable than buying a machine
+   - Weaknesses:
+     * Need to design another microfluidics device
+
+#+BEGIN_EXPORT latex
+\end{frame}
+\begin{frame}[plain]
+#+END_EXPORT
+
+#+ATTR_LATEX: :height 1.4\textheight
+[[./planarpatch1.png]]
+
+** Microfluidics fluorescence chip
+   - Idea:
+    * Use an existing microfluidics chip, built for GFP imaging
+    * Use calcium imaging to observe a neuron's behaviour
+   
+   - Strengths:
+    * Recently developed proteins allow the observations of individual action potentials
+    * Might be able to estimate membrane potential from calcium imaging
+    * Would allow the use of off-the-shelf chips, with no further developments
+     
+   - Weaknesses:
+    * No obvious way to inject current into the neuron, so any control inputs would have to be pharmacological
+    * Probably can't investigate the dynamics of single isolated cells, only networks
+ #+BEGIN_EXPORT latex
+ % BRIEF ASIDE
+ % Could use calcium imaging to measure neural activity
+ % This lacks any way to stimulate the neuron, so if I want to inject current I'd end up turning it into one of the other devices instead
+ % (but, could use this and inject drugs to alter ion channel activity)
+ % [[https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=Nature%2C+499%3A295%E2%80%93300%2C+2013&btnG=][Paper introducing high-sensitivity calcium imaging]]
+ #+END_EXPORT
+
+
+* Reprise
+** The big question (again)
+   Which of these methods would best allow me to...
+     * Apply a current into a neuron
+     * Observe that neuron's membrane potential
+     * Keep the neuron alive as long as possible
+     * (If it were possible, also measure each ion channel's average conductance)
+   
