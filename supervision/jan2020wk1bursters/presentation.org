@@ -1,0 +1,234 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [,aspectratio=169] 
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Bursters and bifurcations
+#+DATE: [2020-01-13 Mon]
+
+* COMMENT Notes
+
+Overall goal: learn about Krassy's neuron model, so that I can use it as an example system for the bifurcation paper.
+
+Krassy's model is a burster; I haven't studied bursters yet, so I looked at those (and the burster papers Krassy's paper builds on) to help understand what's going on in it.
+
+Bursters are a fast-slow system.
+Rinzel's freezing method:
+    Slow subsystem changes slowly.
+    Consider the limit as the sytem gets arbitrarily slow.
+    Slow subsystem state vector stops changing, therefore becomes fixed.
+    A fixed input to the fast subsystem is effectively a parameter vector.
+    Idea: treat slow subsystem state as parameters of the fast subsystem.
+    Analyse the bifurcations present in the fast subsystem, using slow subsystem as bifurcation parameters.
+    Then, reintroduce the slow subsystem, so see how it drives the fast subsystem through its bifurcation landscape.
+Rinzel classified the known bursters at the time, according to the bifurcations at either end of the slow subsystem loop.
+
+Later work realised that the fast subsystem bifurcations are points in the unfolding of a higher-codimension singularity.
+It classifies burster's complexity as the codimension of the singularity in whose unfolding the burster first appears.
+The burster is then represented as a path through the unfolding of that singularity, with the slow subsystem defining this path.
+Previous work explained the known bursters at the time through the unfolding of a codim-2, then codim-3 singularity.
+Krassy's work adds a newly found burster (psuedo-plateau burster) into the mix, by showing it occurs in the codimension four unfolding of a doubly degenerate Bogdanov Takens singularity.
+Krassy et al. then study the possible bifurcations of a cubic Lienard system, to demonstrate that it is able to contain all known bursters (I think?).
+
+Her paper uses a sinusoidal slow variable to drive the fast system.
+This is a slow-wave burster (slow subsystem acts in waves), and would require a 2d+ slow subsystem.
+Van der Pol relaxation oscillators are hysteretic - the slow subsystem is 1d, and the hysteresis loop causes the system to transition across bifurcations.
+The 2017 paper therefore introduces a model that extends Krassy's, as it can also exhibit hysteretic bursting.
+The model is able to explain virtually all known bursting behaviour.
+As far as I can tell, normal (non-bursting) behaviour must also be explained, as presumably this would be obtained by actually setting the slow subsystem to zero.
+The paper also explains how bursters can transition between classes, by the slow subsystem path changing to other regions of the parameter space. 
+This would be a wholly new type of burster bifurcation - a change in the bifurcations the burster exhibits (a bifurcation of bifurcations?).
+This ultra-slow transition of classes could be an interesting area to study, but would be veeeery hard.
+
+Other work: background reading of a more pure-maths bifurcation theory, to try (unsuccessfully) to get an intuitive understanding of singularities, transversality, bifurations, unfoldings, etc.
+
+
+* Background
+** Week's goal
+   * Get familiar with Krassy's neuron model
+   * Do some bifurcation analysis with it
+   * Use the neuron and its bifurcation analysis to write a comparison paper for continuation software
+
+** Krassy's neuron model
+   * Paper goal: classify the psuedo-plateau burster using the codimension burster classification
+   * Issue: I know nothing about burster dynamics!
+
+** Week's activities
+   * Learned about burster dynamics
+   * Learned about the codimension classification system for bursters
+   * Used that to (sort of?) understand Krassy's paper
+   * Found a paper that builds on it, and proposes a potentially very useful neuron model
+
+
+* Burster dynamics
+** What is bursting?
+   
+#+ATTR_LATEX: :height .85\textheight
+[[./burster.png]]
+
+** Rinzel's burster analysis
+   Consider the system
+
+\[ \dot{x} = f(x,y) ~FAST,\]
+\[ \dot{y} = \varepsilon g(x,y)~SLOW,\]
+
+where 
+
+\[ |\varepsilon| \ll 1~,\] and \[f,g \in \mathcal{O}(1)~.\]
+
+** Rinzel's burster analysis
+#+ATTR_BEAMER: :overlay <+->
+    * Consider the singular limit \(\varepsilon \to 0\)
+    * The change in \(y\) drops to zero, so \(y\) becomes a constant
+    * As \(y\) is now a constant vector, it can be considered as a parameter vector to the fast subsystem
+    * Rinzel's approach: consider the bifurcations of the fast subsystem at the singular limit; take the slow subsystem state \(y\) to be a bifurcation parameter, and perform a bifurcation analysis of the fast subsystem with respect to \(y\)
+    * Bursting dynamics are then obtained when the slow subsystem dynamics drives the fast subsystem back and forth over one or more bifurcations.
+
+** Rinzel's burster analysis :B_column:BMCOL:
+*** 
+   :PROPERTIES:
+   :BEAMER_col: 0.5
+   :END:
+#+ATTR_LATEX: :width \textwidth
+   [[file:rinzburst.png]]
+
+***  :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[file:bursterschematic.png]]
+
+
+* Burster classification
+** Krassy et al.'s paper
+
+   * Lots of work has been done to classify bursters
+   * Krassy's paper seeks to classify the (recently found) psuedo-plateau burster 
+   * This is achieved by studying the unfolding of a codimension-4 singularity
+   * The singularity unfolding could (presumably?) also double up as a generic neuron model
+
+** Krassy et al.'s paper
+
+   * Lots of work has been done to classify bursters
+   * Krassy's paper seeks to classify the (recently found) psuedo-plateau burster 
+   * This is achieved by studying the unfolding of a codimension-4 singularity
+   * The singularity unfolding could (presumably?) also double up as a generic neuron model
+     
+
+The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less relevant work), briefly recounted as follows.
+
+** Classifying bursters - background
+   * Rinzel's work allows for the classification of bursters, according to the bifurcations at either end of the hysteresis loop
+
+*** 
+   :PROPERTIES:
+   :BEAMER_col: 0.5
+   :END:
+#+ATTR_LATEX: :width \textwidth
+   [[file:rinzburst.png]]
+
+***  :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[file:bursterschematic.png]]
+
+** Classifying bursters - background
+#+ATTR_BEAMER: :overlay <+->
+   * Rinzel's work allows for the classification of bursters, according to the bifurcations at either end of the hysteresis loop
+   * Izhikevich notes that there are four bifurcations that can lead to the onset or termination of bursting, meaning 16 different bursters can exist for a planar fast subsystem
+   * Later work decided there's a better way of classifying bursters, in terms of unfoldings of high-codimension singularities
+
+** Classifying bursters - Bertram
+*** :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+   * Observation: hysteresis-loop bursters require two bifurcations - one to start spiking, and one to stop it
+   * Instead of considering them as isolated bifurcations, consider them as part of the unfolding of a higher-codimension singularity
+
+***  :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+#+ATTR_LATEX: :height 0.8\textheight
+[[file:bog.png]]
+
+** Classifying bursters - Bertram
+***  :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+    * Bursting behaviours are defined by their paths across fast-subsystem bifurcations
+    * This is represented as horizontal paths on (here) a two-parameter bifurcation diagram
+    * These cuts represent the paths in parameter space that the slow subsystem drives the fast system through
+    * Not only does this allow us to classify bursters, but it also allows the prediction of new ones
+
+***    :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+#+ATTR_LATEX: :height .8\textheight
+[[file:bertrambif.png]]
+
+** Classifying bursters - Golubitsky
+
+   * Golubitsky et al. produced a more rigorous version of Bertram's classification
+   * The classification is extended to the codimension-3 degenerate Bogdanov-Takens singularity
+   * Bursting behaviour later appeared that couldn't be explained as an unfolding of a codim-2 singularity, but could be explained in codim-3
+   * The complexity of a burster is defined as the codimension of the singularity in whose unfolding the bursting behaviour first appears; the codim-3 burster would therefore be considered more complex than the codim-2 ones
+
+** Classifying bursters - Krassy et al.
+
+   * Psuedo-plateau bursting is a type of bursting where there's no sustained oscillations in the active phase
+   * As far as we know, it can't be explained in terms of codim-3 unfoldings
+   * Krassy's paper expands the existing burster classification to include psuedo-plateau bursters
+   * A codim-4 doubly-degenerate Bogdanov Takens singularity is shown to include the burster in its unfoldings
+   * It is thought to be codim-4, as no codim-3 unfolding is yet known to contain the bursting dynamics
+
+
+* Neuron models
+** Towards a generic neuron model
+
+   * The codim-4 unfolding will contain all known bursters (I think?)
+   * By ignoring the slow subsystem, we can instead let injected current drive the system across a bifurcation (not necessarily in a biologically plausible way)
+   * The model will therefore be able to demonstrate all the bifurcations a non-bursting neuron can undergo
+   * This makes it a potential candidate for a generic model
+
+** Towards a generic neuron model
+   
+#+ATTR_BEAMER: :overlay <+->
+   * Bursters in Krassy's paper are driven by a sinusoidal forcing term
+   * This means the slow subsystem must be self-oscillating (called a slow-wave burster)
+   * We can also have resonant slow subsystems, which don't oscillate on their own (hysteresis-loop bursters, acting in similar ways to Fitzhugh-Nagumo)
+   * To model all neuron types (inc. hysteresis- and slow-wave bursters), we need a different slow subsystem model
+   * I've found a paper (ref below) that builds extensively on Krassy's paper to develop such a model
+   * It is designed to model just about every single neuron that's likely to exist, making it another good generic neuron model
+
+
+* Next steps
+** Next steps
+   * I don't really understand the bifurcations of Krassy's neuron model, so work on achieving that
+   * Read paper about the generic neuron model, and its bifurcations
+   * Decide which bifurcations to test myself
+   * Use XPP etc. to do a bifurcation analysis on the model
+   * Use those analyses to produce a software comparison paper
+   * Also, look at networks of neurons and their models, dynamics, bifurcations, etc.
+   * Then, start learning about control strategies
+
+/Saggio, Maria Luisa, et al. "Fast–Slow Bursters in the Unfolding of a High Codimension Singularity and the Ultra-slow Transitions of Classes." The Journal of Mathematical Neuroscience 7.1 (2017): 7./
+
+
+#+BEGIN_EXPORT latex
+\end{frame}
+\begin{frame}[plain]
+#+END_EXPORT
+#+ATTR_LATEX: :height 1.3\textheight
+[[file:hardbif.png]]
