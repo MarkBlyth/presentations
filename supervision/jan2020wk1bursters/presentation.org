@@ -53,7 +53,6 @@ Other work: background reading of a more pure-maths bifurcation theory, to try (
      -  noisy bifurcation precursors.
 It could be interesting to try investigating these using CBC
 
-
 * Background
 ** Week's goal
    * Get familiar with Krassy's neuron model
@@ -88,12 +87,13 @@ where
 \[ |\varepsilon| \ll 1~,\] and \[f,g \in \mathcal{O}(1)~.\]
 
 ** Rinzel's burster analysis
-#+ATTR_BEAMER: :overlay <+->
     * Consider the singular limit \(\varepsilon \to 0\)
     * The change in \(y\) drops to zero, so \(y\) becomes a constant
     * As \(y\) is now a constant vector, it can be considered as a parameter vector to the fast subsystem
     * Rinzel's approach: consider the bifurcations of the fast subsystem at the singular limit; take the slow subsystem state \(y\) to be a bifurcation parameter, and perform a bifurcation analysis of the fast subsystem with respect to \(y\)
     * Bursting dynamics are then obtained when the slow subsystem dynamics drives the fast subsystem back and forth over one or more bifurcations.
+
+Ref: /Rinzel, John. "Bursting oscillations in an excitable membrane model." Ordinary and partial differential equations. Springer, Berlin, Heidelberg, 1985. 304-316./
 
 ** Rinzel's burster analysis :B_column:BMCOL:
 *** 
@@ -119,6 +119,8 @@ where
    * Krassy's paper seeks to classify the (recently found) psuedo-plateau burster 
    * This is achieved by studying the unfolding of a codimension-4 singularity
    * The singularity unfolding could (presumably?) also double up as a generic neuron model
+
+Ref: /Osinga, H. M., A. Sherman, and K. Tsaneva-Atanasova. "Cross-currents between biology and mathematics on models of bursting." Bristol Centre for Applied Nonlinear Mathematics preprint 1737 (2011)./
 
 ** Krassy et al.'s paper
 
@@ -149,12 +151,19 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
 [[file:bursterschematic.png]]
 
 ** Classifying bursters - background
-#+ATTR_BEAMER: :overlay <+->
-   * Rinzel's work allows for the classification of bursters, according to the bifurcations at either end of the hysteresis loop
-   * Izhikevich notes that there are four bifurcations that can lead to the onset or termination of bursting, meaning 16 different bursters can exist for a planar fast subsystem
-   * Later work decided there's a better way of classifying bursters, in terms of unfoldings of high-codimension singularities
+   * Rinzel's work allows for the classification of bursters, according to the bifurcations at either end of the hysteresis loop [1]
+   * Izhikevich notes that there are four bifurcations that can lead to the onset or termination of bursting, meaning 16 different bursters can exist for a planar fast subsystem [2]
+   * Later work decided there's a better way of classifying bursters, in terms of unfoldings of high-codimension singularities [3][4]
 
-** Classifying bursters - Bertram
+** Refs
+
+
+  - [1] /Rinzel, John. "A formal classification of bursting mechanisms in excitable systems." Mathematical topics in population biology, morphogenesis and neurosciences. Springer, Berlin, Heidelberg, 1987. 267-281./
+  - [2] /Izhikevich, Eugene M., and Frank Hoppensteadt. "Classification of bursting mappings." International Journal of Bifurcation and Chaos 14.11 (2004): 3847-3854./
+  - [3] /Bertram, Richard, et al. "Topological and phenomenological classification of bursting oscillations." Bulletin of mathematical biology 57.3 (1995): 413-439./
+  - [4] /Golubitsky, Martin, Kresimir Josic, and Tasso J. Kaper. "An unfolding theory approach to bursting in fast-slow systems." Global analysis of dynamical systems (2001): 277-308./
+
+** Classifying bursters - Bertram [3]
 *** :BMCOL:
     :PROPERTIES:
     :BEAMER_col: 0.5
@@ -170,7 +179,7 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
 #+ATTR_LATEX: :height 0.8\textheight
 [[file:bog.png]]
 
-** Classifying bursters - Bertram
+** Classifying bursters - Bertram [3]
 ***  :BMCOL:
     :PROPERTIES:
     :BEAMER_col: 0.5
@@ -188,7 +197,7 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
 #+ATTR_LATEX: :height .8\textheight
 [[file:bertrambif.png]]
 
-** Classifying bursters - Golubitsky
+** Classifying bursters - Golubitsky [4]
 
    * Golubitsky et al. produced a more rigorous version of Bertram's classification
    * The classification is extended to the codimension-3 degenerate Bogdanov-Takens singularity
@@ -214,7 +223,6 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
 
 ** Towards a generic neuron model
    
-#+ATTR_BEAMER: :overlay <+->
    * Bursters in Krassy's paper are driven by a sinusoidal forcing term
    * This means the slow subsystem must be self-oscillating (called a slow-wave burster)
    * We can also have resonant slow subsystems, which don't oscillate on their own (hysteresis-loop bursters, acting in similar ways to Fitzhugh-Nagumo)
@@ -222,6 +230,7 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
    * I've found a paper (ref below) that builds extensively on Krassy's paper to develop such a model
    * It is designed to model just about every single neuron that's likely to exist, making it another good generic neuron model
 
+/Saggio, Maria Luisa, et al. "Fast–Slow Bursters in the Unfolding of a High Codimension Singularity and the Ultra-slow Transitions of Classes." The Journal of Mathematical Neuroscience 7.1 (2017): 7./
 
 * Next steps
 ** Next steps
@@ -233,7 +242,6 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
    * Also, look at networks of neurons and their models, dynamics, bifurcations, etc.
    * Then, start learning about control strategies
 
-/Saggio, Maria Luisa, et al. "Fast–Slow Bursters in the Unfolding of a High Codimension Singularity and the Ultra-slow Transitions of Classes." The Journal of Mathematical Neuroscience 7.1 (2017): 7./
 
 
 #+BEGIN_EXPORT latex
