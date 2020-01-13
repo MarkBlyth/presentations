@@ -1,6 +1,6 @@
 #+OPTIONS: H:2 toc:nil
 #+LATEX_CLASS: beamer
-#+LATEX_CLASS_OPTIONS: [,aspectratio=169] 
+#+LATEX_CLASS_OPTIONS: 
 #+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
 #+BEAMER_THEME: UoB
 #+AUTHOR: Mark Blyth
@@ -42,6 +42,16 @@ This would be a wholly new type of burster bifurcation - a change in the bifurca
 This ultra-slow transition of classes could be an interesting area to study, but would be veeeery hard.
 
 Other work: background reading of a more pure-maths bifurcation theory, to try (unsuccessfully) to get an intuitive understanding of singularities, transversality, bifurations, unfoldings, etc.
+
+
+* Misc. Christmas
+** Some misc. ideas
+   * Barton's electronic neurons could be a nice quick and easy test experiment
+   * Stochastic behaviour introduces a new class of bifurcation, with weird behaviours such as
+     - coherence resonance;
+     - stochastic resonance;
+     -  noisy bifurcation precursors.
+It could be interesting to try investigating these using CBC
 
 
 * Background
@@ -169,7 +179,7 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
     * Bursting behaviours are defined by their paths across fast-subsystem bifurcations
     * This is represented as horizontal paths on (here) a two-parameter bifurcation diagram
     * These cuts represent the paths in parameter space that the slow subsystem drives the fast system through
-    * Not only does this allow us to classify bursters, but it also allows the prediction of new ones
+    * Allows for both discovery and classification
 
 ***    :BMCOL:
     :PROPERTIES:
@@ -232,3 +242,13 @@ The paper builds on the work of Rinzel, Bertram, and Golubitsky (and other less 
 #+END_EXPORT
 #+ATTR_LATEX: :height 1.3\textheight
 [[file:hardbif.png]]
+
+
+* COMMENT Meeting notes
+  * Periodic splines as a discretisation method
+  * Wavelet decomposition
+  * Keep updating shared folder!
+  * Add refs into slides!
+  * Focus on bifurcation analysis
+  * Do a day a week of paper writing
+  * Put continuation of model into paper if/when I know it's useful
