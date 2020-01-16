@@ -1,0 +1,121 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: 
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: A Rinzel-esque bifurcation analysis of some bursting models
+#+DATE: [2020-01-20 Mon]
+
+* Background
+** Week's goal
+    - Focus on bifurcation analysis of Krassy's system
+    - Use it as an opportunity to learn about continuation software
+    - Once I know enough about any one software, write up about it for the paper
+** Week's activities
+    - Attempted to read some pure-maths papers about bifurcations of Krassy's cubic Lienard system
+      - No success
+    - Attempted instead to do a bifurcation analysis on the cubic Lienard system 
+      - No success
+    - Tried a Rinzel-esque fast-subsystem bifurcation analysis on the HR model (simpler, therefore easier)
+      - No success in XPP
+      - Some success in MATCONT
+    - Went back to Krassy's neuron model again, with newfound MATCONT skills
+      - Slightly more success?
+
+* Papers
+** Global study of a family of cubic Lienard equations
+    - Krassy's model uses a cubic Lienard equation as the fast subsystem
+    - This paper derives the global bifurcation diagram of that system
+    - It's hard.
+
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+/Khibnik, Alexander I., Bernd Krauskopf, and Christiane Rousseau. "Global study of a family of cubic Liénard equations." Nonlinearity 11.6 (1998): 1505./
+
+** Fast subsystem bifurcations in a slowly varying lienard sysetem exhibiting bursting
+    - Krassy's model uses a cubic Lienard equation as the fast subsystem
+    - This paper performs various rigorous analyses on that system
+    - It's hard.
+   
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+
+/Pernarowski, Mark. "Fast subsystem bifurcations in a slowly varying Lienard system exhibiting bursting." SIAM Journal on Applied Mathematics 54.3 (1994): 814-832./
+
+* HR Bifurcations
+** A first attempt at bifurcation diagrams
+
+   - Tried to do a bifurcation analysis of Krassy's system
+     - No success
+   - Decided instead to try a Rinzel-esque analysis of the HR system
+     - Simple system capable of exhibiting bursting
+     - Some success
+
+** The Hindmarsh-Rose model
+   
+A very popular bursting model, given by
+
+\begin{align}
+\frac{\mathrm d x}{\mathrm d t} &= y - ax^3 +bx^2-z+I~,\\
+\frac{\mathrm d y}{\mathrm d t} &= c - dx^2 -y~,\\
+\frac{\mathrm d z}{\mathrm d t} &= r\left[s(x-x_R)-z\right]~.
+\end{align}
+
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+/Hindmarsh, James L., and R. M. Rose. "A model of neuronal bursting using three coupled first order differential equations." Proceedings of the Royal society of London. Series B. Biological sciences 221.1222 (1984): 87-102./
+
+** HR Bifurcations
+    - \(b\) influences whether or not the cell bursts, and \(z\) is the slow subsystem variable.
+    - Idea: codim-2 bifurcation analysis of the fast subsystem, in terms of \((b,z)\)
+      - Goal: find the bifurcations that start and end the hysteresis loop, in the same way as Rinzel classifies bursters
+      - Approach it with minimal knowlege of the system, so that I'm learning, rather than copying papers!
+
+** HR Bifurcations
+
+#+ATTR_LATEX: :options trim={3cm 9cm 4cm 10cm}, clip :height .9\textheight
+[[file:HRzbBif2.pdf]]
+
+** HR Bifurcations
+
+#+ATTR_LATEX: :options trim={3cm 9cm 4cm 10cm}, clip :height .9\textheight
+[[file:HRzbBif3.pdf]]
+
+** HR Bifurcations
+
+#+ATTR_LATEX: :options trim={1cm 7cm 1cm 8cm}, clip :height .9\textheight
+[[file:HRzbBif.pdf]]
+
+** HR Bifurcations
+
+ * Taking \(b=3\) (Wikipedia default value) gives a codim-2 Fold-Hopf burster
+ * I haven't dug into the literature to see if this is right (I don't think it is)
+   
+* Krassy's model (attempt 2)
+** Cubic Lienard system :BMCOL:
+*** Discussion   
+   :PROPERTIES:
+   :BEAMER_col: 0.4
+   :END:
+
+    * Hold \(b\), \(\nu\) fixed
+    * Sweep \(\mu_1,\mu_2\)
+    * Inspired by stuff I didn't understand in Krassy's paper
+    * Some similarities to the bifurcation diagrams in the paper...
+
+*** Pic :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+#+ATTR_LATEX: :options trim={4cm 8cm 3cm 10cm}, clip :width \textwidth
+[[file:krassy.pdf]]
+* Next steps
+** Next steps
+   * Read more about the cubic Lienard model (some of the papers have a good discussion of bifurcation analysis)
+   * Reproduce some of the bifurcation diagrams from the literature
+     * Repeat with each of the different continuation softwares I'm testing
+   * Once I'm familiar with a software package, add it to the comparison paper
