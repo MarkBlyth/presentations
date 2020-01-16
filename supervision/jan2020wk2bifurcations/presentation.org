@@ -95,6 +95,11 @@ A very popular bursting model, given by
  * Taking \(b=3\) (Wikipedia default value) gives a codim-2 Fold-Hopf burster
  * I haven't dug into the literature to see if this is right (I don't think it is)
    
+** HR Bifurcations
+
+#+ATTR_LATEX: :options trim={3cm 9cm 0cm 5cm}, clip :height .9\textheight
+[[file:HRzbBif2 (copy 1).pdf]]
+   
 * Krassy's model (attempt 2)
 ** Cubic Lienard system :BMCOL:
 *** Discussion   
@@ -113,9 +118,46 @@ A very popular bursting model, given by
     :END:
 #+ATTR_LATEX: :options trim={4cm 8cm 3cm 10cm}, clip :width \textwidth
 [[file:krassy.pdf]]
+
+** Attempt 2
+*** Discussion
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+    * Tried to recreate a bifurcation diagram from Krassy's paper
+    * Took their parameter values, mostly succeeded
+    * Can't continue Homoclinics from Bogdanov-Takens points
+    * Strange blue line?
+*** Pics
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+
+#+ATTR_LATEX: :options trim={4cm 8cm 3cm 9cm}, clip :height .8\textheight
+[[file:krassV2.pdf]]
+
+** Attempt 2 - mostly right
+*** Original
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+    
+
+#+ATTR_LATEX: :width \textwidth
+[[file:original.png]]
+
+*** Mine
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+
+#+ATTR_LATEX: :options trim={4cm 8cm 3cm 9cm}, clip :height .8\textheight
+[[file:krassV2.pdf]]
+
 * Next steps
 ** Next steps
    * Read more about the cubic Lienard model (some of the papers have a good discussion of bifurcation analysis)
    * Reproduce some of the bifurcation diagrams from the literature
      * Repeat with each of the different continuation softwares I'm testing
    * Once I'm familiar with a software package, add it to the comparison paper
+   * To study homoclinic bifurcations, or not to study homoclinic bifurcations?
