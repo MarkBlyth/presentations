@@ -1,4 +1,4 @@
-% Created 2020-01-16 Thu 13:55
+% Created 2020-01-16 Thu 16:38
 % Intended LaTeX compiler: pdflatex
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,15 +30,15 @@
 \maketitle
 
 \section{Background}
-\label{sec:org23e4513}
-\begin{frame}[label={sec:org4700b9b}]{Week's goal}
+\label{sec:orgcd36d14}
+\begin{frame}[label={sec:org0e1c8e9}]{Week's goal}
 \begin{itemize}
 \item Focus on bifurcation analysis of Krassy's system
 \item Use it as an opportunity to learn about continuation software
 \item Once I know enough about any one software, write up about it for the paper
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org24cf6e4}]{Week's activities}
+\begin{frame}[label={sec:org67d2b96}]{Week's activities}
 \begin{itemize}
 \item Attempted to read some pure-maths papers about bifurcations of Krassy's cubic Lienard system
 \begin{itemize}
@@ -61,8 +61,8 @@
 \end{frame}
 
 \section{Papers}
-\label{sec:org026f35b}
-\begin{frame}[label={sec:org4cb6af2}]{Global study of a family of cubic Lienard equations}
+\label{sec:org679cd97}
+\begin{frame}[label={sec:org4479f9b}]{Global study of a family of cubic Lienard equations}
 \begin{itemize}
 \item Krassy's model uses a cubic Lienard equation as the fast subsystem
 \item This paper derives the global bifurcation diagram of that system
@@ -73,7 +73,7 @@
 \emph{Khibnik, Alexander I., Bernd Krauskopf, and Christiane Rousseau. "Global study of a family of cubic Liénard equations." Nonlinearity 11.6 (1998): 1505.}
 \end{frame}
 
-\begin{frame}[label={sec:orge33314a}]{Fast subsystem bifurcations in a slowly varying lienard sysetem exhibiting bursting}
+\begin{frame}[label={sec:org279ac95}]{Fast subsystem bifurcations in a slowly varying lienard sysetem exhibiting bursting}
 \begin{itemize}
 \item Krassy's model uses a cubic Lienard equation as the fast subsystem
 \item This paper performs various rigorous analyses on that system
@@ -86,8 +86,8 @@
 \end{frame}
 
 \section{HR Bifurcations}
-\label{sec:org2ad802c}
-\begin{frame}[label={sec:org6c4a6a9}]{A first attempt at bifurcation diagrams}
+\label{sec:org9700964}
+\begin{frame}[label={sec:orgcb52265}]{A first attempt at bifurcation diagrams}
 \begin{itemize}
 \item Tried to do a bifurcation analysis of Krassy's system
 \begin{itemize}
@@ -101,7 +101,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb7857f6}]{The Hindmarsh-Rose model}
+\begin{frame}[label={sec:orgf0abdbb}]{The Hindmarsh-Rose model}
 A very popular bursting model, given by
 
 \begin{align}
@@ -114,7 +114,7 @@ A very popular bursting model, given by
 \emph{Hindmarsh, James L., and R. M. Rose. "A model of neuronal bursting using three coupled first order differential equations." Proceedings of the Royal society of London. Series B. Biological sciences 221.1222 (1984): 87-102.}
 \end{frame}
 
-\begin{frame}[label={sec:org1643c88}]{HR Bifurcations}
+\begin{frame}[label={sec:orgbc6eeb9}]{HR Bifurcations}
 \begin{itemize}
 \item \(b\) influences whether or not the cell bursts, and \(z\) is the slow subsystem variable.
 \item Idea: codim-2 bifurcation analysis of the fast subsystem, in terms of \((b,z)\)
@@ -125,40 +125,40 @@ A very popular bursting model, given by
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org0871e1b}]{HR Bifurcations}
+\begin{frame}[label={sec:orgf48c800}]{HR Bifurcations}
 \begin{center}
 \includegraphics[trim={3cm 9cm 4cm 10cm}, clip,height=.9\textheight]{HRzbBif2.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org348be1d}]{HR Bifurcations}
+\begin{frame}[label={sec:org6cf1500}]{HR Bifurcations}
 \begin{center}
 \includegraphics[trim={3cm 9cm 4cm 10cm}, clip,height=.9\textheight]{HRzbBif3.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org6f9ac4d}]{HR Bifurcations}
+\begin{frame}[label={sec:orgb5779e5}]{HR Bifurcations}
 \begin{center}
 \includegraphics[trim={1cm 7cm 1cm 8cm}, clip,height=.9\textheight]{HRzbBif.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgcdac129}]{HR Bifurcations}
+\begin{frame}[label={sec:org0e83b17}]{HR Bifurcations}
 \begin{itemize}
 \item Taking \(b=3\) (Wikipedia default value) gives a codim-2 Fold-Hopf burster
 \item I haven't dug into the literature to see if this is right (I don't think it is)
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org524e6d3}]{HR Bifurcations}
+\begin{frame}[label={sec:orgbc548b6}]{HR Bifurcations}
 \begin{center}
 \includegraphics[trim={3cm 9cm 0cm 5cm}, clip,height=.9\textheight]{HRzbBif2 (copy 1).pdf}
 \end{center}
 \end{frame}
 
 \section{Krassy's model (attempt 2)}
-\label{sec:org877d4f2}
-\begin{frame}[label={sec:org727783a}]{Cubic Lienard system}
+\label{sec:org52a1b16}
+\begin{frame}[label={sec:orgeb49717}]{Cubic Lienard system}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 \begin{itemize}
@@ -177,7 +177,7 @@ A very popular bursting model, given by
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgf7812e1}]{Attempt 2}
+\begin{frame}[label={sec:orgecbea0e}]{Attempt 2}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 \begin{itemize}
@@ -195,7 +195,7 @@ A very popular bursting model, given by
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org45577ca}]{Attempt 2 - mostly right}
+\begin{frame}[label={sec:org9f2aa25}]{Attempt 2 - mostly right}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 \begin{center}
@@ -210,10 +210,36 @@ A very popular bursting model, given by
 \end{column}
 \end{columns}
 \end{frame}
+\section{AUTO}
+\label{sec:orgbe31537}
+
+\begin{frame}[label={sec:org0c450eb}]{HR model in AUTO}
+\begin{center}
+\includegraphics[height=.9\textheight]{auto2.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:orgd7be187}]{HR Bifurcations in MATCONT (again)}
+\begin{center}
+\includegraphics[trim={3cm 9cm 0cm 5cm}, clip,height=.9\textheight]{HRzbBif2 (copy 1).pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org2a6a545}]{HR model in AUTO}
+\begin{center}
+\includegraphics[height=.9\textheight]{auto3.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org218fa87}]{HR Bifurcations in MATCONT (again)}
+\begin{center}
+\includegraphics[trim={1cm 7cm 1cm 8cm}, clip,height=.9\textheight]{HRzbBif.pdf}
+\end{center}
+\end{frame}
 
 \section{Next steps}
-\label{sec:orgff38211}
-\begin{frame}[label={sec:org943f7a4}]{Next steps}
+\label{sec:org7dfe0b0}
+\begin{frame}[label={sec:org4f4551a}]{Next steps}
 \begin{itemize}
 \item Read more about the cubic Lienard model (some of the papers have a good discussion of bifurcation analysis)
 \item Reproduce some of the bifurcation diagrams from the literature

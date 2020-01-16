@@ -153,6 +153,26 @@ A very popular bursting model, given by
 
 #+ATTR_LATEX: :options trim={4cm 8cm 3cm 9cm}, clip :height .8\textheight
 [[file:krassV2.pdf]]
+* AUTO
+
+#+ATTR_LATEX: :options plain
+** HR model in AUTO
+#+ATTR_LATEX: :height .9\textheight   
+[[file:auto2.png]]
+
+** HR Bifurcations in MATCONT (again)
+
+#+ATTR_LATEX: :options trim={3cm 9cm 0cm 5cm}, clip :height .9\textheight
+[[file:HRzbBif2 (copy 1).pdf]]
+
+** HR model in AUTO
+#+ATTR_LATEX: :height .9\textheight
+[[file:auto3.png]]
+
+** HR Bifurcations in MATCONT (again)
+
+#+ATTR_LATEX: :options trim={1cm 7cm 1cm 8cm}, clip :height .9\textheight
+[[file:HRzbBif.pdf]]
 
 * Next steps
 ** Next steps
