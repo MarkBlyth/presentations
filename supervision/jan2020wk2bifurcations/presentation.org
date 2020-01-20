@@ -176,3 +176,12 @@ A very popular bursting model, given by
      * Repeat with each of the different continuation softwares I'm testing
    * Once I'm familiar with a software package, add it to the comparison paper
    * To study homoclinic bifurcations, or not to study homoclinic bifurcations?
+* Meeting summary
+
+ - Software tends to use orthogonal collocation for bifucation finding (look up what this means)
+  - matlab, xpp use same algo, so using same numerics should give the same ourpur
+ - Varying the numerical parameters might help find homoclinic bifurcation points
+ - Look at some XPP homoclinic orbits tutorial
+ - See how PyDStool compares to the other softwares
+   
+Also, make list of questions to put to Krassy next time we meet
