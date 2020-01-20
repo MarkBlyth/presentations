@@ -14,14 +14,9 @@
     - Once I know enough about any one software, write up about it for the paper
 ** Week's activities
     - Attempted to read some pure-maths papers about bifurcations of Krassy's cubic Lienard system
-      - No success
     - Attempted instead to do a bifurcation analysis on the cubic Lienard system 
-      - No success
     - Tried a Rinzel-esque fast-subsystem bifurcation analysis on the HR model (simpler, therefore easier)
-      - No success in XPP
-      - Some success in MATCONT
     - Went back to Krassy's neuron model again, with newfound MATCONT skills
-      - Slightly more success?
 
 * Papers
 ** Global study of a family of cubic Lienard equations
