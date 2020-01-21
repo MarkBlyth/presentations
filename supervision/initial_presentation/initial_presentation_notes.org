@@ -1,0 +1,178 @@
+* [2019-11-18 Mon] - initial progress presentation
+** DONE CBC - what is it and what does it do?
+   CBC is a method for applying continuation studies on a physical system, without needing a model
+*** Continuation - what is it and what does it do?
+**** What is it?
+     * Zero problem - find some system state satisfying $f(x,\lambda)=0$
+     * Continuation - track how the solution to the zero problem changes as parameter $\lambda$ varies
+**** How does it work?
+     * Naive approach - solve $f(x,\lambda)=0$ for a range of values lambda
+     * Issue with that: slow, doesn't work well around folds etc.
+     * Better approach: predictor-corrector. Predict the next $x$-value, then correct it to the actual solution
+     * Typical implementation: psuedo-arclength continuation
+***** Psuedo-arclength continuation:
+      Consider the zero problem $f(x,\lambda)=0$.
+      We wish to find the implicitly defined manifold $x(\lambda)$ satisfying the zero-problem.
+      If we can parameterise the manifold in terms of arclength, we don't need to worry about its shape (so, we don't see any issues when trying to track the manifold around a fold point, for example).
+      It would be difficult to parameterise the manifold in arclength, so instead we use a psuedo-arclength technique.
+      Use a locally linear approximation of the manifold to estimate the next solution of the zero-problem (take a step in the direction of the tangent vector to the manifold at the current location).
+      Use some iteration scheme to correct this prediction.
+      We require the correction vector to be perpendicular to the prediction (tangent) vector; this requirement gives us n+1 equations (zero requirement, orthogonality requirement), which then allows us to follow the manifold in a similar manner to how we would if it was arclength-parameterised.
+*** How does control-based continuation differ from vanilla continuation?
+    * We don't typically have models of real systems
+    * Can't define a zero problem of form $f(x, \lambda)=0$ if we don't have a system model $f$
+    * Use control methods to steer the physical system to the solution state, instead of a model of it
+    * Defines a systematic method for the experimental investigation of bifurcations in systems, without needing any model of the system
+*** How is CBC done?
+    Consider a system $\dot{x} = f(x, \lambda)$.
+    Assume the system is fully controllable and observable.
+    A control action $u(x,t)$ is applied, to drive the system to some target dynamics.
+    Let $x^*(t)$ be the control target to which we wish to drive the system.
+    When $u(t)=0$, the system is operating without any control input, and is therefore evolving under its free dynamics.
+    The CBC zero-problem seeks to find invariant sets in the natural system dynamics, by finding some control target $x^*(t)$ that drives the control action $u(t)$ to zero.
+    Bifurcations of the system can then be found, by monitoring how these open-loop invariant sets change when system parameters are varied.
+    The zero-problem is thus to find the open-loop invariant set defined by trajectory $x^*(t)$ that drives the control input to zero.
+    This is achieved by discretising the control input using a Galerkin projection, and seeking a fixed point of the map from control target to system ouptut.
+*** What are the benefits of using CBC?
+    * No requirements on the control method, unlike OGY control (apparently), or phase-locked loops etc.
+    * Allows us to discover bifurcations without having to use a model
+    * No reality gap - dynamics we observe are necessarily real system dynamics, and not just an artefact of a poorly descriptive model
+** DONE Background maths
+*** Galerkin projections
+    * Lots of hard maths I don't understand here
+    * Found a nice PDF which covers the basics I need
+    * Functions are a type of vector, so we can project onto functions in the same way as we can project onto any other vector basis
+    * Galerkin methods, as far as I need to know, are using an inner product to project data or a function onto a finite set of basis functions
+    * The projection's coefficients form a discretised version of the system, that we can use for our iteration scheme
+    * Conceptual understanding, rather than any rigorous mathematical knowledge
+*** Floquet theory
+    * Lots of hard maths here too
+    * Basically like a Poincare section, convert the dynamics within a neighbourhood of a PO into dynamics on a transversal hyperplane, by integrating over a linearisation of the system around the PO
+    * Equilibrium will occur where the PO intersects the hyperplane; eigenvalues of this equilibrium dictate PO stability
+    * Conceptual understanding, rather than any rigorous mathematical knowledge
+*** Newton-Krylov solvers
+    * Newton's method approximates a function by its tangent, and takes the zero of this tangent approximation as a zero of the actual function
+    * Iterating the method will generally convergerge to a zero of the actual function
+    * Tangent approximation requires Jacobian estimates; could use a finite differences scheme, but this is potentially inaccurate, and would be particularly expensive in a CBC experiment
+    * Alternative: Jacobian-free quasi-Newton iteration schemes
+    * Quasi-Newton methods: eg. take two near-by points, draw a line between them, and use that as the tangent approximation, to avoid having to take derivatives
+    * Newton-Krylov method: update the initial Jacobian as we iterate, to avoid recomputing it
+*** Gaussian process regression
+    * Parametric models (eg. polynomial regression) are limited in that many basis functions are needed to get much expressive power
+    * Neural nets lack interpretability (whereas eg. poloynomial regression can be understood more easily)
+    * Can we get a practical non-parametric model? Yes! Using GPR.
+    * GPR: maintain a Gaussian distribution over functions
+    * Assume data came from a Gaussian process with mean mu(x), and covariance k(x1,x2) (effectively how wiggly the process is)
+    * Take a zero mean, squared-exponential covariance prior
+    * Evaluate the mean, covariance across all the test, training datapoints
+    * Condition on the prior and observed data to get a posterior distribution, giving process values at unseen (test) positions
+    * Statistically optimal, non-parametric method for generating models
+***** Link back to CBC
+      GPR lets us produce (generally speaking) well-fitted models, that are quick to evaluate.
+      Instead of having to run a full CBC experiment for each predictor-corrector step (an evaluation of the I/O map), we can instead run the experiment on a local GPR model.
+      The model is updated with CBC data, with test points specifically chosen in such a way as to maximise the information obtained by the experiment.
+      This allows us to run the experiments much faster, and to do more complex numerical methods (eg. much easier to finite-differences Newton's Jacobian on a local GPR model, than on the actual system)
+*** Control theory
+    * Played about with PD-control on linear oscillators, and had a skim through a textbook, to gain some intuition on control
+    * Recapped modern control theory from last year's course
+** DONE Demos
+*** GPR
+    Demonstrate the GPR example code
+*** CBC
+    Run a CBC simulation on the Duffing oscillator
+** DONE Misc. other learning
+*** Numerical continuation software
+    * Read PyDSTool docs
+    * Worked through Lucia's XPPAUT tutorials
+    * ...and the MATCONT tutorials
+    * Looked at misc. other numerical methods software (Knut, DDE-BIFTOOL, etc.)
+    * Started a comparison between them (didn't finish)
+*** Microfluidics
+    * Had a brief look into what microfluidics is and why we use it
+    * Learned a bit about the photolithography process (enough to follow what's going on in the meetings)
+    * Went to the clean room with Mahmoud to try it out, and see it in action
+** DONE Dynamical systems in neuroscience
+   * Neural computation arises from neurons deciding when to spike or not
+     * We're therefore interested in studing their spiking dynamics
+   * Biological view: all-or-nothing spiking when input exceeds a threshold
+     * Hard to do any sort of real analysis with this, hence ODEs
+   * Neurons can be well-described as systems of nonlinear ODEs
+     * Resting states = stable equilibrium, continuous spiking = limit cycle
+     * Excitability arises from the neuron existing near a bifurcation point (generally they bifurcate under input current)
+*** HH Model:
+    * Ions carry currents through ion channels
+    * Membrane potential dictated by electrochemical equilibrium (diffusion = electrical repulsion)
+    * Ionic currents determine changes in cell membrane potential
+    * Ion channels have conductances which vary depending on membrane potential +more
+    * HH model describes how ion channels are gated
+      * Activation = conductance increases as membrane depolarises (V increases)
+      * Inactivation = conductances decrease as membrane potential increases
+      * Lots of gates opening and closing randomly, so we take an average
+      * Sigmoidal activation / inactivation curves
+    * Activation of (inward) Na+, Ca2+ currents depolarise membrane, activation of outward K+, Cl- hyperpolarise it
+      * Inward currents activate fast, and provide positive feedback; inactivation, plus outward currents, occur more slowly, to draw cell back to equilibrium
+      * Neuron spiking is caused by the multiple timescales between an amplifying and a resonant variable
+    * A minimal model is the simplest neural model capable of spiking
+      * Amplifying gating vars = activation of deploarising inward currents, or inactivation of outward hyperpolarising currents; provide positive feedback and amplify voltage change
+      * Resonant gating vars = inactivation of depolarising inward currents, or activation of outward hyperpolarising currents; resist voltage change
+      * Excitability requires an amplifying and a resonant gating variable
+      * Minimal models let us study the simplest possible systems capable of describing neural computation, allowing planar representations
+    * Current work: looking at the ways these models can bifurcate (early days)
+** DONE next steps
+   * Finish DSN (currently on page 200 of 440); rest of book covers...
+     * The bifurcations that are likely to be seen in neural models
+     * Excitability, and how those bifurcations contribute to neural computation
+     * Bursting dynamics, synchronisation between neurons, etc.
+   * Analytical work:
+     * Neurons can appear to bifurcate when they haven't as a result of noise, so develop a theoretical model of what bifurcations look like in stochastic systems
+     * Design a CBC strategy to investigate these bifurcations
+* [2019-11-25 Mon] 
+** Bifurcations of neurons
+   * Transitions from spiking to excitability to bistable states all occur as a result of bifurcations
+   * Different inputs change the neuron state in different ways, and therefore we can see different bifurcations 
+** Stochastic resonance
+    * Noise can increase signal-to-noise ratio
+    * There's evidence to suggest that that's how sensory neurons can pick up data - by actually using the noise present to amplify the input signal
+    * Noise is an essential part of neural dynamics, so any study on those dynamics should seek to explicitly model noise
+** Recording neural data
+>>>>>>> e98813c937bef7dbdefd84bb9ad09069f99305cf
+   Had to spend ages chasing a paper trail to find where neuron recordings actually came from, and how they were obtained.
+   Several methods exist for recording neural data:
+    * In vivo: use dyes and fluorescence, infrared video microscopy, or differential interference contrast to visually observe cell dynamics
+    * In vitro: either microfluidic MEAs, sharpened tungsten electrodes, or glass electrode patch clamps
+*** Glass electrode method
+    Benefits: direct electrical access to cell interior. 
+    Access is at a very specific point, so no need to space clamp the membrane.
+    Tip resistances are very high, so we get a large signal-to-noise ratio
+    * Take a glass capillary, heat it, stretch it, giving a pipette with 1-2um tip diameter
+    * Keep everything veeeery clean (clean pipette with methanol, filter solutions)
+    * Enzymatically clean cell surface, where dyes etc. have been used
+    * Gently suck pipette onto cell surface
+    * Cell membrane gets brought onto pipette opening
+    * Either 
+      a. proceed as is (isolates specific ion channel),
+      b. use a big current to blast away the membrane
+      c. use antibiotics to perforate the membrane slightly
+    * b,c give direct access to the cell interior, allowing the membrane potential to be measured
+    * Method c. prevents large proteins etc. from diffusing out of the neuron, maintaining its internal fluids
+    * The electrode has a high resistance (o(gigohms)), so the method has low noise
+    * Only way to patch-clamp a neuron. Only way besides metal electrode to measure membrane potential
+    * Won the Nobel prize, and still the gold-standard method
+*** Tungsten electrode
+    * Old method
+    * Hard to isolate membrane currents from exterior currents, meaning it's high-noise
+    * Not really used any more
+*** Microfluidics
+    * Every membrane potential recording I've found uses glass or tungsten electrodes
+    * My project (and any similar spike train recording project) needs to measure membrane potential
+    * Microfluidics methods exist to do this, however they're still cutting edge / in development
+      The difficulty with using microfluidics for cell measurements is that we need a one-to-one correspondence between cells and electrodes.
+      Since we can't put cells in specific places within the device, this is difficult.
+      One approach uses very specific designs of fluidics channels to enforce a topology on how the neurons grow, so that they're guaranteed to be near an electrode.
+      The microfluidics device used by Bath is designed to measure extracellular voltages from populations of glial cells.
+      To keep the noise ratio low, large electrodes are used.
+      The measured potentials are an 'extracellular field potential, which is a superposition of' a variety of different potential sources, from a range of cells in the population.
+      As far as I can see, this isn't what we want to measure...
+
+* TODOs
+  * Add references to every section (turn this into a research diary sort of thing)
