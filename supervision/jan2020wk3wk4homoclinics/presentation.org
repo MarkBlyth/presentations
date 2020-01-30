@@ -1,0 +1,142 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Homoclinics and continuations
+#+DATE: [2020-01-31 Fri]
+
+* Background
+** Week's goal
+    - Reproduce some of the bifurcation diagrams from the literature
+      - Use different continuation software packages, and add them to the comparison paper once I know them well enough to do so
+    - Learn how to find homoclinic bifurcations
+    - Use the bifurcation tools to learn more about Krassy's cubic Lienard model
+** Week's activities (week 1)
+#+ATTR_LATEX: :overlay <+->
+   - Tried the numerical continuation of homoclinic bifurcations in the HR model, with no success
+   - Followed some homoclinic bifurcations tutorials, with success
+   - Tried the numerical continuation of homoclinic bifurcations in the HR model again, with no success (again)
+   - Looked a bit into the maths and numerics of homoclinic bifurcations and continuation
+
+
+* Homoclinics
+** Motivating problem
+*** Image :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+#+ATTR_LATEX: :options trim={3cm 9cm 0cm 5cm}, clip :height .7\textheight
+[[file:HRzbBif2 (copy 1).pdf]]
+*** Text :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+    - Homoclinic bifurcations are fundamental to neuron function
+    - I can't seem to find them in my Hindmarsh-Rose bifurcation analysis
+** Motivating problem
+   - Homoclinic bifurcations are fundamental to neuron function, so they are a useful thing to understand
+   - Bogdanov-Takens points (intersection of Saddle-Node and Hopf bifurcations) necessarily produce a family of homoclinics
+     - Krassy's model is an unfolding of a doubly-degenerate Bogdanov-Takens singularity
+     - Since it's codim-4, it the parameter space contains three-dimensional subspaces of homoclinic bifurcations
+     - The bifurcations are therefore unavoidable!
+   - CBC can't yet deal with homoclinic bifurcations, making it a particularly interesting area to study
+
+** Goals and results
+   - Goal: find and continue homoclinic bifurcations in the HR and Cubic Lienard models
+   - Results: /[none]/
+** The challenges of Homoclinic bifurcations (1)
+#+ATTR_LATEX: :overlay <+->
+   The period of a limit cycle diverges to infinity at a homoclinic bifurcation, making numerical integration difficult:
+     - Homoclinic trajectories are the solution to a boundary value problem, where the boundaries (start, end state) are a saddle equilibrium
+     - The equilibrium is only reached as \(t \to \pm \infty\), meaning our boundaries are not numerically tractable
+     - To fix this, we use projective boundary conditions, to truncate the problem onto a finite time domain
+     - These require some rather complicated maths
+
+** The challenges of Homoclinic bifurcations (2)
+#+ATTR_LATEX: :overlay <+->
+   - A homoclinc orbit becomes arbitrarily small at a BT point (small in the Lebesgue measure sense)
+   - Homoclinic bifurcations are a /'truly global'/ bifurcation - no stability changes occur in any invariant sets
+     - Since there's no stability changes, we can only detect these bifurcations by searching for homoclinic trajectories
+   - But, this becomes impossible near a BT point, since those trajectories become arbitrarily small
+   - Looking for homoclinc bifurcations at a BT point therefore becomes a problem of spotting nothing happening, where that nothing happens in an infinitely small region of phase space
+
+** The challenges of Homoclinic bifurcations (3)
+   I flicked through a few different papers on the numerical aspects of homoclinic continuation. 
+   They build on maths that I don't know much about
+     - Reduction of the system to the center manifold
+     - Homeomorphism onto topological normal forms
+     - Everything to do with projective boundary conditions
+     - Homotopic shooting methods
+      
+/Guckenheimer and Holmes (1983)/ contains most of the required maths, as well as lots of useful information on bifurcations.
+I've added it to my reading list!
+
+
+* Numerical continuation
+** Week's activities (week 2)
+   - Homoclinic bifurcations are interesting, but would require a large time investment to make any progress
+   - Instead, I returned to numerical bifurcation analysis
+     - Started learning about PyDSTool
+     - Followed online tutorials
+     - Managed to generate some bifurcation diagrams
+
+#+BEGIN_EXPORT latex
+\end{frame}
+\begin{frame}[plain]
+\begin{columns}
+\begin{column}{0.5\columnwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{HRzbBif.pdf}
+\end{center}
+\end{column}
+\begin{column}{0.5\columnwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{dstool_2dbif.pdf}
+\end{center}
+\end{column}
+\end{columns}
+#+END_EXPORT
+
+
+#+BEGIN_EXPORT latex
+\end{frame}
+\begin{frame}[plain]
+#+END_EXPORT
+
+#+ATTR_LATEX: :width \textwidth
+[[file:pydstool3.pdf]]
+
+     
+#+BEGIN_EXPORT latex
+\end{frame}
+\begin{frame}[plain]
+#+END_EXPORT
+
+#+ATTR_LATEX: :width \textwidth
+[[file:pydstool4.pdf]]
+
+
+#+BEGIN_EXPORT latex
+\end{frame}
+\begin{frame}[plain]
+#+END_EXPORT
+
+#+ATTR_LATEX: :width \textwidth
+[[file:pydstool2.pdf]]
+
+
+* Next steps
+** Project ideas
+    1. Find a way of using CBC to track homoclinic bifurcations (challenge: CBC of global bifurcations)
+       - Use the simplest possible system and the simplest possible controller
+       - Use that knowledge to add homoclinic bifurcation analysis into PyDSTool, if it won't take too long to do so? Might be paper-worthy in itself?
+    2. Design a controller that'll work on neuron models; adapt the CBC approach to use Krassy's model and the new controller (challenge: discretising spiking signals, controlling neurons)
+       - Use that for an in-silico neuron CBC simulation
+       - See how things change when noise gets introduced
+    3. Use the newly developed CBC approach on a real live neuron (challenge: experiments)
+** Next steps
+   - Keep learning numerical continuation tools (next steps: CoCo, MATCONT CL)
+   - Start writing some notes about the ones I've used so far
+     - QUESTION: what sort of things would be useful to discuss in the paper?
+   - Mix things up with some /Guckenheimer and Holmes/, when I get tired
