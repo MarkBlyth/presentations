@@ -140,3 +140,27 @@ I've added it to my reading list!
    - Start writing some notes about the ones I've used so far
      - QUESTION: what sort of things would be useful to discuss in the paper?
    - Mix things up with some /Guckenheimer and Holmes/, when I get tired
+
+
+* Meeting notes
+  
+Things to put in the paper:
+    Table of comparison:
+	- Bifurcations it can do, curves it can continue, and the types of system they can use
+	- When they fail, crash, etc.
+	- Numerical methods they have available
+	- How much do the parameters need manually fiddling?
+	- Do we need to code or not?
+
+When writing, aim it at a biology audience.
+COntinuation is a sequence of problems - start off at equilibria, then move to tracking codim2 bifurcations, increase the dimension etc.
+Make this nice and clear: explain why we're starting off finding any sorts of bifurcations we can, then continuing those to find others.
+Aim it at someone that doesn't understand continuation
+Assume they know what bifurcations are but not continuation
+A brief section on the maths (eg. why we need to continue from a steady state, and how continuation works) would probably be useful.
+
+Stephen Wiggins nonlinear dynamics - good for maths, but rather hard!
+
+Don't bother starting CoCo with the CoCo book, but use the online tutorials instead! Only then look at the book, otherwise it'll not make sense.
+
+Also, set up a meeting with Ludovic and Alan at some point, to discuss homoclinic bifurcations.
