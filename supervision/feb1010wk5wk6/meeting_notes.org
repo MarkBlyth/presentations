@@ -1,0 +1,830 @@
+#+LATEX_CLASS: article
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+#+LATEX_COMPILER: pdflatex
+#+DATE: \today
+ 
+
+#+BEGIN_EXPORT latex
+\newpage
+#+END_EXPORT
+* Questions for Krassy
+    - How are you managing to produce bifurcation diagrams on the surface of a sphere like that?
+
+    - How are you finding these paths? Trial and error?
+      - Given a bifurcation diagram, it seems hard to find paths that actually correspond to bursting. Even finding the right start and end bifurcations and linking them won't necessarily produce a burstable trajectory.
+      - Why are we looking at bifurcations on the surface of the sphere? Is it just as a convenient dimensionality reduction? Is there any a priori reason why this surface should have contained the burster path, or was that just a lucky bit of guesswork?
+
+    - Where are you getting the parameter values for the bifurcation regions?
+      - Golubitsky uses b=3, mu2 = 1/3. Why?
+      - This paper fixes something like b=0.75. Why? Surely then it isn't a codim4 unfolding?
+      - The paper claims that for small b (here, b=0.75), any fixed neighbourhood (here the unit ball) around the origin of (mu1,mu2,v) space contains all the additional bifurcations gained from the DD-BT pt. Why? How and why was b=0.75 chosen? How about the unit ball?
+      - I don't understand why we're able to fix b at some small value and not limit the types of bifurcation that we see; why does any fixed neighbourhood of 0 in (mu1,mu2,v)-space contain all the relevant bifurcations for sufficiently small b?
+
+    - How am I supposed to use the model?
+      - Trial and error some parameter vals from a bif diagram, to find the areas of parameter space that give whatever bursting/excitability dynamics I'm after?
+      - Is this actually a useful model, being a phenomenological one? Will it be able to tell me much about what a living neuron is doing? How much information can we really get from a living cell if we're completely ignoring all ionic currents?
+      - How will the model actually be useful to me? How do I relate the parameters to what's going on in reality?
+
+Notes:
+    - In the cubic Lienard model, mu1 is the slow subsystem variable (z), and v is the HR-b-like bursting pattern variable
+
+#+BEGIN_EXPORT latex
+\newpage
+#+END_EXPORT
+* Continuation software
+** Notes
+*** ODE examples
+**** XPP
+**** COCO
+**** MATCONT
+**** PyDSTool
+
+*** Pure AUTO capabilities
+**** Algebraics
+    - Compute sol'n families for algebraic eq's of form \(f(u,p)=0\), \(f(\cdot,\cdot) \in \mathbb{R}^n\)
+    - Find branch points, and continue them in two or three parameters
+    - Find Hopf points, continue them in two parameters, detect criticality, find zero-Hopf, BT, Bautins
+    - Find folds, continue in 2 parameters, find cusps, zero-Hopfs, BTs
+    - Find branch points, folds, period doubling, Neimark-Sackers, continue these in 2 or 3 params and switch branches at branch points and PD bifs for map fixed points
+    - Find extrema of ojective functions along solution families; continue extrema in more params
+
+**** Flows
+ Consider an ODE of form \(u'(t) = f\big(u(t), p\big)\), \(f(\cdot, \cdot),~u(\cdot) \in \mathbb{R}^n\).
+ AUTO can...
+    - Compute stable / unstable periodic sol'n families, and their Floquet multipliers
+    - Find folds, branch points, period doublings, Neimark-Sackers, along PO families; branch switching at PO and PD bifs
+    - Continue folds, PD bifs, NS bifs in two parameters, and detect 1:{1,2,3,4} resonances
+    - Continuation of fixed-period orbits for sufficiently large periods
+    - Follow curves of homoclinic orbits, detect and continue codim-2 bifs using HomCont
+    - Find extrema of integral objective functions along a periodic solution family; continue extrema in more parameters
+    - Compute sol'n curves on the unit interval, subject to nonlinear BCs and integral conditions; discretisation uses an adaptive-mesh orthogonal collocation
+    - Determine fold, branch points along sol'n families to the above BVP
+**** PDEs
+     Also some stuff for reaction-diffusion equations.
+
+*** Things to put in the paper
+  Table of comparison:
+	  - Bifurcations it can do, curves it can continue, and the types of system they can use
+	  - When they fail, crash, etc.
+	  - Numerical methods they have available
+	  - How much do the parameters need manually fiddling?
+	  - Do we need to code or not?
+
+  When writing, aim it at a biology audience.
+  Continuation is a sequence of problems - start off at equilibria, then move to tracking codim2 bifurcations, increase the dimension etc.
+  Make this nice and clear: explain why we're starting off finding any sorts of bifurcations we can, then continuing those to find others.
+  Aim it at someone that doesn't understand continuation (assume they know what bifurcations are, but not continuation methods for finding them).
+  A brief section on the maths (eg. why we need to continue from a steady state, and how continuation works) would probably be useful.
+*** Investigating the HR model
+**** Simplifying assumptions
+     - b is a parameter influencing the bursting and spiking behaviour (frequency of spiking, ability or inability to burst)
+     - We want to find the start/stop bifurcations when in a spiking regime, so we fix I=2 to force the neuron to spike
+     - Freeze the fast subsystem (so, ignore the slow subsystem)
+     - We therefore have two bifurcation parameters - slow subsystem state z, and bursting-spiking parameter b
+**** Investigation strategy
+     - Simulate the neuron for a few different b,z, to see what happens
+     - It spikes
+     - If the neuron can spike there must be a limit cycle; if there's a planar limit cycle, there must be an equilibrium within it
+     - We're interested in when this limit cycle appears or disappears; let's start by investigating how its central equilibrium bifurcates
+***** Equilibrium bifurcation
+      (1) Find the equilibrium
+	 - Simulate the system to get a (x,y) phase portrait, for arbitrary initial conditions, params
+	   * Wikipedia says b=3 is a sensible value, so let's use that to start with
+	   * The simulations seem to show I=2 as being a nice (but arbitrarily chosen!) value, so let's use that too
+	   * (Emphasise that these were chosen just by playing around with simulations)
+	 - This shows a stable limit cycle
+	 - Choose some point within the limit cycle and integrate backwards
+	 - This allows us to find the (unstable!) equilibrium in the middle of the limit cycle
+	   - For I=2, b=3, other params at wikipedia default, this gives an equilibrium at x,y=1,-4
+      (2) Do a bifurcation analysis in Z of this equilibrium 
+	 - We choose to bifurcate in Z since this is the forcing term applied by the slow subsystem that causes bursting
+	 - Since we have a 1d slow subsystem, we must have a hysteresis-loop burster; hyseteresis-loops typically have a Z-shaped nullcline, so let's guess that's going to be the case and plot a bifurcation diagram in (z,x) space
+	 - We get two LPs and two Hopf's; the first of these Hopfs occurs at z<-10; this is outside the expected range of z for a typical HR firing, so we'll ignore this one and focus on the other three bifs
+      (3) Continue the bifurcations in (z,b) space
+	 - Get confused and give up?
+
+*** Refs
+    [1] http://www.math.pitt.edu/~bard/xpp/whatis.html
+
+    [2] K. Engelborghs, T.Luzyanina, G. Samaey, DDE-BIFTOOL v. 2.00: a Matlab package for bifurcation analysis of delay differential equations, Technical Report TW-330, Department of Computer Science, K.U.Leuven, Leuven, Belgium, 2001.
+
+    [3] https://www.dropbox.com/s/cx2ex5o4n4q42ov/manual_v8.pdf?dl=0
+
+    [4] https://github.com/robclewley/pydstool
+
+    [5] https://pydstool.github.io/PyDSTool/FrontPage.html
+
+** Tools overview
+*** ODEs
+**** XPP
+***** Overview
+      - Language: C
+      - Interface: GUI only
+      - Usage: ODEs, DDEs, SDEs, BVPs, difference equations, functional equations
+      - License: GNU GPL V3
+***** Notes
+      The 'classic' simulation and continuation software.
+      Still sees active use in a large range of nonlinear problems.
+      Bifurcation (continuation) methods provided by AUTO and HomCont; probably possible to use AUTO by itself, but no one does because it would be very difficult (needs FORTRAN coding), and XPP provides a good interface to do it.
+      Takes plain-text input files, with equations written out in text, as opposed to being defined by user-written functions like in eg. matlab.
+      From [1], ...
+      Over a dozen different solvers, covering stiff systems, integral equations, etc.
+      Supports Poincare sections, nullcline plotting, flow fields, etc., so it's good for visualisation, as well as bifurcation analysis.
+      Can produce animations in it (somehow?).
+      Since it's so popular, there's a wealth of tutorials available for it.
+      Somewhat outdated GUI, but it does the job perfectly adequately.
+      No command line interface.
+      Buggy, sometimes segfaults.
+***** Tutorials
+      Comprehensive tutorial provided by Ermentrout here: http://www.math.pitt.edu/~bard/bardware/tut/start.html#toc
+**** TODO COCO
+***** Overview
+***** Notes
+***** Tutorials
+**** TODO MatCont
+***** Overview
+      - Language: MATLAB
+      - Interface: GUI only, but CL_MatCont exists as a command-line version
+      - Usage: """""TODO""""""
+      - License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 unported
+***** Notes
+      Also: CL_MatCont (commandline interface), MatContM (MatCont for maps)
+***** Tutorials
+**** PyDSTool
+     See [[https://pydstool.github.io/PyDSTool/ProjectOverview.html][the project overview]] for lots of nice interesting things to talk about
+***** Overview
+      - Language: Python3, with options for invoking C, Fortran
+      - Interface: scripting only
+      - Usage: ODEs, DAEs, discrete maps, and hybrid models thereof; some support for DDEs
+      - License: BSD 3-clause
+***** Notes
+      Julia DS library is just PyDSTool in a julia wrapper.
+      Provides a full set of tools for development, simulation, and analysis of dynamical system models.
+      'supports symbolic math, optimisation, phase plane analysis, continuation and bifurcation analysis, data analysis,' etc. (quoted from [5]).
+      Easy to build into existing code.
+      Can reuse bits and pieces (eg. continuation, or modelling) for building more complex software.
+***** Tutorials
+      Learn-by-example tutorials provided in the examples directory of the code repo [4], and fairly comprehensive documentation available on the website [5].
+*** Others
+**** DDE Biftool
+***** Overview
+      - Language: MATLAB
+      - Interface: Scripting
+      - Usage: DDEs, sd-DDEs
+      - License: BSD 2-clause
+***** Notes
+      DDE bifurcation analysis only.
+      Described in detail at http://twr.cs.kuleuven.be/research/software/delay/ddebiftool.shtml .
+      Full manual available at [2].
+      Designed for numerical bifurcation analysis of fixed points and periodic orbits, in constant-delay differential equations, and in state-dependent-delay differential equations.
+      Uses orthogonal collocation (???) to continue steady states, periodic orbits.
+      Doesn't provide automatic bifurcation detection, but instead tracks eigenvalue evolution, so that the user can determine bifurcation points.
+      No simulation ability.
+**** Knut
+***** Overview
+      - Language: C++
+      - Interface: GUI, CLI
+      - Usage: explicitly time-dependent-delay DDEs
+      - License: GNU GPL
+***** Notes
+****** Features:
+       [Info taken verbatim from https://rs1909.github.io/knut/]:
+       - Continuation of periodic orbits along a parameter
+       - Floquet multiplier calculations
+       - Automatic bifurcation detection
+       - Continuation of some bifurcations in 2 parameters
+****** Differences from DDE Biftool:
+       [Info taken from https://rs1909.github.io/knut/]:
+       - C++ makes it faster than MATLAB
+       - Standalone software (no need to install matlab as well)
+       - GUI-based, with plaintext input, so no need for any programming skills to use it
+       - Only software to calculate quasi-periodic tori
+***** Tutorials
+      See reference manual [3] for how-to's
+**** PDECONT
+***** Overiew
+      - Language: C
+      - Interface: combination of C and a config file. Matlab interface appears to exist, but no documentation for how to use it
+      - Usage: PDE discretisations, large systems of ODEs
+      - License: unspecified (open-source, and free for non-commerial use)
+***** Notes
+      Huge long documentation file exists, but that's just full of code implementations. 
+      Couldn't find any clear, straightforward tutorials for using it.
+      Need to code in C and produce a big config file to use the software.
+      Even then, I can't tell what the code is actually designed to do...
+** Tables
+*** Point labels
+
+ | Point | Label                       | Also known as                                      |
+ |-------+-----------------------------+----------------------------------------------------|
+ | EP    | Equilibrium                 |                                                    |
+ | LC    | Limit cycle                 |                                                    |
+ | LP    | Limit point                 | Fold bifurcation, saddle node bifurcation          |
+ | H     | Hopf                        | Andronov-Hopf bifurcation                          |
+ | LPC   | Limit point of cycles       | Fold / saddle node bifurcation of periodics        |
+ | NS    | Neimark-Sacker              | Torus bifurcation                                  |
+ | PD    | Period doubling             | Flip bifurcation                                   |
+ | BP    | Branch point                |                                                    |
+ | CP    | Cusp bifurcation            |                                                    |
+ | BT    | Bogdanov-Takens             |                                                    |
+ | ZH    | Zero-Hopf                   | Fold-Hopf, Saddle-node Hopf, Gavrilov-Guckenheimer |
+ | HH    | Double Hopf                 | Hopf-Hopf bifurcation                              |
+ | GH    | Generalised Hopf            | Bautin                                             |
+ | BPC   | Branch point of cycles      |                                                    |
+ | CPC   | Cusp point of cycles        |                                                    |
+ | CH    | Chenciner                   | Generalised Neimark-Sacker bifurcation             |
+ | LPNS  | Fold-Neimark-Sacker         |                                                    |
+ | PDNS  | Flip-Neimark-Sacker         |                                                    |
+ | LPPD  | Fold-flip                   |                                                    |
+ | NSNS  | Double Neimark-Sacker       |                                                    |
+ | GPD   | Generalised period doubling |                                                    |
+
+ (Taken from the [[http://www.scholarpedia.org/article/MATCONT][MATCONT Scholarpedia]] page)
+
+*** TODO Types of curve
+
+ | Curve label | Curve type                        | MATCONT | CoCo | AUTO | PyDSTool |
+ |-------------+-----------------------------------+---------+------+------+----------|
+ | EP-C        | Equilibrium                       | y       |      | y    | y        |
+ | LP-C        | Limit point / fold                | y       |      | y    | y        |
+ | H-C1        | Hopf (method 1)                   | y       |      | y    | y        |
+ | H-C2        | Hopf (method 2)                   | -       |      | -    | y        |
+ | LC-C        | Limit cycle curve (family of POs) | y       |      | y    | y        |
+ |             | Limit point of cycles             | y       |      | ?    | ?        |
+ |             | Period doubling                   | y       |      | y    | **       |
+ |             | Neimark-Sacker                    | y       |      | y    | **       |
+ |             | Homoclinic to saddle              | y       |      | y    | n        |
+ |             | Homoclinic to saddle-node         | y       |      | y    | n        |
+ | *           | Branch point                      | y       |      |      |          |
+ | *           | Branch point of cycles            | y       |      |      |          |
+ | *           | ConnectionSaddle                  | y       |      |      |          |
+ | *           | ConnectionSaddleNode              | y       |      |      |          |
+ | *           | HomotopySaddle                    | y       |      |      |          |
+ | *           | HomotopySaddleNode                | y       |      |      |          |
+ | *           | ConnectionHet                     | y       |      |      |          |
+ | *           | HomotopyHet                       | y       |      |      |          |
+ | *           | Heteroclinic                      | y       |      |      |          |
+
+  \* What do thes mean? Are they actually a bifurcation curve type?
+  \** PyDSTool seems to have methods to compute these for fixed points of maps; does that mean they're a maps-only type of curve? Note that it lacks documentation and tests/examples about these methods, so maybe they're not implemented?
+  ? indicates that there doesn't appear to be a native way of doing this, however it's possible that there's ways to do it (eg. AUTO97 apparently let's us track LPCs, and PyDSTool let's us define custom curves to follow, so one could possibly construct a customised continuation regime to track limit points of cycles)
+
+*** TODO Types of point
+
+ | Point type | Codim | MATCONT | CoCo | XPP | PyDSTool |
+ |------------+-------+---------+------+-----+----------|
+ | LP         |     1 | y       |      | y   | y        |
+ | H          |     1 | y       |      | y   | y        |
+ | LPC        |     1 | y       |      |     | y        |
+ | NS         |     1 | y       |      |     | y        |
+ | Torus bif  |       |         |      | y   |          |
+ | PD         |     1 | y       |      | y   | y        |
+ | BP         |     2 | y       |      | y   | y        |
+ | CP         |     2 | y       |      |     | y        |
+ | BT         |     2 | y       |      |     | y        |
+ | ZH         |     2 | y       |      |     | y        |
+ | HH         |     2 | y       |      |     | y        |
+ | GH         |     2 | y       |      |     | y        |
+ | BPC        |     2 | y       |      |     | n        |
+ | CPC        |     2 | y       |      |     | n        |
+ | CH         |     2 | y       |      |     | n        |
+ | LPNS       |     2 | y       |      |     | n        |
+ | PDNS       |     2 | y       |      |     | n        |
+ | LPPD       |     2 | y       |      |     | n        |
+ | NSNS       |     2 | y       |      |     | n        |
+ | GPD        |     2 | y       |      |     | n        |
+
+ \* Are branch points just 'there's a bifurcation here but we don't know what type specifically'? In that case, any bifurcation that occurs, but isn't one of the labelled ones, would still be detected as a BP.
+ Also see the MATCONT 'objects related to homoclinics to equilibria' table, and resonances, for additional points it can detect
+
+*** TODO Available numerical methods
+
+ | Method | MATCONT | CoCo | XPP | PyDSTool |
+ |--------+---------+------+-----+----------|
+ |        |         |      |     |          |
+
+*** TODO Types of system they can simulate
+
+ | System            | MATCONT | CoCo | XPP                | PyDSTool |
+ |-------------------+---------+------+--------------------+----------|
+ | ODE               |         |      | y                  | y        |
+ | PDE (discretized) |         |      | y                  | n        |
+ | DDE               |         |      | y                  | limited  |
+ | SDE               |         |      | y                  | limited  |
+ | DAE               |         |      | y                  | y        |
+ | BVP               |         |      | y                  | n        |
+ | Maps              |         |      | y                  | y        |
+ | Hybrid            |         |      | basic (apparently) | y        |
+ | Integral          |         |      | y                  | n        |
+ | Difference        |         |      | y                  | y        |
+ | Functional        |         |      | y                  | n        |
+
+ *While XPP is capable of simulating all the noted systems, I don't know if that is literally just XPP simulating them, or also that AUTO is able to run continuations with them*
+
+ Aren't difference equations the same as maps?
+
+*** TODO Degree of manual fiddling / parameter tuning
+*** To code or not code?
+   
+ | MATCONT             | XPP                 | PyDSTool                 | CoCo                     |
+ |---------------------+---------------------+--------------------------+--------------------------|
+ | No coding necessary | No coding necessary | Coding required (matlab) | Coding required (matlab) |
+
+*** License
+
+ | MATCONT                                         | XPP        | PyDSTool     | CoCo                                    |
+ |-------------------------------------------------+------------+--------------+-----------------------------------------|
+ | Creative commons, but requires a matlab license | GNU GPL v3 | BSD 3 clause | None specified; matlab license required |
+
+ There might be the option of running matcont or CoCo in GNU Octave, meaning no matlab license is required, but this is not a given.
+
+*** TODO Crashing and instability / ease of use
+*** TODO Other stuff
+
+ | Thing                          | MATCONT                                         | CoCo | XPP | PyDSTool |
+ |--------------------------------+-------------------------------------------------+------+-----+----------|
+ | Toolboxes                      | biomechanical, compneuro, systems biology       |      |     |          |
+ | Auto C code generation         | Yes, for ODE/ DAE / map simulations             |      |     |          |
+ | Bounds safety                  | Yes, can preserve eg. non-negativity            |      |     |          |
+ | Index-free system              | Yes, making for clear syntax                    |      |     |          |
+ | Extensible                     | Yes, can easily build on the code and expand it |      |     |          |
+ | Heirarchical model composition | Yes                                             |      |     |          |
+ | Events detection               | Yes                                             |      |     |          |
+ | Symbolic manipulation          | Yes                                             |      |     |          |
+ | Memory management utilities    | Yes, inc. LaTeX markup export, smbl conversion  |      |     |          |
+ | Parameter estimation / fitting | Yes, toolboxes for that                         |      |     |          |
+
+*** TODO PyDSTool vs others
+
+ | PyDSTool                                    | XPP                                         | MATCONT                               |
+ |---------------------------------------------+---------------------------------------------+---------------------------------------|
+ | Arbitrarily large systems                   | No heirarchical composition-based modelling |                                       |
+ | Wider range of DE RHS, but no stochastics   | Supports stochastic RHS                     |                                       |
+ | SUpports long names                         | 9 character max. for names                  |                                       |
+ | Scriptable                                  | Not scriptable                              |                                       |
+ | Can embed simulations in other environments | Can only use as a standalone box            |                                       |
+ | Limited DDE support                         | Supports general DDEs                       |                                       |
+ | Fewer integrators than XPP                  | Supports more ODE integrators than PyDSTool |                                       |
+ | No BVP solver                               | Has a BVP solver                            |                                       |
+ | Slower than XPP, as fast as MATCONT         | Written in C / fortran. Fast!               | Slower than XPP, as fast as PyDSTool  |
+ | Closer integration with the programming env | Hard to interface with other programming    | Harder to integrate with other coding |
+ |                                             |                                             |                                       |
+ #+BEGIN_EXPORT latex
+ \newpage
+ #+END_EXPORT
+* Burster bibliography and notes
+** LITERATURE SUMMARY
+  The literature spends a lot of time trying to classify bursting neurons into different causes for bursts.
+  Bursting requires a fast-slow system.
+  Rinzel (0) introduces the idea of a frozen fast system.
+  Here, we take the limit as \(\epsilon \to 0\), such that the slow system stops changing.
+  We treat the slow system state \(y\) as a bifurcation parameter of the fast system.
+  The fast system will exhibit a variety of bifurcations under y.
+  (Eg. a pair of saddle-node bifurcations, in the Fitzhugh-Naugmo model.)
+  The slow variable, when reintroduced, acts as a driving force, which pushes the fast system over these different bifurcations.
+   
+  Consider the bifurcation set of a bursting system.
+  Between each bifurcation point, there exists a stable invariant set.
+  At the bifurcation point, an invariant set either disappears, or loses stability.
+  The bursting system will trace a path from one invariant set to the next, as the slow subsystem evolves.
+  This is all explained nicely in (1).
+   
+  (1) classifies bursters by the bifurcations at either end of the fast subsystem's hysteresis loop.
+  (3) tries to improve Rinzel's (1) classification, by explaining all bursters as slices through an unfolding of a bifurcation.
+  (3) considers all of the either-end bifurcations on a 2-parameter bifurcation diagram.
+  Any given Rinzel bursting type is given by path / periodic motion / cut across this bifurcation diagram, with the either-end bifurcations being those which the cut passes through at the start and end. 
+  This also allows the prediction of more burster types.
+  It is noted that the 2d bifurcation diagram is typical of a system near a codim-3 degenerate Bogdanov-Takens bifurcation.
+
+  (4) improves (3)'s classification method slightly, to classify bursters by the codimension of the unfolding in which they fist appear, as well as by the bifurcations.
+  In doing so, it also classifies bursters from the literature as occuring in codim-3 bifurcation unfoldings.
+  After (4) was written, psuedo-plateau bursters appeared, which can't be explained in terms of codim-3 unfoldings.
+  Krassy's paper (2) extends the unfolding classification further, by adding psuedo-plateau bursters into the classification system.
+  This is done by considering the codim-4 unfolding of a doubly degenerate bogdanov takens singularity.
+  In studying this unfolding, a slow-subsystem path for psuedo-plaueau bursters is uncovered, as well as suggestions for how the systems bifurcate into regular square-wave (plaueau) bursters.
+  The new (codim-4) unfolding also contains all the codim-3 bursters, and hence, (probably?) every type of known burster so far.
+
+  Krassy's paper (2) provides some nice references for the history of explaning bursting.
+  The general strategy, as mentioned in Krassy's paper, is to find an unfolding containing any relevant fast-subsystem bifurcations, and a path though the parameter space representing the forcing action of the slow variables.
+   
+  Krassy's paper uses the cubic Lienard system for the (frozen) fast subsystem, as it is one of the partial unfoldings of a doubly-degenerate Bogdanov Takens bifurcation.
+  Since the paper only considers the frozen fast subsystem, it doesn't pay much attention to the slow system.
+  A sinusoidal slow subsystem is suggested in the appendices; this forms a slow-wave burster (autonymously oscillating slow subsystem), however no hysteresis-loop slow subsystem is proposed.
+  To make the model capable of hysteretic bursting, a different slow subsystem must also be defined.
+  (5) therefore builds further on the work of (0)-(4), by using the same sort of classification scheme as gets developed, but by also adding in a model for a hysteretic slow subsystem.
+  (The paper also provides a nice review of all the work up to that point, inc. Krassy's paper.)
+  (IT ONLY SEEMS TO CONSIDER CODIM-3 [SINGLY] DEGENERATE TB SINGULARITIES; IF SO, THE MODEL CAN'T EXHIBIT KRASSY'S PSUEDO-PLATEAU BURSTING.)
+
+** [[https://link.springer.com/article/10.1186/2190-8567-1-12][Dynamics of plateau bursting in pituitary cells (lots of nice refs)]]
+*** Reference
+Teka, Wondimu, et al. "The dynamics underlying pseudo-plateau bursting in a pituitary cell model." The Journal of Mathematical Neuroscience 1.1 (2011): 12.
+
+*** BibTeX
+@article{teka2011dynamics,
+  title={The dynamics underlying pseudo-plateau bursting in a pituitary cell model},
+  author={Teka, Wondimu and Tabak, Jo{\"e}l and Vo, Theodore and Wechselberger, Martin and Bertram, Richard},
+  journal={The Journal of Mathematical Neuroscience},
+  volume={1},
+  number={1},
+  pages={12},
+  year={2011},
+  publisher={Springer}
+}
+
+*** Abstract
+Pituitary cells of the anterior pituitary gland secrete hormones in
+response to patterns of electrical activity. Several types of
+pituitary cells produce short bursts of electrical activity which are
+more effective than single spikes in evoking hormone release. These
+bursts, called pseudo-plateau bursts, are unlike bursts studied
+mathematically in neurons (plateau bursting) and the standard
+fast-slow analysis used for plateau bursting is of limited use. Using
+an alternative fast-slow analysis, with one fast and two slow
+variables, we show that pseudo-plateau bursting is a canard-induced
+mixed mode oscillation. Using this technique, it is possible to
+determine the region of parameter space where bursting occurs as well
+as salient properties of the burst such as the number of spikes in the
+burst. The information gained from this one-fast/two-slow
+decomposition complements the information obtained from a
+two-fast/one-slow decomposition.
+
+*** Summary
+   Neurons tend to burst because it's a more effective way of triggering hormone / neurotransmitter release than individual spikes.
+   This paper looks at different mechanisms to bursting.
+   Also contains lots of nice useful references about bursting!
+
+** [[https://www.sciencedirect.com/science/article/pii/S0166223696100709][Neurons tend to burst because it's a more effective way of triggering hormone / neurotransmitter release than individual spikes]]
+*** Reference
+Lisman, John E. "Bursts as a unit of neural information: making unreliable synapses reliable." Trends in neurosciences 20.1 (1997): 38-43.
+    
+*** BibTeX
+@article{lisman1997bursts,
+  title={Bursts as a unit of neural information: making unreliable synapses reliable},
+  author={Lisman, John E},
+  journal={Trends in neurosciences},
+  volume={20},
+  number={1},
+  pages={38--43},
+  year={1997},
+  publisher={Elsevier}
+}
+
+*** Abstract
+Several lines of evidence indicate that brief ( < 25 ms) bursts of
+high-frequency firing have special importance in brain function.
+Recent work shows that many central synapses are surprisingly
+unreliable at signaling the arrival of single presynaptic action
+potentials to the postsynaptic neuron. However, bursts are reliably
+signaled because transmitter release is facilitated. Thus, these
+synapses can be viewed as filters that transmit bursts, but filter out
+single spikes. Bursts appear to have a special role in synaptic
+plasticity and information processing. In the hippocampus, a single
+burst can produce long-term synaptic modifications. In brain
+structures whose computational role is known, action potentials that
+arrive in bursts provide more-precise information than action
+potentials that arrive singly. These results, and the requirement for
+multiple inputs to fire a cell suggest that the best stimulus for
+exciting a cell (that is, a neural code) is coincident bursts.
+
+*** Summary
+   Synapses are unreliable, and bursting is the best way to get a signal to cross them.
+   Acts as a filter and stuff.
+   Lots of relevant neural information.
+
+** (0) [[https://link.springer.com/content/pdf/10.1007/BFb0074739.pdf][Rinzel's introduction of the fast-slow freezing method to explain bursting]]
+*** Reference
+Rinzel, John. "Bursting oscillations in an excitable membrane model." Ordinary and partial differential equations. Springer, Berlin, Heidelberg, 1985. 304-316.
+
+*** BibTeX
+@incollection{rinzel1985bursting,
+  title={Bursting oscillations in an excitable membrane model},
+  author={Rinzel, John},
+  booktitle={Ordinary and partial differential equations},
+  pages={304--316},
+  year={1985},
+  publisher={Springer}
+}
+
+*** Abstract
+Various nerve, muscle, and secretory cells exhibit complex electrical
+activity which has been observed experimentally by using intracellular
+electrodes to monitor the dynamics of the potential across the cell
+membrane. Such activity may include single spikes (time scale, msec.)
+in response to brief stimuli, repetitive spiking for a maintained
+input, and repetitive bursts of spikes (time scale, sec) which may be
+endogenous and modulated by chemical (e.g. hormonal) or electrical
+stimuli. Pancreatic B­cells respond with periodic bursting in the
+presence of glucose (3,13) and this activity is correlated with their
+release of insulin (18). Figure 1 illustrates computed solutions of a
+theoretical model (4) for such electrical behavior. The mathematical
+model (based upon a biophysical model (2)) is an adapted and expanded
+version of the classical Hodgkin­Huxley (11) description of nerve
+excitability and involves five first­order nonlinear ordinary
+differential equations. The time course of membrane potential V(Fig.
+1, upper) exhibits spikes of roughly constant size (30­40mV) which
+appear to ride on a plateau potential of approximately ­40 mV.
+Following each "active phase" of spiking is a "silent phase" where V
+slowly increases. The intracellular free calcium concentration Ca
+(Fig. 1, lower) slowly increases (on the average) during the active
+phase and slowly decreases during the silent phase. The dynamics of Ca
+determine the time scale of the bursts. In this paper we present an
+analysis and qualitative viewpoint of bursting for the Chay­Keizer
+(C­K) theoretical model. We exploit the slow behavior of Ca by first
+considering Ca as a parameter and studying its influence on the faster
+spike­generating subsystem. Such spike generation dynamics are first
+illustrated (Section 2) for a simplified model of excitable membrane
+activity with Ca fixed. This two­variable, reduced HH, model yields
+single spike and repetitive spike activity such as seen in the active
+phase of bursting. In some parameter ranges it exhibits bistability in
+which V may rest at a lower stable steady state or oscillate stably
+around an upper (unstable) steady state. This latter behavior is also
+in the repertoire of the four­variable HH subsystem in the C­K model
+and it corresponds to the silent and active phases. Next we append to
+the excitation subsystem the slow dynamics of Ca to account for
+bursting.
+
+** (1) [[http://www-sop.inria.fr/members/Mathieu.Desroches/files/Rinzel_ICM1986.pdf][Rinzel classifying bursting mechanisms in terms of the bifurcations exhibited by a neuron (intuitive description of fast-slow burster dynamics)]]
+*** Reference
+Rinzel, John. "A formal classification of bursting mechanisms in excitable systems." Mathematical topics in population biology, morphogenesis and neurosciences. Springer, Berlin, Heidelberg, 1987. 267-281.
+
+*** BibTeX
+@incollection{rinzel1987formal,
+  title={A formal classification of bursting mechanisms in excitable systems},
+  author={Rinzel, John},
+  booktitle={Mathematical topics in population biology, morphogenesis and neurosciences},
+  pages={267--281},
+  year={1987},
+  publisher={Springer}
+}
+
+*** Abstract
+Burst activity is characterized by slowly alternating phases of near
+steady state behavior and trains of rapid spike-like oscillations;
+examples of bursting patterns are shown in Fig. 2. These two phases
+have been called the silent and active phases respectively [2], In the
+case of electrical activity of biological membrane systems the slow
+time scale of bursting is on the order of tens of seconds while the
+spikes have millisecond time scales. In our study of several specific
+models for burst activity we have identified a number of different
+mechanisms for burst generation (which are characteristic of classes
+of models). We will describe qualitatively some of these mechanisms by
+way of the schematic diagrams in Fig. 1.
+
+*** Summary
+   One of the original papers on bursting dynamics. 
+   Explains bursting intuitively, in terms of fast-slow systems.
+
+** (2) [[https://research-information.bristol.ac.uk/files/3020939/osta_preprint.pdf][Krassy's paper on psuedo-plateau bursting (huge amounts of good bursting refs in the intro)]]
+*** Reference
+Osinga, H. M., A. Sherman, and K. Tsaneva-Atanasova. "Cross-currents between biology and mathematics on models of bursting." Bristol Centre for Applied Nonlinear Mathematics preprint 1737 (2011).
+
+*** BibTeX
+@article{osinga2011cross,
+  title={Cross-currents between biology and mathematics on models of bursting},
+  author={Osinga, HM and Sherman, A and Tsaneva-Atanasova, K},
+  journal={Bristol Centre for Applied Nonlinear Mathematics preprint},
+  volume={1737},
+  year={2011}
+}
+
+*** Abstract
+A great deal of work has gone into classifying bursting oscillations,
+periodic alternations of spiking and quiescence modeled by fast-slow
+systems. In such systems, one or more slow variables carry the fast
+variables through a sequence of bifurcations that mediate transitions
+between oscillations and steady states. The most rigorous approach is
+to characterize the bifurcations found in the neighborhood of a
+singularity. Fold/homoclinic bursting, along with most other burst
+types of interest, has been shown to occur near a singularity of
+codimension three by examining bifurcations of a cubic Lienard system.
+Modeling and biological considerations suggest that fold/homoclinic
+bursting should be found near fold/subHopf bursting, a more recently
+identified burst type whose codimension has not been determined yet.
+One would expect that fold/subHopf bursting has the same codimension
+as fold/homoclinic bursting, because models of these two burst types
+have very similar underlying bifurcation diagrams. However, we are
+unable to determine a codimension-three singularity that supports
+fold/subHopf bursting. Furthermore, we believe that it is not possible
+to find a codimension-three singularity that gives rise to all known
+types of bursting. Instead, we identify a three-dimensional slice that
+contains all known types of bursting in a partial unfolding of a
+doubly-degenerate Bodganov–Takens point, which has codimension four.
+
+*** Summary
+   Codim-3 unfoldings aren't enough to explain psuedo-plateau bursting.
+   To explain it, the paper considers codim-4 unfoldings of a doubly-degenerate Bogdanov Takens bifurcation.
+   Not only does this add psuedo-plateau bursters to the classification in (3) and (4), but the resulting unfolding also contains all known burster types, making it a very general bursting model.
+**** S1 intro
+     - Cells can exhibit bursting dynamics
+       - These are useful for encouraging calcium buildup, which in turn helps with hormone and neurotransmitter release
+     - Platea bursting is like VdP oscillator, but with the 'high' state as a limit cycle
+       - Cell fires spikes from a depolarised state for a while
+       - Good for promoting calcium buildup
+     - Psuedo-platea bursting is a fairly newly discovered one
+       - No LC in the active phase
+       - Spikes are actually just the oscillatory transients towards a stable equilibrium (think damped oscillator)
+       - This requires a fairly fast slow subsystem, which is a bit weird
+       - These burst patterns are yet to be classified; this paper fixes that
+
+**** S2 bursting normal form
+     - Chay-Keizer is a biologically plausible (HH-esque) bursting model
+     - Hindmarsh-Rose is a phenomenological bursting model
+     - Bertram's unfolding classification built on a deg. BT point unfolding
+       - The system equations for its unfolding are presented
+       - A slow subsystem model is also given, to facilitate bursting
+     - A small change (time-reversal) to the d-deg-BT unfolding gives a system that contains all previously categorised bursters, plus more
+       - d-deg-BT is our current best guess of a burster normal form
+
+**** S3 finding a fold/subHopf burster path
+     - d-deg-BT singularity is at the origin
+     - b axis outside of 0 contains entirely deg BT points
+       - For some reason, the additional d-d-BT bifurcations occur in any fixed neighbourhood around one of these d-BT points, provided b is sufficiently small. WHY?
+       - This means we can reduce the parameter space by fixing b small and considering a fixed neighbourhood of 0 in the (mu1,mu2,v) space; the above statement guarantees that we won't lose any interesting bifurcations by doing this
+     - Take the unit sphere as the fixed neighbourhood. This must be a sufficiently sized neighbourhood to contain the interesting additional bifurcations, as we can find a fold/subHopf path actually on the surface of this sphere
+     - Yipee we've found a fold/subHopf burster path in codim4, thus giving us an upper bound on its category codim
+     - It can also transition to regular (fold/homoclinic) square wave / plateau bursting, just by shifting the Ca threhsold a bit; this is interesting since the two burst types come from cells that are developmentally and functionally very similar
+     - Paths through parameter space are also presented for all the currently known burster types, backing up the claim that this is a good model of neuron bursting
+     - Some fold/homoclinic bursters can be perturbed to fold/subHopf bursters with a single parameter change; others can't. This means that there's actually different types of fold/homoclinic burster, even though they're part of the same class. It highlights the difference between classifying bursters from unfoldings, which considers the surrounding bifurcation structure and how that influences cell properties and neighbour cells, and the Rinzel / Izhikevich approach of classifying by the bifurcations that start and stop bursting.
+**** S4 fold/subHopf codimension
+We now know fold/subHopf bursting can appear in codim4 unfoldings, but can it appear in codim3?
+Tl;dr not all codim3 d-BT unfoldings are known, but fold/subHopf doesn't appear in any of the known ones.
+     - Fold/subHopf has a region of bistability, with a subHopf on the top branch, ending at a homoclinic
+     - Bistable region means the causing singularity must lie on a cusp
+     - Hopf and  homoclinic mean we must be at a BT
+     - BT + cusp = d-BT point
+
+But... fold/subHopf can't appear near a d-BT. 
+
+Some long argument that concludes it's probably a codim4 burster.
+
+**** An interesting note from the conclusion
+Maths has basically only considered planar fast-subsystem bursters.
+Cells need to operate in uncertain conditions, and have lots of robustness, so they have a non-minimal set of ion channels, which means they don't actually have planar fast subsystems.
+Furthermore, when we couple cells, their fast subsystems grow in dimensionality.
+The surface has barely been scratched on these more complex burster types.
+Mixed-mode oscillations ideas would be a good place to look into this from.
+
+** (3) [[https://link.springer.com/content/pdf/10.1007/BF02460633.pdf][Classification of bursters according to slow trajectories through the fast-subsystem bifurcation diagram]]
+*** Reference
+Bertram, Richard, et al. "Topological and phenomenological classification of bursting oscillations." Bulletin of mathematical biology 57.3 (1995): 413-439.
+
+*** BibTeX
+@article{bertram1995topological,
+  title={Topological and phenomenological classification of bursting oscillations},
+  author={Bertram, Richard and Butte, Manish J and Kiemel, Tim and Sherman, Arthur},
+  journal={Bulletin of mathematical biology},
+  volume={57},
+  number={3},
+  pages={413--439},
+  year={1995},
+  publisher={Elsevier}
+}
+
+*** Abstract
+We describe a classification scheme for bursting oscillations which
+encompasses many of those found in the literature on bursting in
+excitable media. This is an extension of the scheme of Rinzel (in
+Mathematical Topics in Population Biology, Springer, Berlin, 1987),
+put in the context of a sequence of horizontal cuts through a
+two-parameter bifurcation diagram. We use this to describe the
+phenomenological character of different types of bursting, addressing
+the issue of how well the bursting can be characterized giventhe
+limited amount of information often available in experimental
+settings.
+
+*** Summary
+   Classifies bursters as cuts on a 2-parameter fast-subsystem bifurcation diagram.
+
+** (4) [[https://www.asc.ohio-state.edu/golubitsky.4/reprintweb-0.5/output/papers/bursting12.pdf][Unfolding theory approach to burster classification]]
+*** Reference    
+Golubitsky, Martin, Kresimir Josic, and Tasso J. Kaper. "An unfolding theory approach to bursting in fast-slow systems." Global analysis of dynamical systems (2001): 277-308.
+
+*** BibTeX
+@article{golubitsky2001unfolding,
+  title={An unfolding theory approach to bursting in fast-slow systems},
+  author={Golubitsky, Martin and Josic, Kresimir and Kaper, Tasso J},
+  journal={Global analysis of dynamical systems},
+  pages={277--308},
+  year={2001},
+  publisher={Inst. Phys.}
+}
+
+*** Abstract
+Many processes in nature are characterized by periodic bursts of activity separated by intervals of quiescence. In this chapter we describe a method for classifying the types of bursting that occur in models in which variables evolve on two different timescales, ie, fast-slow systems. The classification is based on the observation that the bifurcations of the fast system that lead to bursting can be collapsed to a single local bifurcation, generally of higher codimension. The bursting is recovered as the slow variables periodically trace a closed ...
+
+*** Summary 
+
+
+   (3) explains bursting as cuts through a codim-2 bifurcation diagram. 
+   This paper takes things a step further, by classifying bursters according to their complexity, in terms of the codimension of the bifurcation in whose unfolding the burster first appears.
+   It also extends (3)'s classification to include some codim-3 bursters, which covered all known bursters at the time it was written.
+   (2) takes this even further by studying codim-4 to explain more recently found psuedo-plateau bursters.
+
+** (5) [[https://mathematical-neuroscience.springeropen.com/articles/10.1186/s13408-017-0050-8][A model capable of exhibiting most (hysteresis-loop only) codim-3 bursting behaviours]]
+*** Reference
+Saggio, Maria Luisa, et al. "Fast–Slow Bursters in the Unfolding of a High Codimension Singularity and the Ultra-slow Transitions of Classes." The Journal of Mathematical Neuroscience 7.1 (2017): 7.
+
+*** BibTeX
+@article{saggio2017fast,
+  title={Fast--Slow Bursters in the Unfolding of a High Codimension Singularity and the Ultra-slow Transitions of Classes},
+  author={Saggio, Maria Luisa and Spiegler, Andreas and Bernard, Christophe and Jirsa, Viktor K},
+  journal={The Journal of Mathematical Neuroscience},
+  volume={7},
+  number={1},
+  pages={7},
+  year={2017},
+  publisher={SpringerOpen}
+}
+
+*** Abstract
+Bursting is a phenomenon found in a variety of physical and biological
+systems. For example, in neuroscience, bursting is believed to play a
+key role in the way information is transferred in the nervous system.
+In this work, we propose a model that, appropriately tuned, can
+display several types of bursting behaviors. The model contains two
+subsystems acting at different time scales. For the fast subsystem we
+use the planar unfolding of a high codimension singularity. In its
+bifurcation diagram, we locate paths that underlie the right sequence
+of bifurcations necessary for bursting. The slow subsystem steers the
+fast one back and forth along these paths leading to bursting
+behavior. The model is able to produce almost all the classes of
+bursting predicted for systems with a planar fast subsystem.
+Transitions between classes can be obtained through an ultra-slow
+modulation of the model’s parameters. A detailed exploration of the
+parameter space allows predicting possible transitions. This provides
+a single framework to understand the coexistence of diverse bursting
+patterns in physical and biological systems or in models.
+
+*** Summary
+   Extends Krassy's work (sort of?) by providing a slow subsystem to complete a model of hysteresis loop codim-3 bursters.
+   Model will be useful for CBC.
+
+** [[https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=global+study+of+a+family+of+cubic+lienard+equations&btnG=][Global study of a family of cubic lienard equations]]
+*** Reference
+Khibnik, Alexander I., Bernd Krauskopf, and Christiane Rousseau. "Global study of a family of cubic Liénard equations." Nonlinearity 11.6 (1998): 1505.
+
+*** BibTeX
+@article{khibnik1998global,
+  title={Global study of a family of cubic Li{\'e}nard equations},
+  author={Khibnik, Alexander I and Krauskopf, Bernd and Rousseau, Christiane},
+  journal={Nonlinearity},
+  volume={11},
+  number={6},
+  pages={1505},
+  year={1998},
+  publisher={IOP Publishing}
+}
+
+*** Abstract
+We derive the global bifurcation diagram of a three-parameter family
+of cubic Liénard systems. This family seems to have a universal
+character in that its bifurcation diagram (or parts of it) appears in
+many models from applications for which a combination of hysteretic
+and self-oscillatory behaviour is essential. The family emerges as a
+partial unfolding of a doubly degenerate Bogdanov-Takens point, that
+is, of the codimension-four singularity with nilpotent linear part and
+no quadratic terms in the normal form. We give a new presentation of a
+local four-parameter bifurcation diagram which is a candidate for the
+universal unfolding of this singularity.
+
+*** Summary
+   Krassy's model uses a cubic Lienard equation as the fast subsystem. 
+   This paper derives the global bifurcation diagram of the system.
+   It's hard.
+   The paper contains some nice analytical descriptions of where in parameter space some bifurcations occur, but it also contains some particularly confusing theorems and proofs and stuff.
+
+** [[https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=fast+subsystem+bifurcations+in+a+slowly+varying+lienard+sysetem+exhibiting+bursting&btnG=][Fast subsystem bifurcations in a slowly varying lienard system exhibiting bursting]]
+*** Reference
+Pernarowski, Mark. "Fast subsystem bifurcations in a slowly varying Lienard system exhibiting bursting." SIAM Journal on Applied Mathematics 54.3 (1994): 814-832.
+
+*** BibTeX
+@article{pernarowski1994fast,
+  title={Fast subsystem bifurcations in a slowly varying Lienard system exhibiting bursting},
+  author={Pernarowski, Mark},
+  journal={SIAM Journal on Applied Mathematics},
+  volume={54},
+  number={3},
+  pages={814--832},
+  year={1994},
+  publisher={SIAM}
+}
+
+*** Abstract
+A perturbed Liénard differential system is examined using local
+stability and Hopf bifurcation analyses, asymptotic techniques, and
+Melnikov's method. The results of these analyses are applied to a
+simple cubic model that exhibits a variety of different oscillatory
+behaviors for different parameter values. For a bounded region in
+(fast) parameter space, the model exhibits square-wave bursting
+patterns analogous to the bursting electrical activity observed in
+pancreatic ,$\beta $-cells. Under certain hypotheses, solutions of the
+cubic model are known to have square-wave patterns. By using the
+theory developed for the more general Liénard system, each hypothesis
+is shown to correspond to a curve in parameter space. Together, the
+curves bound a region in which the model exhibits square-wave bursting
+patterns. Since the model is simple, the curves that bound this region
+can all be determined analytically.
+
+*** Summary 
+   Contains some nice references about bursting sytems, and has a nice model derivation.
+   Also contains some rather impenetrable mathematical analysis.
