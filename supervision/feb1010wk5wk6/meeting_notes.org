@@ -372,7 +372,7 @@ Notes:
  #+BEGIN_EXPORT latex
  \newpage
  #+END_EXPORT
-* Burster bibliography and notes
+* COMMENT Burster bibliography and notes
 ** LITERATURE SUMMARY
   The literature spends a lot of time trying to classify bursting neurons into different causes for bursts.
   Bursting requires a fast-slow system.
