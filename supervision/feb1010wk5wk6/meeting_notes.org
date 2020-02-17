@@ -828,3 +828,22 @@ can all be determined analytically.
 *** Summary 
    Contains some nice references about bursting sytems, and has a nice model derivation.
    Also contains some rather impenetrable mathematical analysis.
+
+* COMMENT Meeting notes
+
+  Krasy only has one S!
+  Minimally augmented systems: a way of tracking bifurcations
+  Why does PyDSTool have two different Hopf continuations
+  Chapter 10: Kuznetsov applied bifurcation theory
+  Hindmarsh-Rose model for the example bifurcation system
+  Try to get notes into a paper for next week
+   - Could also submit Cell systems - highest impact factor cell systems journal
+   - Lots of experimental work with a maths component, like all the comp synth bio material
+   - Write report, add figures, etc.
+   - Look for some other papers out there from the same journal, to get an idea of what they want
+   - Look at different journals and what they expect of their papers; the expected format, word count, figs
+   - There's already review papers out there about tracking ecology, gene expression, etc.. Find these papers and cite them!
+  Write it as a tutorial about using continuation on bio systems, for a person with a biology background
+  Ask Krasy about how to find homoclinics
+  Add plots into the talk
+  Refine the questions I have for Krasy, and email them through to her in advance
