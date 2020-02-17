@@ -7,7 +7,7 @@
 #+BEGIN_EXPORT latex
 \newpage
 #+END_EXPORT
-* Questions for Krassy
+* Questions for Krasy
     - How do you produce bifurcation diagrams on the surface of a sphere, like those in your paper?
 
     - How do you find the slow subsystem paths? Trial and error?
@@ -399,20 +399,20 @@ Notes:
   (4) improves (3)'s classification method slightly, to classify bursters by the codimension of the unfolding in which they fist appear, as well as by the bifurcations.
   In doing so, it also classifies bursters from the literature as occuring in codim-3 bifurcation unfoldings.
   After (4) was written, psuedo-plateau bursters appeared, which can't be explained in terms of codim-3 unfoldings.
-  Krassy's paper (2) extends the unfolding classification further, by adding psuedo-plateau bursters into the classification system.
+  Krasy's paper (2) extends the unfolding classification further, by adding psuedo-plateau bursters into the classification system.
   This is done by considering the codim-4 unfolding of a doubly degenerate bogdanov takens singularity.
   In studying this unfolding, a slow-subsystem path for psuedo-plaueau bursters is uncovered, as well as suggestions for how the systems bifurcate into regular square-wave (plaueau) bursters.
   The new (codim-4) unfolding also contains all the codim-3 bursters, and hence, (probably?) every type of known burster so far.
 
-  Krassy's paper (2) provides some nice references for the history of explaning bursting.
-  The general strategy, as mentioned in Krassy's paper, is to find an unfolding containing any relevant fast-subsystem bifurcations, and a path though the parameter space representing the forcing action of the slow variables.
+  Krasy's paper (2) provides some nice references for the history of explaning bursting.
+  The general strategy, as mentioned in Krasy's paper, is to find an unfolding containing any relevant fast-subsystem bifurcations, and a path though the parameter space representing the forcing action of the slow variables.
    
-  Krassy's paper uses the cubic Lienard system for the (frozen) fast subsystem, as it is one of the partial unfoldings of a doubly-degenerate Bogdanov Takens bifurcation.
+  Krasy's paper uses the cubic Lienard system for the (frozen) fast subsystem, as it is one of the partial unfoldings of a doubly-degenerate Bogdanov Takens bifurcation.
   Since the paper only considers the frozen fast subsystem, it doesn't pay much attention to the slow system.
   A sinusoidal slow subsystem is suggested in the appendices; this forms a slow-wave burster (autonymously oscillating slow subsystem), however no hysteresis-loop slow subsystem is proposed.
   To make the model capable of hysteretic bursting, a different slow subsystem must also be defined.
   (5) therefore builds further on the work of (0)-(4), by using the same sort of classification scheme as gets developed, but by also adding in a model for a hysteretic slow subsystem.
-  (The paper also provides a nice review of all the work up to that point, inc. Krassy's paper.)
+  (The paper also provides a nice review of all the work up to that point, inc. Krasy's paper.)
   (IT ONLY SEEMS TO CONSIDER CODIM-3 [SINGLY] DEGENERATE TB SINGULARITIES; IF SO, THE MODEL CAN'T EXHIBIT KRASSY'S PSUEDO-PLATEAU BURSTING.)
 
 ** [[https://link.springer.com/article/10.1186/2190-8567-1-12][Dynamics of plateau bursting in pituitary cells (lots of nice refs)]]
@@ -574,7 +574,7 @@ way of the schematic diagrams in Fig. 1.
    One of the original papers on bursting dynamics. 
    Explains bursting intuitively, in terms of fast-slow systems.
 
-** (2) [[https://research-information.bristol.ac.uk/files/3020939/osta_preprint.pdf][Krassy's paper on psuedo-plateau bursting (huge amounts of good bursting refs in the intro)]]
+** (2) [[https://research-information.bristol.ac.uk/files/3020939/osta_preprint.pdf][Krasy's paper on psuedo-plateau bursting (huge amounts of good bursting refs in the intro)]]
 *** Reference
 Osinga, H. M., A. Sherman, and K. Tsaneva-Atanasova. "Cross-currents between biology and mathematics on models of bursting." Bristol Centre for Applied Nonlinear Mathematics preprint 1737 (2011).
 
@@ -756,7 +756,7 @@ a single framework to understand the coexistence of diverse bursting
 patterns in physical and biological systems or in models.
 
 *** Summary
-   Extends Krassy's work (sort of?) by providing a slow subsystem to complete a model of hysteresis loop codim-3 bursters.
+   Extends Krasy's work (sort of?) by providing a slow subsystem to complete a model of hysteresis loop codim-3 bursters.
    Model will be useful for CBC.
 
 ** [[https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=global+study+of+a+family+of+cubic+lienard+equations&btnG=][Global study of a family of cubic lienard equations]]
@@ -788,7 +788,7 @@ local four-parameter bifurcation diagram which is a candidate for the
 universal unfolding of this singularity.
 
 *** Summary
-   Krassy's model uses a cubic Lienard equation as the fast subsystem. 
+   Krasy's model uses a cubic Lienard equation as the fast subsystem. 
    This paper derives the global bifurcation diagram of the system.
    It's hard.
    The paper contains some nice analytical descriptions of where in parameter space some bifurcations occur, but it also contains some particularly confusing theorems and proofs and stuff.
