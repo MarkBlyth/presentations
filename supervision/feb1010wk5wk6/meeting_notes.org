@@ -7,26 +7,20 @@
 #+BEGIN_EXPORT latex
 \newpage
 #+END_EXPORT
+
 * Questions for Krasy
     - How do you produce bifurcation diagrams on the surface of a sphere, like those in your paper?
 
-    - How do you find the slow subsystem paths? Trial and error?
-      - Given a bifurcation diagram, it seems hard to find paths that actually correspond to bursting. Even finding the right start and end bifurcations and linking them won't necessarily produce a burstable trajectory.
-      - Why are we looking at bifurcations on the surface of the sphere? Is it just as a convenient dimensionality reduction? Is there any a priori reason why this surface should have contained the burster path, or was that just a lucky bit of guesswork?
+    - How do you find the slow subsystem paths? Is it just looking for the right order of bifurcations and testing them out through trial and error?
 
-    - Where are you getting the parameter values for the bifurcation regions?
-      - Golubitsky uses b=3, mu2 = 1/3. Why?
-      - This paper fixes something like b=0.75. Why? Surely then it isn't a codim4 unfolding?
-      - The paper claims that for small b (here, b=0.75), any fixed neighbourhood (here the unit ball) around the origin of (mu1,mu2,v) space contains all the additional bifurcations gained from the DD-BT pt. Why? How and why was b=0.75 chosen? How about the unit ball?
-      - I don't understand why we're able to fix b at some small value and not limit the types of bifurcation that we see; why does any fixed neighbourhood of 0 in (mu1,mu2,v)-space contain all the relevant bifurcations for sufficiently small b?
+    - Why are we looking at bifurcations on the surface of the sphere? Is it just as a convenient dimensionality reduction? Is there any a priori reason why this surface should have contained the burster path, or was that just a lucky bit of guesswork?
 
-    - How do you expect the model to be used?
-      - Would I trial and error some parameter vals from a bifurcation diagram diagram, to find the areas of parameter space that give whatever bursting/excitability dynamics I'm interested in studying?
-      - How biologically relevant is this model, being a phenomenological one? Will it be able to tell me much about what a living neuron is doing? How much information can we get using it to describe a living cell, if we don't consider the different ionic currents?
-      - Is there any nice methods for relating the parameters and parameter values back to what's going on in the live cell? Any real-world interpretation of them?
+    - How did you come up with the parameter values for the bifurcation regions?
+      - Golubitsky uses b=3, mu2 = 1/3 for the cubic model; is there any a priori reason to choose this, or is it trial and error?
+      - The paper fixes b=0.75. I loosely understand that as being a way of reducing the dimension of the parameter space, while still being close enough to the singularity to contain the interesting additional bifurcations it creates, but is there any particular intuition about why this is a useful parameter value? Why close to the origin? Why not really close to the origin? The paper claims that for small b, any fixed neighbourhood (here the unit ball) around the origin of (mu1,mu2,v) space contains all the additional bifurcations gained from the doubly-degenerate BT point. Why is this the case? How and why was b=0.75 chosen? And the unit ball?
 
-Notes:
-    - In the cubic Lienard model, mu1 is the slow subsystem variable (z), and v is the HR-b-like bursting pattern variable
+    - How biologically relevant is this model, being a phenomenological one? Will it be able to tell me much about what a living neuron is doing? How much information can we get using it to describe a living cell, if we don't consider the different ionic currents?
+      - Is there any nice methods for relating the parameters and parameter values back to what's going on in the live cell? Any real-world interpretation of them? In the cubic Lienard model, mu1 is like a slow subsystem variable (z, in the Hindmarsh-Rose model), and v is the HR b-like bursting pattern variable, but even these variables are something of a phenomenological abstraction. Does this mean the model is only a useful test bed for in-silico CBC, or would it also be applicable to controller design?
 
 #+BEGIN_EXPORT latex
 \newpage
