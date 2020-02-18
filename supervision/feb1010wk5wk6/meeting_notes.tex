@@ -1,4 +1,4 @@
-% Created 2020-02-17 Mon 09:18
+% Created 2020-02-18 Tue 10:39
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -30,61 +30,51 @@
 \tableofcontents
 
 \newpage
+
 \section{Questions for Krasy}
-\label{sec:org248f0c1}
+\label{sec:org20574ed}
 \begin{itemize}
 \item How do you produce bifurcation diagrams on the surface of a sphere, like those in your paper?
 
-\item How do you find the slow subsystem paths? Trial and error?
-\begin{itemize}
-\item Given a bifurcation diagram, it seems hard to find paths that actually correspond to bursting. Even finding the right start and end bifurcations and linking them won't necessarily produce a burstable trajectory.
+\item How do you find the slow subsystem paths? Is it just looking for the right order of bifurcations and testing them out through trial and error?
+
 \item Why are we looking at bifurcations on the surface of the sphere? Is it just as a convenient dimensionality reduction? Is there any a priori reason why this surface should have contained the burster path, or was that just a lucky bit of guesswork?
+
+\item How did you come up with the parameter values for the bifurcation regions?
+\begin{itemize}
+\item Golubitsky uses b=3, mu2 = 1/3 for the cubic model; is there any a priori reason to choose this, or is it trial and error?
+\item The paper fixes b=0.75. I loosely understand that as being a way of reducing the dimension of the parameter space, while still being close enough to the singularity to contain the interesting additional bifurcations it creates, but is there any particular intuition about why this is a useful parameter value? Why close to the origin? Why not really close to the origin? The paper claims that for small b, any fixed neighbourhood (here the unit ball) around the origin of (mu1,mu2,v) space contains all the additional bifurcations gained from the doubly-degenerate BT point. Why is this the case? How and why was b=0.75 chosen? And the unit ball?
 \end{itemize}
 
-\item Where are you getting the parameter values for the bifurcation regions?
-\begin{itemize}
-\item Golubitsky uses b=3, mu2 = 1/3. Why?
-\item This paper fixes something like b=0.75. Why? Surely then it isn't a codim4 unfolding?
-\item The paper claims that for small b (here, b=0.75), any fixed neighbourhood (here the unit ball) around the origin of (mu1,mu2,v) space contains all the additional bifurcations gained from the DD-BT pt. Why? How and why was b=0.75 chosen? How about the unit ball?
-\item I don't understand why we're able to fix b at some small value and not limit the types of bifurcation that we see; why does any fixed neighbourhood of 0 in (mu1,mu2,v)-space contain all the relevant bifurcations for sufficiently small b?
-\end{itemize}
-
-\item How do you expect the model to be used?
-\begin{itemize}
-\item Would I trial and error some parameter vals from a bifurcation diagram diagram, to find the areas of parameter space that give whatever bursting/excitability dynamics I'm interested in studying?
 \item How biologically relevant is this model, being a phenomenological one? Will it be able to tell me much about what a living neuron is doing? How much information can we get using it to describe a living cell, if we don't consider the different ionic currents?
-\item Is there any nice methods for relating the parameters and parameter values back to what's going on in the live cell? Any real-world interpretation of them?
-\end{itemize}
-\end{itemize}
-
-Notes:
 \begin{itemize}
-\item In the cubic Lienard model, mu1 is the slow subsystem variable (z), and v is the HR-b-like bursting pattern variable
+\item Is there any nice methods for relating the parameters and parameter values back to what's going on in the live cell? Any real-world interpretation of them? In the cubic Lienard model, mu1 is like a slow subsystem variable (z, in the Hindmarsh-Rose model), and v is the HR b-like bursting pattern variable, but even these variables are something of a phenomenological abstraction. Does this mean the model is only a useful test bed for in-silico CBC, or would it also be applicable to controller design?
+\end{itemize}
 \end{itemize}
 
 \newpage
 \section{Continuation software}
-\label{sec:org8fd785f}
+\label{sec:org1ce134e}
 \subsection{Notes}
-\label{sec:orgbde0df7}
+\label{sec:org21bc9dd}
 \subsubsection{ODE examples}
-\label{sec:orgbc12d5a}
+\label{sec:org1bb742d}
 \begin{enumerate}
 \item XPP
-\label{sec:orgbde6a57}
+\label{sec:org9bdee61}
 \item COCO
-\label{sec:org1573758}
+\label{sec:org7ae5ac1}
 \item MATCONT
-\label{sec:orgedff95d}
+\label{sec:org43922ba}
 \item PyDSTool
-\label{sec:orgba202cb}
+\label{sec:org9a45589}
 \end{enumerate}
 
 \subsubsection{Pure AUTO capabilities}
-\label{sec:orgf00e148}
+\label{sec:org04c1fd9}
 \begin{enumerate}
 \item Algebraics
-\label{sec:orgb308fce}
+\label{sec:org615d580}
 \begin{itemize}
 \item Compute sol'n families for algebraic eq's of form \(f(u,p)=0\), \(f(\cdot,\cdot) \in \mathbb{R}^n\)
 \item Find branch points, and continue them in two or three parameters
@@ -95,7 +85,7 @@ Notes:
 \end{itemize}
 
 \item Flows
-\label{sec:org08b0181}
+\label{sec:orge647765}
 Consider an ODE of form \(u'(t) = f\big(u(t), p\big)\), \(f(\cdot, \cdot),~u(\cdot) \in \mathbb{R}^n\).
 AUTO can\ldots{}
 \begin{itemize}
@@ -109,12 +99,12 @@ AUTO can\ldots{}
 \item Determine fold, branch points along sol'n families to the above BVP
 \end{itemize}
 \item PDEs
-\label{sec:org91fbbde}
+\label{sec:org37e455f}
 Also some stuff for reaction-diffusion equations.
 \end{enumerate}
 
 \subsubsection{Things to put in the paper}
-\label{sec:org09d9e90}
+\label{sec:org4e1c9bd}
 Table of comparison:
 \begin{itemize}
 \item Bifurcations it can do, curves it can continue, and the types of system they can use
@@ -130,10 +120,10 @@ Make this nice and clear: explain why we're starting off finding any sorts of bi
 Aim it at someone that doesn't understand continuation (assume they know what bifurcations are, but not continuation methods for finding them).
 A brief section on the maths (eg. why we need to continue from a steady state, and how continuation works) would probably be useful.
 \subsubsection{Investigating the HR model}
-\label{sec:org82b4f19}
+\label{sec:org3fb8408}
 \begin{enumerate}
 \item Simplifying assumptions
-\label{sec:org4b75444}
+\label{sec:org2e42798}
 \begin{itemize}
 \item b is a parameter influencing the bursting and spiking behaviour (frequency of spiking, ability or inability to burst)
 \item We want to find the start/stop bifurcations when in a spiking regime, so we fix I=2 to force the neuron to spike
@@ -141,7 +131,7 @@ A brief section on the maths (eg. why we need to continue from a steady state, a
 \item We therefore have two bifurcation parameters - slow subsystem state z, and bursting-spiking parameter b
 \end{itemize}
 \item Investigation strategy
-\label{sec:org567ca4e}
+\label{sec:org22972ba}
 \begin{itemize}
 \item Simulate the neuron for a few different b,z, to see what happens
 \item It spikes
@@ -150,7 +140,7 @@ A brief section on the maths (eg. why we need to continue from a steady state, a
 \end{itemize}
 \begin{enumerate}
 \item Equilibrium bifurcation
-\label{sec:org2ffb27a}
+\label{sec:org2eddb60}
 (1) Find the equilibrium
 \begin{itemize}
 \item Simulate the system to get a (x,y) phase portrait, for arbitrary initial conditions, params
@@ -180,7 +170,7 @@ A brief section on the maths (eg. why we need to continue from a steady state, a
 \end{enumerate}
 
 \subsubsection{Refs}
-\label{sec:org81a0475}
+\label{sec:orga103f08}
 [1] \url{http://www.math.pitt.edu/\~bard/xpp/whatis.html}
 
 [2] K. Engelborghs, T.Luzyanina, G. Samaey, DDE-BIFTOOL v. 2.00: a Matlab package for bifurcation analysis of delay differential equations, Technical Report TW-330, Department of Computer Science, K.U.Leuven, Leuven, Belgium, 2001.
@@ -192,15 +182,15 @@ A brief section on the maths (eg. why we need to continue from a steady state, a
 [5] \url{https://pydstool.github.io/PyDSTool/FrontPage.html}
 
 \subsection{Tools overview}
-\label{sec:org2cce07d}
+\label{sec:orgded5d6b}
 \subsubsection{ODEs}
-\label{sec:orgaea985d}
+\label{sec:org6a2d487}
 \begin{enumerate}
 \item XPP
-\label{sec:org7e6990b}
+\label{sec:org2ad10da}
 \begin{enumerate}
 \item Overview
-\label{sec:orga33b8f5}
+\label{sec:org82f8d0b}
 \begin{itemize}
 \item Language: C
 \item Interface: GUI only
@@ -208,7 +198,7 @@ A brief section on the maths (eg. why we need to continue from a steady state, a
 \item License: GNU GPL V3
 \end{itemize}
 \item Notes
-\label{sec:org7f8b40a}
+\label{sec:org309ef66}
 The 'classic' simulation and continuation software.
 Still sees active use in a large range of nonlinear problems.
 Bifurcation (continuation) methods provided by AUTO and HomCont; probably possible to use AUTO by itself, but no one does because it would be very difficult (needs FORTRAN coding), and XPP provides a good interface to do it.
@@ -222,24 +212,24 @@ Somewhat outdated GUI, but it does the job perfectly adequately.
 No command line interface.
 Buggy, sometimes segfaults.
 \item Tutorials
-\label{sec:org2c2ae91}
+\label{sec:org24d3219}
 Comprehensive tutorial provided by Ermentrout here: \url{http://www.math.pitt.edu/\~bard/bardware/tut/start.html\#toc}
 \end{enumerate}
 \item {\bfseries\sffamily TODO} COCO
-\label{sec:orgf4bba62}
+\label{sec:org15bc19a}
 \begin{enumerate}
 \item Overview
-\label{sec:orgd607993}
+\label{sec:orgf579027}
 \item Notes
-\label{sec:org4899b4c}
+\label{sec:org3b63af1}
 \item Tutorials
-\label{sec:org3f1db1e}
+\label{sec:org5dbd02e}
 \end{enumerate}
 \item {\bfseries\sffamily TODO} MatCont
-\label{sec:org7810729}
+\label{sec:org4523fe9}
 \begin{enumerate}
 \item Overview
-\label{sec:org5047ea4}
+\label{sec:org5c4506f}
 \begin{itemize}
 \item Language: MATLAB
 \item Interface: GUI only, but CL\(_{\text{MatCont}}\) exists as a command-line version
@@ -247,17 +237,17 @@ Comprehensive tutorial provided by Ermentrout here: \url{http://www.math.pitt.ed
 \item License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 unported
 \end{itemize}
 \item Notes
-\label{sec:orga2ed1bc}
+\label{sec:org99a156b}
 Also: CL\(_{\text{MatCont}}\) (commandline interface), MatContM (MatCont for maps)
 \item Tutorials
-\label{sec:org74f5ecb}
+\label{sec:org9ef1c28}
 \end{enumerate}
 \item PyDSTool
-\label{sec:org4810e83}
+\label{sec:org817ed24}
 See \href{https://pydstool.github.io/PyDSTool/ProjectOverview.html}{the project overview} for lots of nice interesting things to talk about
 \begin{enumerate}
 \item Overview
-\label{sec:org305d016}
+\label{sec:org5a3a1f4}
 \begin{itemize}
 \item Language: Python3, with options for invoking C, Fortran
 \item Interface: scripting only
@@ -265,25 +255,25 @@ See \href{https://pydstool.github.io/PyDSTool/ProjectOverview.html}{the project 
 \item License: BSD 3-clause
 \end{itemize}
 \item Notes
-\label{sec:org42cba3a}
+\label{sec:org7d6a6cb}
 Julia DS library is just PyDSTool in a julia wrapper.
 Provides a full set of tools for development, simulation, and analysis of dynamical system models.
 'supports symbolic math, optimisation, phase plane analysis, continuation and bifurcation analysis, data analysis,' etc. (quoted from [5]).
 Easy to build into existing code.
 Can reuse bits and pieces (eg. continuation, or modelling) for building more complex software.
 \item Tutorials
-\label{sec:orgc2cab5d}
+\label{sec:org4e44ebd}
 Learn-by-example tutorials provided in the examples directory of the code repo [4], and fairly comprehensive documentation available on the website [5].
 \end{enumerate}
 \end{enumerate}
 \subsubsection{Others}
-\label{sec:org71ff629}
+\label{sec:orge5f5931}
 \begin{enumerate}
 \item DDE Biftool
-\label{sec:org8ae4821}
+\label{sec:orgaa3b5f3}
 \begin{enumerate}
 \item Overview
-\label{sec:org314d3e6}
+\label{sec:org199d9e6}
 \begin{itemize}
 \item Language: MATLAB
 \item Interface: Scripting
@@ -291,7 +281,7 @@ Learn-by-example tutorials provided in the examples directory of the code repo [
 \item License: BSD 2-clause
 \end{itemize}
 \item Notes
-\label{sec:orgade3bb3}
+\label{sec:orgee561e1}
 DDE bifurcation analysis only.
 Described in detail at \url{http://twr.cs.kuleuven.be/research/software/delay/ddebiftool.shtml} .
 Full manual available at [2].
@@ -301,10 +291,10 @@ Doesn't provide automatic bifurcation detection, but instead tracks eigenvalue e
 No simulation ability.
 \end{enumerate}
 \item Knut
-\label{sec:org121a248}
+\label{sec:orgf18c7b5}
 \begin{enumerate}
 \item Overview
-\label{sec:org9896ddc}
+\label{sec:org54d7a58}
 \begin{itemize}
 \item Language: C++
 \item Interface: GUI, CLI
@@ -312,10 +302,10 @@ No simulation ability.
 \item License: GNU GPL
 \end{itemize}
 \item Notes
-\label{sec:orga29ab0f}
+\label{sec:org41def24}
 \begin{enumerate}
 \item Features:
-\label{sec:org0afa973}
+\label{sec:orge38b73e}
 [Info taken verbatim from \url{https://rs1909.github.io/knut/}]:
 \begin{itemize}
 \item Continuation of periodic orbits along a parameter
@@ -324,7 +314,7 @@ No simulation ability.
 \item Continuation of some bifurcations in 2 parameters
 \end{itemize}
 \item Differences from DDE Biftool:
-\label{sec:orga85fab5}
+\label{sec:org705ceb8}
 [Info taken from \url{https://rs1909.github.io/knut/}]:
 \begin{itemize}
 \item C++ makes it faster than MATLAB
@@ -334,14 +324,14 @@ No simulation ability.
 \end{itemize}
 \end{enumerate}
 \item Tutorials
-\label{sec:orgf8a466e}
+\label{sec:orgf649146}
 See reference manual [3] for how-to's
 \end{enumerate}
 \item PDECONT
-\label{sec:orga44fb23}
+\label{sec:org79d8c01}
 \begin{enumerate}
 \item Overiew
-\label{sec:org1264a98}
+\label{sec:org50395d1}
 \begin{itemize}
 \item Language: C
 \item Interface: combination of C and a config file. Matlab interface appears to exist, but no documentation for how to use it
@@ -349,7 +339,7 @@ See reference manual [3] for how-to's
 \item License: unspecified (open-source, and free for non-commerial use)
 \end{itemize}
 \item Notes
-\label{sec:org74e99e5}
+\label{sec:org1c3d92c}
 Huge long documentation file exists, but that's just full of code implementations. 
 Couldn't find any clear, straightforward tutorials for using it.
 Need to code in C and produce a big config file to use the software.
@@ -357,9 +347,9 @@ Even then, I can't tell what the code is actually designed to do\ldots{}
 \end{enumerate}
 \end{enumerate}
 \subsection{Tables}
-\label{sec:org167927d}
+\label{sec:org8a3012e}
 \subsubsection{Point labels}
-\label{sec:org8408ced}
+\label{sec:org0a5bc70}
 
 \begin{center}
 \begin{tabular}{lll}
@@ -392,7 +382,7 @@ GPD & Generalised period doubling & \\
 (Taken from the \href{http://www.scholarpedia.org/article/MATCONT}{MATCONT Scholarpedia} page)
 
 \subsubsection{{\bfseries\sffamily TODO} Types of curve}
-\label{sec:orgf555363}
+\label{sec:orgb18cfb7}
 
 \begin{center}
 \begin{tabular}{llllll}
@@ -425,7 +415,7 @@ $\backslash$** PyDSTool seems to have methods to compute these for fixed points 
 ? indicates that there doesn't appear to be a native way of doing this, however it's possible that there's ways to do it (eg. AUTO97 apparently let's us track LPCs, and PyDSTool let's us define custom curves to follow, so one could possibly construct a customised continuation regime to track limit points of cycles)
 
 \subsubsection{{\bfseries\sffamily TODO} Types of point}
-\label{sec:org5d16a53}
+\label{sec:org854ffdb}
 
 \begin{center}
 \begin{tabular}{lrllll}
@@ -458,7 +448,7 @@ $\backslash$* Are branch points just 'there's a bifurcation here but we don't kn
 Also see the MATCONT 'objects related to homoclinics to equilibria' table, and resonances, for additional points it can detect
 
 \subsubsection{{\bfseries\sffamily TODO} Available numerical methods}
-\label{sec:org507e5a3}
+\label{sec:org716ef67}
 
 \begin{center}
 \begin{tabular}{lllll}
@@ -469,7 +459,7 @@ Method & MATCONT & CoCo & XPP & PyDSTool\\
 \end{center}
 
 \subsubsection{{\bfseries\sffamily TODO} Types of system they can simulate}
-\label{sec:org7f94f54}
+\label{sec:orgb727958}
 
 \begin{center}
 \begin{tabular}{lllll}
@@ -494,9 +484,9 @@ Functional &  &  & y & n\\
 Aren't difference equations the same as maps?
 
 \subsubsection{{\bfseries\sffamily TODO} Degree of manual fiddling / parameter tuning}
-\label{sec:org3ab8750}
+\label{sec:orgbe718e7}
 \subsubsection{To code or not code?}
-\label{sec:org5ccba54}
+\label{sec:org7d7dfed}
 
 \begin{center}
 \begin{tabular}{llll}
@@ -507,7 +497,7 @@ No coding necessary & No coding necessary & Coding required (matlab) & Coding re
 \end{center}
 
 \subsubsection{License}
-\label{sec:org72370bf}
+\label{sec:orgf950c76}
 
 \begin{center}
 \begin{tabular}{llll}
@@ -520,9 +510,9 @@ Creative commons, but requires a matlab license & GNU GPL v3 & BSD 3 clause & No
 There might be the option of running matcont or CoCo in GNU Octave, meaning no matlab license is required, but this is not a given.
 
 \subsubsection{{\bfseries\sffamily TODO} Crashing and instability / ease of use}
-\label{sec:org3a45c95}
+\label{sec:orgea0e625}
 \subsubsection{{\bfseries\sffamily TODO} Other stuff}
-\label{sec:orgb143dcd}
+\label{sec:org1adeacf}
 
 \begin{center}
 \begin{tabular}{lllll}
@@ -542,7 +532,7 @@ Parameter estimation / fitting & Yes, toolboxes for that &  &  & \\
 \end{center}
 
 \subsubsection{{\bfseries\sffamily TODO} PyDSTool vs others}
-\label{sec:orgd17be15}
+\label{sec:org16feaee}
 
 \begin{center}
 \begin{tabular}{lll}
