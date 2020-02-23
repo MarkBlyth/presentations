@@ -1,0 +1,272 @@
+\begin{thebibliography}{10}
+
+\bibitem{beard2005computational}
+Daniel~A Beard, James~B Bassingthwaighte, and Andrew~S Greene.
+\newblock Computational modeling of physiological systems, 2005.
+
+\bibitem{strogatz2018nonlinear}
+Steven~H Strogatz.
+\newblock {\em Nonlinear dynamics and chaos: with applications to physics,
+  biology, chemistry, and engineering}.
+\newblock CRC press, 2018.
+
+\bibitem{guckenheimer2013nonlinear}
+John Guckenheimer and Philip Holmes.
+\newblock {\em Nonlinear oscillations, dynamical systems, and bifurcations of
+  vector fields}, volume~42.
+\newblock Springer Science \& Business Media, 2013.
+
+\bibitem{hodgkin1952quantitative}
+Alan~L Hodgkin and Andrew~F Huxley.
+\newblock A quantitative description of membrane current and its application to
+  conduction and excitation in nerve.
+\newblock {\em The Journal of physiology}, 117(4):500--544, 1952.
+
+\bibitem{mackey1977oscillation}
+Michael~C Mackey and Leon Glass.
+\newblock Oscillation and chaos in physiological control systems.
+\newblock {\em Science}, 197(4300):287--289, 1977.
+
+\bibitem{volterra1928variations}
+Vito Volterra.
+\newblock Variations and fluctuations of the number of individuals in animal
+  species living together.
+\newblock {\em ICES Journal of Marine Science}, 3(1):3--51, 1928.
+
+\bibitem{kuznetsov2013elements}
+Yuri~A Kuznetsov.
+\newblock {\em Elements of applied bifurcation theory}, volume 112.
+\newblock Springer Science \& Business Media, 2013.
+
+\bibitem{guevara2003bifurcations}
+Michael~R Guevara.
+\newblock Bifurcations involving fixed points and limit cycles in biological
+  systems.
+\newblock In {\em Nonlinear Dynamics in Physiology and Medicine}, pages 41--85.
+  Springer, 2003.
+
+\bibitem{an2006schizophrenia}
+Uwe An~der Heiden.
+\newblock Schizophrenia as a dynamical disease.
+\newblock {\em Pharmacopsychiatry}, 39(S 1):36--42, 2006.
+
+\bibitem{mustafa2009non}
+IH~Mustafa, G~Ibrahim, A~Elkamel, SSEH Elnashaie, and P~Chen.
+\newblock Non-linear feedback modeling and bifurcation of the acetylcholine
+  neurocycle and its relation to alzheimer's and parkinson's diseases.
+\newblock {\em Chemical Engineering Science}, 64(1):69--90, 2009.
+
+\bibitem{da2003epilepsies}
+Fernando~Lopes Da~Silva, Wouter Blanes, Stiliyan~N Kalitzin, Jaime Parra, Piotr
+  Suffczynski, and Demetrios~N Velis.
+\newblock Epilepsies as dynamical diseases of brain systems: basic models of
+  the transition between normal and epileptic activity.
+\newblock {\em Epilepsia}, 44:72--83, 2003.
+
+\bibitem{milton2000epilespy}
+John~G Milton.
+\newblock {\em Epilepsy: Multistability in a dynamic disease}.
+\newblock Cambridge, UK: Cambridge Univ. Press, 2000.
+
+\bibitem{mackey1987dynamical}
+Michael~C Mackey and John~G Milton.
+\newblock Dynamical diseases.
+\newblock {\em Neuro—ophthalmology}, 21:24, 1987.
+
+\bibitem{izhikevich2000neural}
+Eugene~M Izhikevich.
+\newblock Neural excitability, spiking and bursting.
+\newblock {\em International journal of bifurcation and chaos},
+  10(06):1171--1266, 2000.
+
+\bibitem{izhikevich2007dynamical}
+Eugene~M Izhikevich.
+\newblock {\em Dynamical systems in neuroscience}.
+\newblock MIT press, 2007.
+
+\bibitem{diaz2010bistable}
+Orlando D{\'\i}az-Hern{\'a}ndez and Mois{\'e}s Santill{\'a}n.
+\newblock Bistable behavior of the lac operon in e. coli when induced with a
+  mixture of lactose and tmg.
+\newblock {\em Frontiers in physiology}, 1:158, 2010.
+
+\bibitem{chialvo1993modulated}
+Dante~R Chialvo and A~Vania Apkarian.
+\newblock Modulated noisy biological dynamics: three examples.
+\newblock {\em Journal of Statistical Physics}, 70(1-2):375--391, 1993.
+
+\bibitem{jost2014bifurcation}
+Daniel Jost.
+\newblock Bifurcation in epigenetics: implications in development,
+  proliferation, and diseases.
+\newblock {\em Physical Review E}, 89(1):010701, 2014.
+
+\bibitem{angeli2004detection}
+David Angeli, James~E Ferrell, and Eduardo~D Sontag.
+\newblock Detection of multistability, bifurcations, and hysteresis in a large
+  class of biological positive-feedback systems.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  101(7):1822--1827, 2004.
+
+\bibitem{meijer2009numerical}
+Hil Meijer, Fabio Dercole, and Bart~E Oldeman.
+\newblock Numerical bifurcation analysis., 2009.
+
+\bibitem{govaerts2007interactive}
+Willy Govaerts and Yuri~A Kuznetsov.
+\newblock Interactive continuation tools.
+\newblock In {\em Numerical continuation methods for dynamical systems}, pages
+  51--75. Springer, 2007.
+
+\bibitem{dhooge2008new}
+Annick Dhooge, Willy Govaerts, Yu~A Kuznetsov, Hil Ga{\'e}tan~Ellart Meijer,
+  and Bart Sautois.
+\newblock New features of the software matcont for bifurcation analysis of
+  dynamical systems.
+\newblock {\em Mathematical and Computer Modelling of Dynamical Systems},
+  14(2):147--175, 2008.
+
+\bibitem{clewley2012hybrid}
+Robert Clewley.
+\newblock Hybrid models and biological model reduction with pydstool.
+\newblock {\em PLoS computational biology}, 8(8), 2012.
+
+\bibitem{ermentrout2002simulating}
+Bard Ermentrout.
+\newblock {\em Simulating, analyzing, and animating dynamical systems: a guide
+  to XPPAUT for researchers and students}, volume~14.
+\newblock Siam, 2002.
+
+\bibitem{dankowicz2013recipes}
+Harry Dankowicz and Frank Schilder.
+\newblock {\em Recipes for continuation}, volume~11.
+\newblock SIAM, 2013.
+
+\bibitem{beuter2003nonlinear}
+Anne Beuter, Leon Glass, Michael~C Mackey, and Michele~S Titcombe.
+\newblock {\em Nonlinear dynamics in physiology and medicine}.
+\newblock 2003.
+
+\bibitem{hoppensteadt2012weakly}
+Frank~C Hoppensteadt and Eugene~M Izhikevich.
+\newblock {\em Weakly connected neural networks}, volume 126.
+\newblock Springer Science \& Business Media, 2012.
+
+\bibitem{allgower2003introduction}
+Eugene~L Allgower and Kurt Georg.
+\newblock {\em Introduction to numerical continuation methods}, volume~45.
+\newblock SIAM, 2003.
+
+\bibitem{doedel1991numerical}
+Eusebius Doedel, Herbert~B Keller, and Jean~Pierre Kernevez.
+\newblock Numerical analysis and control of bifurcation problems (i):
+  Bifurcation in finite dimensions.
+\newblock {\em International journal of bifurcation and chaos}, 1(03):493--520,
+  1991.
+
+\bibitem{keller1977numerical}
+Herbert~B Keller and KELLER HB.
+\newblock Numerical solution of bifurcation and nonlinear eigenvalue problems.
+\newblock 1977.
+
+\bibitem{pyragas1992continuous}
+Kestutis Pyragas.
+\newblock Continuous control of chaos by self-controlling feedback.
+\newblock {\em Physics letters A}, 170(6):421--428, 1992.
+
+\bibitem{pyragas2001control}
+Kestutis Pyragas.
+\newblock Control of chaos via an unstable delayed feedback controller.
+\newblock {\em Physical Review Letters}, 86(11):2265, 2001.
+
+\bibitem{barton2013systematic}
+David~AW Barton and Jan Sieber.
+\newblock Systematic experimental exploration of bifurcations with noninvasive
+  control.
+\newblock {\em Physical Review E}, 87(5):052916, 2013.
+
+\bibitem{sieber2008control}
+Jan Sieber and Bernd Krauskopf.
+\newblock Control based bifurcation analysis for experiments.
+\newblock {\em Nonlinear Dynamics}, 51(3):365--377, 2008.
+
+\bibitem{gomes2019exploring}
+Brandon Gomes, Irene de~Cesare, Agostino Guarino, Mario di~Bernardo, Ludovic
+  Renson, and Lucia Marucci.
+\newblock Exploring the dynamics of nonlinear biochemical systems using
+  control-based continuation.
+\newblock {\em bioRxiv}, page 695866, 2019.
+
+\bibitem{engl2005nonlinear}
+Heinz~W Engl and Philipp K{\"u}gler.
+\newblock Nonlinear inverse problems: theoretical aspects and some industrial
+  applications.
+\newblock In {\em Multidisciplinary methods for analysis optimization and
+  control of complex systems}, pages 3--47. Springer, 2005.
+
+\bibitem{engl2009inverse}
+Heinz~W Engl, Christoph Flamm, Philipp K{\"u}gler, James Lu, Stefan M{\"u}ller,
+  and Peter Schuster.
+\newblock Inverse problems in systems biology.
+\newblock {\em Inverse Problems}, 25(12):123014, 2009.
+
+\bibitem{lu2006inverse}
+James Lu, Heinz~W Engl, and Peter Schuster.
+\newblock Inverse bifurcation analysis: application to simple gene systems.
+\newblock {\em Algorithms for molecular biology}, 1(1):11, 2006.
+
+\bibitem{kitajima2015method}
+Hiroyuki Kitajima and Tetsuya Yoshinaga.
+\newblock A method for constructing a robust system against unexpected
+  parameter variation.
+\newblock In {\em Analysis and Control of Complex Dynamical Systems}, pages
+  41--48. Springer, 2015.
+
+\bibitem{chickarmane2005bifurcation}
+Vijay Chickarmane, Sri~R Paladugu, Frank Bergmann, and Herbert~M Sauro.
+\newblock Bifurcation discovery tool.
+\newblock {\em Bioinformatics}, 21(18):3688--3690, 2005.
+
+\bibitem{FLU09a}
+V.~Flunkert and E.~Sch{\"o}ll.
+\newblock pydelay -- a python tool for solving delay differential equations.
+\newblock {\tt arXiv:0911.1633~[nlin.CD]}, 2009.
+
+\bibitem{szalaiknut}
+R~Szalai.
+\newblock Knut: a continuation and bifurcation software for delay-differential
+  equations (version 8), department of engineering mathematics, university of
+  bristol (2013).
+
+\bibitem{engelborghs2002numerical}
+Koen Engelborghs, Tatyana Luzyanina, and Dirk Roose.
+\newblock Numerical bifurcation analysis of delay differential equations using
+  dde-biftool.
+\newblock {\em ACM Transactions on Mathematical Software (TOMS)}, 28(1):1--21,
+  2002.
+
+\bibitem{simic2005towards}
+Slobodan~N Simic, Karl~Henrik Johansson, John Lygeros, and Shankar Sastry.
+\newblock Towards a geometric theory of hybrid systems.
+\newblock {\em Dynamics of Continuous, Discrete and Impulsive Systems Series B:
+  Applications and Algorithms}, 12(5-6):649--687, 2005.
+
+\bibitem{gerstner2014neuronal}
+Wulfram Gerstner, Werner~M Kistler, Richard Naud, and Liam Paninski.
+\newblock {\em Neuronal dynamics: From single neurons to networks and models of
+  cognition}.
+\newblock Cambridge University Press, 2014.
+
+\bibitem{doedel1981auto}
+Eusebius~J Doedel.
+\newblock Auto: A program for the automatic bifurcation analysis of autonomous
+  systems.
+\newblock {\em Congr. Numer}, 30(265-284):25--93, 1981.
+
+\bibitem{kuznetsov2005numerical}
+Yu~A Kuznetsov, Willy Govaerts, Eusebius~J Doedel, and Annick Dhooge.
+\newblock Numerical periodic normalization for codim 1 bifurcations of limit
+  cycles.
+\newblock {\em SIAM journal on numerical analysis}, 43(4):1407--1435, 2005.
+
+\end{thebibliography}

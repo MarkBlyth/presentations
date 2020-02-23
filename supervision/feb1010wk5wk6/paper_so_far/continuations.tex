@@ -1,0 +1,439 @@
+% Created 2020-02-21 Fri 17:14
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper,twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\newenvironment{NOTE}{\color{red}\bfseries ZZZ}
+
+
+\usepackage[margin=1in]{geometry}
+\newcommand{\matcont}{\textsc{MatCont}}
+\newcommand{\matcontm}{\textsc{MatContM}}
+\newcommand{\clmatcont}{\textsc{Cl\_MatCont}}
+\newcommand{\inr}[2]{\(#1\in\mathbb{R}^{#2}\)}
+\author{Mark}
+\date{\today}
+\title{A review of numerical continuation and bifurcation analysis software for computational biology problems}
+\hypersetup{
+ pdfauthor={Mark},
+ pdftitle={A review of numerical continuation and bifurcation analysis software for computational biology problems},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.1.9)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\begin{NOTE}
+Currently c.3000 words, 47 refs.
+Cell systems has a review word limit of 8000 words, 100 refs.
+
+
+TODO come up with a less verbose title
+
+Perhaps send the preprint to whoever wrote each of the tools, to make sure I haven't missed anything / got anything wrong?
+\end{NOTE}
+
+\section{{\bfseries\sffamily TODO} Abstract}
+\label{sec:org64c599d}
+\begin{abstract}
+\end{abstract}
+
+
+\section{{\bfseries\sffamily TODO} Introduction to bifurcation analysis}
+\label{sec:org20f845f}
+\subsection{{\bfseries\sffamily TODO} : PROOF READ; [intro, remove this header]}
+\label{sec:org60b5f17}
+
+Computational biology uses mathematical tools to understand the processes that give rise to living organisms \cite{beard2005computational}.
+One area having seen significant success is the application of ideas from nonlinear dynamics and dynamical systems theory to biological systems.
+Here, processes are described in terms of differential equations, which describe how some aspect of interest evolves in time; an introduction to the field can be found in \cite{strogatz2018nonlinear,guckenheimer2013nonlinear}.
+The resulting equations can be analysed both to explain observed phenomena, and to predict novel, unseen behaviours.
+Classic examples of this are the work of Hodgkin and Huxley \cite{hodgkin1952quantitative}, which laid the foundations for classical neuroscience; the Mackey-Glass equation \cite{mackey1977oscillation}, which studies the effects of time-delayed feedback on respiratory and hematopoietic diseases; and the Lotka-Volterra model \cite{volterra1928variations} of population dynamics.
+
+The behaviour of all these systems depends on the value of various parameters, such as injected current for a neuron model, or population growth rate in ecological models.
+When a change in parameter values causes a change in system behaviour, a bifurcation is said to have occurred; see \cite{strogatz2018nonlinear,guckenheimer2013nonlinear,kuznetsov2013elements} for an entry point into the literature.
+Bifurcations are of great interest in biology \cite{guevara2003bifurcations}.
+They can contribute to a variety of diseases such as schizophrenia \cite{an2006schizophrenia}, Alzheimer's and Parkinson's disease \cite{mustafa2009non}, and epilepsy \cite{da2003epilepsies,milton2000epilespy}.
+Mackey and Milton refer to these abnormal behaviours, arising from unwanted bifurcations, as dynamical diseases \cite{mackey1987dynamical}; progress can be made into understanding these diseases by considering the systems and the bifurcations that lead to them.
+Bifurcations can also be used to explain the causes of neuronal spiking and bursting behaviours \cite{izhikevich2000neural,izhikevich2007dynamical}.
+The saddle-node bifurcation can explain bistability in metabolic pathways \cite{diaz2010bistable}, visual perception tasks \cite{chialvo1993modulated}, epigenetic regulation \cite{jost2014bifurcation}, as well as many other biological feedback systems \cite{angeli2004detection}.
+
+Clearly therefore, bifurcations are a powerful explanatory tool in systems biology.
+Nevertheless, the detection and analysis of these bifurcations is often analytically challenging.
+Consequently, numerous computational algorithms and software packages have been produced to detect and analyse the bifurcations occuring in a system of equations.
+While some publications include a survey of continuation tools (see \cite{meijer2009numerical,govaerts2007interactive,dhooge2008new}), they focus primarily on the history and design approaches of the software.
+This work aims to complement these studies, by providing a review of the most commonly used bifurcation analysis software, and demonstrating how each package can be applied to problems from mathematical biology.
+The most commonly used packages are PyDSTool \cite{clewley2012hybrid}, XPPAUTO \cite{ermentrout2002simulating}, MatCont \cite{dhooge2008new}, and CoCo \cite{dankowicz2013recipes}.
+These four packages form the core of this work, however other packages also exist, some of which are discussed in section \ref{sec:org50c18e5}.
+
+\subsection{{\bfseries\sffamily TODO} : PROOF READ; What is a bifurcation and a dynamical system?}
+\label{sec:org1d76f44}
+This section aims to provide an intuitive introduction to bifurcation theory; it is aimed at the non-specialist, and hence any rigorous analysis is left for the literature.
+A more formal introduction to bifurcation theory can be found in \cite{strogatz2018nonlinear,guckenheimer2013nonlinear,kuznetsov2013elements}; an exposition from a computational biology perspective can be found in \cite{beuter2003nonlinear,hoppensteadt2012weakly,izhikevich2007dynamical}.
+The author particularly recommends \cite{strogatz2018nonlinear} for a broad and very readable introduction to the field.
+
+Bifurcation theory considers changes in the dynamics of a system when a parameter is varied.
+A change is said to have occurred when the before and after dynamics are not equivalent.
+A topological definition of equivalence is typically adopted -- two systems are said to be topologically equivalent if and only if there exists a homeomorphism between their phase portraits.
+One can loosely imagine this to mean that two systems have equivalent dynamics, only if they can be stretched, rotated, and bent into the one another.
+While the temporal nature of the dynamics may vary between topologically equivalent systems (eg. slow or rapid convergence to equilibria), their general features, such as stability and existence of limit cycles, equilibria et cetera will remain the same.
+For example, while the dynamics of a damped fast-swinging pendulum can easily be transformed into that of a damped slow-swinging pendulum, neither can be transformed into a pendulum whose swing amplitude increases in time due to resonance; the fast- and slow-swinging pendula are equivalent, and different to the resonantly excited pendulum.
+
+A system is said to be structurally stable if it is topologically equivalent to any small perturbation within the same class of systems.
+That is, the inclusion of additional small terms, or the small perturbation of existing terms, does not produce topologically different dynamics within the system.
+Consider the system of differential equations given by
+
+\begin{equation}
+\label{eq:org6a5f88b}
+\dot{x} = f(x,\lambda)~,
+\end{equation}
+where \inr{x}{n} is the system state, and \inr{\lambda}{m} is a vector of system parameters.
+A bifurcation occurs at parameter value \(\lambda^{\text{*}}\) if the system loses structural stability when \(\lambda = \lambda^*\).
+That is, arbitrarily small variations away from \(\lambda^*\) will produce a system with different dynamics to those at \(\lambda^*\).
+A bifurcation diagram shows how invariant sets change as a function of parameter value; a bifurcation set shows the sets in parameter space where a system loses structural stability through bifurcation.
+\begin{NOTE}
+QUESTION: It is possible for a system to not be structurally stable, but also not be at a bifurcation point, eg. \(x^3 + \lambda\) at (0,0). Does that make this definition wrong? How should I rephrase this section to make it right?
+\end{NOTE}
+
+The codimension of a bifurcation is the number of parameters that must be varied to generically see that bifurcation.
+This can equivalently be thought of as the number of parameters that are required in a bifurcation diagram to make it structurally stable.
+If a bifurcation diagram is never structurally stable, the corresponding bifurcation is said to have infinite codimension.
+Codimension is used to describe the complexity of a bifurcation.
+Few tools exist to study higher-codimension bifurcations.
+\begin{NOTE}
+QUESTION: Codimension higher than what? Do any tools exist to study codim3 bifurcations? 
+\end{NOTE}
+
+\subsection{{\bfseries\sffamily TODO} : PROOF READ; How does continuation work / do we find bifurcations numerically?}
+\label{sec:org2d59b9c}
+A basic understanding of continuation is necessary for running numerical bifurcation experiments.
+Continuation considers the computation of implicitly defined manifolds.   
+Consider the system given in equation (\ref{eq:org6a5f88b}).
+An equilibrium is given by \(f(x,\lambda)=0\).
+Under certain assumptions \uline{\emph{\textbf{WHAT ASSUMPTIONS? SMOOTHNESS? ALSO CITE WHERE THOSE ASSUMPTIONS CAN BE FOUND (SEE [28])}}}, the implicit function theorem guarantees that we can find some manifold \(x(\lambda\)$\backslash$), giving the location of the equilibrium position as a function of the parameter vector \(\lambda\) \cite{allgower2003introduction}.
+Numerical continuation provides a means of computing this manifold, given some starting equilibrium \(x_0\) at parameter value \(\lambda_0\).
+In the context of bifurcation analysis, continuation methods are used to track how the solution to a system of equations changes as the parameter vector is varied.
+The system of equations is given by the vector field \(f\), and a set of test functions whose zeros occur at a bifurcation; additional regularisation constraints, such as phase constraints, are sometimes required to produce a well-posed problem \cite{doedel1991numerical}.
+See \cite{dankowicz2013recipes} \uline{\emph{\textbf{CHAPTER?}}} for a detailed discussion on problem formulation.
+
+Numerical bifurcation analysis is thus a problem of tracking the zeros of a system of equations, test functions, and regularisation constraints, as some of the system parameters change.
+A numerical investigation of bifurcations generally proceeds by 
+\begin{enumerate}
+\item finding equilibria (codimension zero points);
+\item tracking those equilibria under single-parameter changes, to reveal codimension 1 bifurcations;
+\item tracking these codimension-1 bifurcations in multiple parameters, to find higher codimension singularities.
+\end{enumerate}
+It is useful to understand bifurcation analysis as being a problem of computing implicitly defined manifolds, as it explains why numerical bifurcation analysis must be approached in this fashion.
+One must first find points where equilibria bifurcates, by tracking the equilibria as a parameter changes WHICH IS COMPUTING AN IMPLICIT MANIFOLD.
+This will indicate the locations of codimension-1 bifurcations, which occur at zero-dimensional points in a one-dimensional parameter space.
+By augmenting the equilibrium problem with test functions, these bifurcations can then be tracked as two parameters are varied WHICH IS COMPUTING AN IMPLICIT MANIFOLD IN THE AUGMENTED SYSTEM.
+Higher-codimension bifurcations form organising centers, from which manifolds of lower-codimension bifurcations emerge.
+One therefore proceeds by finding and tracking interesting points in successively higher codimension.
+\begin{NOTE}
+TODO fix the bits in caps in the above paragraph 
+\end{NOTE}
+
+Continuation is performed using a psuedo-arclength predictor corrector scheme \cite{keller1977numerical}.
+Here, the next point on the manifold is estimated using its tangent at the previous point, and a corrector scheme is used to refine this estimate.
+This is designed to replicate the parameterisation of the manifold in terms of arc length from the initial point, allowing for continuation around fold points.
+While numerical psuedo-arclength continuation is the standard method of bifurction analysis, several variations to this approach have been developed.
+These include control-based continuation algorithms, for investigating the bifurcation structure of physical and black-box systems \cite{pyragas1992continuous,pyragas2001control,barton2013systematic,sieber2008control}, and inverse bifurcation algorithms, for discovering parameter configurations that produces some target bifurcation structure.
+Control-based continuation has recently been applied to an \emph{in silico} gene regulatory network \cite{gomes2019exploring}.
+An introduction to inverse problems is given in \cite{engl2005nonlinear,engl2009inverse}, with \cite{engl2009inverse} giving a discussion of their applications to systems biology.
+Inverse methods have been applied variously to designing gene networks that exhibit a specific set of dynamics \cite{lu2006inverse}, and producing systems that are robust to parameter noise \cite{kitajima2015method}.
+An entirely different approach to bifurcation analysis is taken in \cite{chickarmane2005bifurcation}, where a genetic algorithm is used to search for bifurcations in the parameter space of ODE reaction networks.
+
+
+\section{{\bfseries\sffamily TODO} an overview of the available tools, their strengths and limitations, usages, etc.}
+\label{sec:orgcc4f7f2}
+\subsection{{\bfseries\sffamily TODO} : PROOF READ; PyDSTool}
+\label{sec:org4bff84c}
+\uline{\textbf{\emph{TODO HOW MUCH OF THIS IS ACTUALLY NECESSARY INFORMATION?}}}
+PyDSTool provides a suite of tools for the simulation and analysis of dynamical systems, with a focus on biological applications \cite{clewley2012hybrid}.
+It is written primarily in Python3, however legacy C and Fortran code is included for efficient numerical solvers.
+Being written in Python3, PyDSTool is particularly easy to adapt and extend to new problems.
+The code is released under the permissive BSD 3-clause license, which allows for modification and redistribution of the source code.
+PyDSTool supports ordinary differential equations, differential algebraic equations, discrete maps, and hybrid models thereof.
+Limited support is also available for delay differential equations, however these do not form the focus of PyDSTool; more specialised packages such as pydelay \cite{FLU09a}, Knut \cite{szalaiknut}, or DDE-BIFTOOL \cite{engelborghs2002numerical} are better suited to such problems.
+
+\uline{\textbf{\emph{TODO REPHRASE THIS PARA}}}
+PyDSTool has no graphical user interface.
+Instead, modelling and analysis procedures are specified through Python scripts.
+This has the advantage of allowing for more sophisticated and complex analysis routines than could be achieved with a graphical interface.
+It makes it easy to rapidly run and rerun analyses, reproduce research, and to change the model and any aspects of its analysis, without having to repeat the entire procedure from scratch; instead, the script can simply be rerun after any desired alterations have been made.
+Rich data structures are provided to facilitate this.
+These can be integrated into other work, to extend the capabilities of PyDSTool, and to apply its methods and routines to other problems.
+
+\uline{\textbf{\emph{TODO IS THIS TOO MUCH INFORMATION ABOUT HYBRID SYSTEMS?}}}
+Unlike other software packages, PyDSTool offers advanced support for hybrid models.
+These can be considered loosely as a set of different regimes of smooth dynamics, and a set of events-based rules to dictate when and how transitions between these regimes should occur; see \cite{simic2005towards} for a rigorous treatment of hybrid dynamical systems.
+Hybrid modelling can allow one to express key system behaviours in a significantly simpler way than could otherwise be achieved.
+A key example of this is the integrate and fire neuron (see \cite{gerstner2014neuronal} section 1.3).
+Here, a neuron is modelled as integrating any applied current, and firing a spike when the membrane potential exceeds a threshold.
+The membrane potential then resets to a resting state.
+This non-smooth model succeeds in abstracting away the complex dynamics of spike generation, resulting in a simple model that still captures the essence of neuronal behaviours.
+While hybrid modelling is a powerful tool for biological analysis, only PyDSTool is explicitly designed for building and analysing these models.
+
+\uline{\emph{\textbf{TODO GENERALLY OKAY. SHOULD I TALK MORE ABOUT THE PHASE PLANE / COMP NEURO TOOLBOX CAPABILITIES?}}}
+Models are specified symbolically; symbolic expression routines exist for manipulating derivatives, substitutions, evaluations, and simplifications.
+Individual models can optionally be combined together, to form hybrid models.
+These models can then be simulated and analysed.
+Toolboxes exist for a range of purposes, with examples including parameter fitting and estimation, compartmental modelling of neurons and chemical synapses, and phase plane analysis.
+Continuation methods are implemented to detect and track bifurcations in parameter space; these are considered in more depth in section \ref{sec:org21952ee}.
+
+\subsection{{\bfseries\sffamily TODO} : PROOF READ; XPPAUTO}
+\label{sec:org898b79c}
+
+XPP (also referred to as XPPAUT, XPPAUTO) is a combined simulation and continuation package \cite{ermentrout2002simulating}.
+It is one of the oldest dynamical systems tools to still see regular use, and as a result, has seen extensive use for solving and analysing problems across nonlinear dynamics.
+A large number of tutorials and resources are available because of this.
+Nevertheless, the age of the software also lends itself to a somewhat \emph{`clunky'} user interface.
+The program also has a tendency to crash; no scripting interface is available, which means that in the event of a crash, one must restart an entire analysis from scratch.
+
+XPP is capable of handing a wide range of system classes, including ordinary, delay, and stochastic differential equations, boundary value problems, and difference and functional equations.
+The package is written in C, and source code is released under the GNU GPL v3 license, allowing for modification and redistribution.
+Nevertheless, the code base does not easily lend itself towards being extended and adapted to novel problems.
+XPP is used through a graphical interface and models are specified symbolically in text files, meaning no knowlege of coding is required to use the software.
+Furthermore, XPP provides a graphical interface to most features of AUTO \cite{dhooge2008new,doedel1981auto}, allowing users to run continuation and bifurcation analyses without writing any Fortran code.
+
+XPP has a wide range of features, both within and in addition to simulation and bifurcation analysis.
+Over a dozen solvers are available, covering forward and backward integration for a range of stiff and non-stiff classes of system.
+Tools are also provided for phase plane analysis, such as nullcline, vector field, and flow field plotting, and equilibrium location methods.
+Methods exist to create Poincar\'{e} sections and animations directly from XPP.
+
+\subsection{{\bfseries\sffamily TODO} : PROOF READ; \matcont{}}
+\label{sec:org99d3f31}
+\uline{\emph{\textbf{IS THIS TOO OPINION-BASED?}}}
+\matcont{} focuses on providing a comprehensive set of simulation and analysis tools, for ordinary differential equations only.
+The package aims to overcome the shortfalls of previous bifurcation analysis tools (such as detection, continuation, and normal form calculations of codimension-2 bifurcations), and is thus the most fully featured of the tools considered here.
+The intuitive graphical interface lends itself towards a more gentle learning curve than for other tools.
+\matcont{} is freely available under the Creative Commons BY-NC-SA 3.0 license, allowing users to modify and redistribute the software, subject to constraints.
+Note that \matcont{} is written for use with MATLAB, and thus requires a MATLAB license; the author was unable to run \matcont{} in GNU Octave in its provided form.
+
+While being the most powerful tool of those discussed here, \matcont{} is also extensively and clearly documented, and a large number of tutorials are available.
+It is available both as a graphical package, and as the command-line version \clmatcont{}.
+This means that users are not required to write any code to use \matcont{}; nevertheless, the graphical interface merely acts as an intermediary between the user and \clmatcont{}, so analyses can be carried out just as effectively in a scripting environment, should the user desire.
+\clmatcont{} also allows one to extend the functionality of the software, by integrating \matcont{} routines into custom projects.
+
+\matcont{} has a well-designed memory management system, allowing curves and points of interest to be saved automatically.
+As a result, users are not forced to re-run analyses from scratch each time a system is studied, even when working from the graphical interface.
+
+Models are provided symbolically to \matcont{}.
+The software is able to compute derivatives symbolically, allowing for faster code execution, and improved precision.
+It supports additional features such as Poincar\'{e} maps and phase repsonse curves, and is the only software to support normal form analysis of limit cycle bifurcations, using the methods developed in \cite{kuznetsov2005numerical}.
+Users have access to all MATLAB solvers, in addition to two additional Runge-Kutta solvers for stiff systems.
+
+\subsection{{\bfseries\sffamily TODO} CoCo}
+\label{sec:orgae87578}
+\begin{NOTE}
+\begin{itemize}
+\item Background to the software - who wrote it, what for, when, why?
+\item What systems can it analyse?
+\item What does it try to do / solve? What niche was it created to fill?
+\item What problems / users is it aimed at?
+\item What nice touches does it have to make it worth using? Toolboxes? Scripting? Exports? Simulation? Phase planes?
+\item Only describe the tools here, don't compare them to each other!
+\item CoCo is only an analysis environment, though it's used through matlab, which simulations could be run in
+\item requires user to code the problem in matlab
+\item functions, variables, etc. are declared in Matlab syntax
+\end{itemize}
+\end{NOTE}
+
+
+\section{{\bfseries\sffamily TODO} a comparison of those tools and their functionality}
+\label{sec:org21952ee}
+
+\begin{NOTE}
+Notes to work into the text somewhere:
+\begin{itemize}
+\item PyDSTool and XPP integrators are significantly faster than CoCo / MatCont's matlab integrators.
+\item PyDSTool can support arbitrarily large models, which XPP can't
+\item MatCont and PyDSTool's bifurcation analysis is closer-integrated with its simulation / core tools than for XPP
+\item CoCo, PyDSTool and CL\(_{\text{MatCont}}\) can be scripted, and integrated into other programs; XPP cannot easily, however some attemts at interfaces exist (see website).
+\item XPP and MatCont have GUIs; PyDSTool and CoCo do not
+\end{itemize}
+\end{NOTE}
+
+\subsubsection{Types of system each software can handle}
+\label{sec:orgdf94940}
+
+
+\begin{center}
+\begin{tabular}{lllll}
+System & \matcont{} & CoCo & XPP & PyDSTool\\
+\hline
+ODE & y & ? & y & y\\
+PDE (discretized) & n & ? & y & n\\
+DDE & n & ? & y & limited\\
+SDE & n & ? & y & limited\\
+DAE & n & ? & y & y\\
+BVP & n & ? & y & n\\
+Maps & \matcontm{} & ? & y & y\\
+Hybrid & n & ? & basic (apparently) & y\\
+Integral & n & ? & y & n\\
+Functional & n & ? & y & n\\
+\end{tabular}
+\end{center}
+
+\begin{NOTE}
+QUESTION I'm yet to look at what CoCo is and isn't capable of analysing. Ask Ludovic for some pointers?
+
+QUESTION While XPP is capable of simulating all the noted systems, I don't know if that is literally just XPP simulating them, or also that AUTO is able to run continuations with them. Ask supervisors for advice.
+\end{NOTE}
+
+\subsubsection{Types of point each software can study}
+\label{sec:org6fbd124}
+
+\begin{itemize}
+\item D: software can detect this invariant set
+\item C: software can continue this invariant set
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{llrllll}
+Point label & Point type & Codim & MATCONT & CoCo & XPP & PyDSTool\\
+\hline
+EP & Equilibrium & 0 & D,C &  & D,C & D,C\\
+LC & Limit cycle & 0 & D,C &  & D,C & D,C\\
+LP & Limit point & 1 & D,C &  & D,C & D,C\\
+H & Hopf & 1 & D,C &  & D,C & D,C\\
+LPC & Limit point of cycles & 1 & D,C &  & ?-? & D\\
+NS & Neimark-Sacker & 1 & D,C &  & ??? & D,**\\
+Torus bif & ?????????????? &  & ?????? &  & D,??? & ???????\\
+PD & Period doubling & 1 & D &  & D,C & D,**\\
+BP * & Branch point &  & D,C &  & D,? & D,?\\
+CP & Cusp & 2 & D &  & ?-? & D\\
+BT & Bogdanov Takens & 2 & D &  & ?-? & D\\
+ZH & Zero-Hopf & 2 & D &  & ?-? & D\\
+HH & Double Hopf & 2 & D &  & ?-? & D\\
+GH & Generalised Hopf & 2 & D &  & ?-? & D\\
+BPC * & Branch point of cycles &  & D &  & ?-? & ?\\
+CPC & Cusp point of cycles & 2 & D &  & ?-? & -\\
+CH & Chenciner & 2 & D &  & ?-? & -\\
+LPNS & Fold-Neimark-Sacker & 2 & D &  & ?-? & -\\
+PDNS & Flip-Neimark-Sacker & 2 & D &  & ?-? & -\\
+LPPD & Fold-Flip & 2 & D &  & ?-? & -\\
+NSNS & Double Niemark-Sacker & 2 & D &  & ?-? & -\\
+GPD & Generalised flip & 2 & D &  & ?-? & -\\
+\end{tabular}
+\end{center}
+
+\begin{NOTE}
+\begin{itemize}
+\item QUESTION: Is torus bifurcation the same as Neimark-Sacker, or are NS a map bifurcation and torus the flows equivalent?
+\item * QUESTION: Are branch points just 'there's a bifurcation here but we don't know what type specifically'? In that case, any bifurcation that occurs, but isn't one of the labelled ones, would still be detected as a BP.
+\item Also see the MATCONT 'objects related to homoclinics to equilibria' table, and resonances, for additional \emph{stuff} it can detect / continue
+\item ** QUESTION: PyDSTool seems to have methods to continue these for fixed points of maps; does that mean they're a maps-only type of curve? Note that it lacks documentation and tests/examples about these methods, so maybe they're not implemented?
+\end{itemize}
+\end{NOTE}
+
+\section{{\bfseries\sffamily TODO} examples of using those tools with the Hindmarsh-Rose model}
+\label{sec:org0390e19}
+
+
+\section{{\bfseries\sffamily TODO} allude to the existence of non-ODE packages}
+\label{sec:org50c18e5}
+\begin{NOTE}
+How valuable is this section? Should I delete it entirely?
+If not, are there tools for stochastics? 
+Any additional tools for PDEs / nonsmooth systems?
+\end{NOTE}
+
+This work does not intend to provide a review of all dynamical systems software.
+Nevertheless, common continuation tools for other classes of systems are included here for completeness.
+
+\subsection{Other ODE tools}
+\label{sec:orgb39197f}
+\begin{NOTE}
+Justify why I haven't studied these here.
+Good refs in that textbook about the history of these softwares.
+
+\begin{itemize}
+\item DSTool
+\item CONTENT
+\item AUTO
+\item \ldots{}
+\end{itemize}
+\end{NOTE}
+
+
+\subsection{Delay differential equations}
+\label{sec:org6f13380}
+\begin{NOTE}
+Brief note about why DDEs are relevant to biology. 
+
+\begin{itemize}
+\item Engelborghs, Koen, et al. "Numerical bifurcation analysis of delay differential equations arising from physiological modeling." Journal of mathematical biology 42.4 (2001): 361-385.
+\end{itemize}
+\begin{itemize}
+\item Luzyanina, Tatyana, Dirk Roose, and Gennady Bocharov. "Numerical bifurcation analysis of immunological models with time delays." Journal of computational and applied mathematics 184.1 (2005): 165-176.
+\end{itemize}
+\end{NOTE}
+DDE BIFTOOL \cite{engelborghs2002numerical} is a MATLAB package for analysis of systems with fixed delays.
+It provides stability analysis and tracking of equilibrium and limit cycle solutions, and is capable of tracking bifurcations.
+The interface is script-based.
+Knut \cite{szalaiknut} provides a graphical package for both analysing and simulating DDEs.
+It supports stability analysis, orbit continuation, and bifurcation detection in one parameter, and has methods for the two-parameter continuation of some bifurcatons.
+Unlike DDE BIFTOOL, it requires no programming knowlege to use; being written in C++, it is also faster.
+Pydelay \cite{FLU09a} provides an easy-to-use package for simulating DDEs in Python3, featuring automatic low-level code generation for efficient solving.
+It lacks any analysis tools.
+
+
+\subsection{Partial differential equations}
+\label{sec:org8985838}
+\begin{NOTE}
+Brief note about where PDEs arise in biology 
+
+\begin{itemize}
+\item PDECONT
+\end{itemize}
+\end{NOTE}
+
+
+\subsection{Non-smooth systems}
+\label{sec:org77050d0}
+\begin{NOTE}
+Brief note about where non-smooth dynamics arise in biology 
+\begin{itemize}
+\item SLIDECONT
+\item TC HAT
+\end{itemize}
+\end{NOTE}
+
+
+\subsection{Large-scale biological systems}
+\label{sec:org8818146}
+\begin{NOTE}
+Find references comparing all these software.
+Presumably there's some. 
+
+\begin{itemize}
+\item Neuron
+\item NEST
+\item VCell
+\item Bio-SPICE
+\item Brian
+\item Chaste
+\item SloppyCell
+\end{itemize}
+\end{NOTE}
+
+
+\section{{\bfseries\sffamily TODO} concluding remarks}
+\label{sec:orgce8b720}
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}
