@@ -1,0 +1,606 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+DATE: [2020-02-27 Thu]
+#+TITLE: Experimental Bifurcation Analysis in Neurons Using Control-based Continuation
+
+* COMMENT Plan
+** Stuff to talk about
+   - Project title
+   - Neural dynamics
+     - Integrate and fire neuron as example of capacitance, current
+     - Note that HH gives a model in terms of lots of ionic currents - basically just I&F
+   - Bifurcations as a source of neural encoding
+     - What is neural encoding?
+     - What bifurcations can we expect to see in neurons?
+   - Bursting and multiple timescale dynamics
+     - Show some bursting trajectories
+     - Slow-fast decomposition of models
+     - High-codim bifurcation diagrams
+     - WHAT DO I HOPE TO GET OUT OF THIS?
+   - Numerical bifurcation analysis
+     - Numerical continuation
+   - Limited by the predictive ability of models
+     - Control-based continuation
+   - Next steps
+     - Stochastic resonance stuff
+
+** INTRO: what is my project? What will the talk cover?
+   - Give the project title
+   - Talk about what each part means
+     - Neurons as cells that control everything (motivate why they're worth studying)
+     - Explain that neurons encode all their information in bifurcations
+     - Mention how we normally use eg. XPP to study them, and I want to use CBC instead
+   - Give a talk plan
+
+** A brief introduction to neurons
+
+** Bifurcations as a source of neural encoding
+
+** Numerical bifurcation analysis (and its limitations)
+
+** A first look at control-based continuation
+
+
+* COMMENT Abstract
+ 
+Neurons exhibit a wide range of complex dynamics, which provide a range of interesting problems for mathematicians to play with. These include multiple timescale dynamics, mixed-mode oscillations, and stochastic and coherence resonance. Dynamical neuroscience is an emerging field that seeks to explain the results of classical neuroscience in terms of these mathematical phenomena. Early successes include the explanation of all neural encodings in terms of just four bifurcations, and the use of unfolding theory to classify and predict the existence of new bursting neurons. One must remember, however, that these models are merely a mathematical abstraction. Neurons do not care for the intricate descriptions of mathematicians, and any conclusions from mathematics are only as good as the models from which they are derived. Consequently, one must take the results from dynamical neuroscience with a healthy degree of scepticism. One can build confidence in these results through a combination of better models, and experimental validation. However, an alternative approach is to avoid the reality gap entirely, by performing the usual mathematical analyses on real living neurons, instead of mathematical models. Control-based continuation (CBC) provides a means for running bifurcation analysis experiments on black-box systems, such as living cells. Here I shall discuss progress towards a model-free bifurcation analysis of neurons using CBC. A brief introduction is provided into the concepts underpinning dynamical neuroscience. Bifurcations are discussed as being the source of neural encodings, and a discussion is presented on possible methods to analyse these bifurcations. Subject to time constraints, bonus material may be presented, looking into mixed-mode oscillations in the unfolding of a codim-4 singularity, and the counterintuitive effects of introducing noise to systems near a bifurcation point.
+
+
+* Intro
+** My project
+   * Neurons are interesting
+   * We have lots of models of them
+   * These can explain most results from classical neuroscience using these models
+
+#+BEGIN_EXPORT latex
+\vfill
+\begin{exampleblock}{}
+  {\large ``All models are wrong, but some are useful''}
+  \vskip5mm
+  \hspace*\fill{\small--- George Box}
+\end{exampleblock}
+\vfill
+#+END_EXPORT
+
+   * Is there a better way?
+
+** Presentation plan
+   * \color{bristolred}{A brief introduction to neurons}
+   * \color{black} Bifurcations as neural encodings
+   * Methods for bifurcation analysis
+   * Future work
+     
+
+* A brief introduction to neurons
+** But what is a neuron?
+*** Neuron pic :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+[[file+sys:./neuron_diagram.png]]    
+
+*** Neuron description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+    * Cell membrane, with salt inside and salt outside
+    * Different ion concentrations produce a voltage over the membrane
+    * Ion channels and pumps move the ions to change membrane potential
+
+** Neurons spike!
+
+#+ATTR_LATEX: :height .8\textheight
+   [[./excitability_classes.png]]
+
+** How do we model them?
+   * Membrane acts as a capacitor
+   * External currents charge it
+   * Ionic currents charge or discharge it
+     
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenological
+
+** The integrate-and-fire neuron
+*** Image :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+[[./ifneuron.png]]
+
+*** Description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+\begin{equation}
+\frac{1}{C} \frac{\mathrm{d}V}{\mathrm{d}t} = I
+\end{equation}
+
+   - \(\Delta\)voltage = current \(\div\) capacitance
+   - If voltage \(\geq\) threshold:
+     - Say a spike was fired
+     - Reset voltage
+   - Input current charges membrane, causing spiking 
+   - Biophysical models just add more currents
+
+** Ionic currents
+*** image :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+[[./fastsodium.png]]
+
+*** description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+  * Sodium currents are positive charges flowing into the cell
+  * Sodium increases the membrane potential
+  * Higher membrane potential causes more sodium currents
+  * Positive feedback, causes upspike
+
+** Ionic currents
+*** Image :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+[[./slowpotassium.png]]
+
+*** Description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+    * Potassium currents are positive charges flowing out of the cell
+    * Potassium decreases membrane potential
+    * Higher membrane potential causes more potassium currents
+    * Negative feedback, causes downspike
+** Spiking mechanism
+   
+   Disparate timescales cause spiking behaviour!
+
+
+*** Sodium :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+[[./fastsodium.png]]
+
+#+BEGIN_CENTER
+FAST
+#+END_CENTER
+
+*** Potassium :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+
+#+ATTR_LATEX: :width .8\textwidth
+    [[./slowpotassium.png]]
+    
+#+BEGIN_CENTER
+SLOW
+#+END_CENTER
+
+** Hodgkin Huxley
+
+[[./hh1.png]]
+
+
+* Bifurcations
+
+** Presentation plan
+   * A brief introduction to neurons
+   * \color{bristolred}{Bifurcations as neural encodings}
+   * \color{black} Methods for bifurcation analysis
+   * Future work
+     
+** Spiking dynamics
+   
+*** EMPTY SPACE FOR FORMATTING                                        :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.1
+    :END:
+
+*** Diagram :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+#+ATTR_LATEX: :height .85\textheight :center nil
+[[./phaseplane.png]]
+
+*** Question :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+   
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+How can we turn these spikes on and off?
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+
+** The SNIC bifurcation
+
+#+ATTR_LATEX: :width \textwidth
+[[./snic.png]]
+
+    * Like a regular saddle-node, but it occurs on a limit cycle
+    * Period of the cycle goes to infinity as it approaches the SNIC
+    * Causes spiking to stop / start
+** The SN bifurcation
+   
+*** image :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[./SN.png]]
+
+*** Description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+Regular saddle-node bifurcations are interesting too
+
+    * Rest state disappears in saddle-node bifurcation
+    * Dynamics jump onto spiking limit cycle
+** Bifurcations encode information!
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+#+ATTR_LATEX: :height 1.1\textheight
+   [[./excitability_classes.png]]
+
+** More bifurcations
+
+   * We can explain all neural excitability in terms of four bifurcations!
+   * (Usually) an input current drives the system across a bifurcation, causing spiking to start and stop
+     * Ionic currents and can also cause bifurcations (see bursting neurons bonus section)
+     * Pharmacological agents can make this happen, too
+   * The types of bifurcation a neuron undergoes can explain its behaviours and stimulus responses
+
+
+* Bifurcation analysis
+** Presentation plan
+   * A brief introduction to neurons
+   * Bifurcations as neural encodings
+   * \color{bristolred}{Methods for bifurcation analysis}
+   * \color{black} Future work
+     
+** Bursting neurons
+*** Diagram :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+   
+#+ATTR_LATEX: :width 1.2\textwidth :center nil
+[[./burst.pdf]]
+
+*** Description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+    * Bursting is a type of mixed-mode oscillation
+    * Helps cells communicate through noisy channels, promotes calcium release
+    * Seems somewhat counter-intuitive
+    * Can we figure out how cells do this?
+
+** The Hindmarsh-Rose model
+*** MODEL :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+\begin{align}
+\frac{\mathrm{d}x}{\mathrm{d}t} &= y - ax^3 +bx^2 -z + I~,\nonumber \\
+\frac{\mathrm{d}y}{\mathrm{d}t} &= c - dx^2 - y~,\nonumber \\
+\frac{\mathrm{d}z}{\mathrm{d}t} &= \varepsilon \left[s(x-x_r)-z\right]~,\nonumber
+\end{align}
+
+where \( |\varepsilon| \ll 1\).
+
+*** DESCRIPTION :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+   
+    * \(x\) and \(y\) are the fast subsystem variables
+    * \(z\) is the slow subsystem variable
+    * As \(\varepsilon \to 0\), \(z\) stops changing
+    * \(\dot{z}=0\) means \(z\) can be treated like a parameter
+    * Let's treat \(z\) as a parameter and do a bifurcation analysis on it!
+      
+** Hindmarsh-Rose fast subsystem
+    
+   #+BEGIN_EXPORT latex
+\begin{block}{Fast subsystem}
+    \begin{align}
+    \frac{\mathrm{d}x}{\mathrm{d}t} &= y - ax^3 +bx^2 -z + I~,\nonumber \\
+    \frac{\mathrm{d}y}{\mathrm{d}t} &= c - dx^2 - y~,\nonumber
+    \end{align}
+\end{block}
+   #+END_EXPORT
+
+where \(a\), \(b\), \(c\), \(d\), \(z\), \(I\) are parameters
+
+      * \(I\) models the input current to a cell
+      * \(b\) is a conductance-like variable, and mediates spiking behaviours
+      * \(z\) is the slow subsystem variable
+      * The rest are just... there?
+
+** System analysis
+
+    * Initially, fix parameters at their Wikipedia recommended values
+      * Let \(I\) = 2, to get some spikes going
+      * Let \(z\) = 0, arbitrarily
+      * \(a=1\), \(b=3\), \(c=1\), \(d=5\), \(\varepsilon=0.001\), \(x_r=-1.6\)
+    * Choose some arbitrary initial conditions
+    
+
+1. Simulate the system to get some idea of what happens
+
+** Sampling some trajectories
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./trajectory.pdf]]
+
+** System analysis
+
+1. Simulate the system to get some idea of what happens
+2. There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
+
+** Phase plane analysis
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./phaseplane.pdf]]
+
+** System analysis
+
+1. Simulate the system to get some idea of what happens
+2. There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
+3. Track how the equilibrium changes as the slow subsystem variable \(z\) changes
+
+** Equilibrium point curve
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./epc-1.pdf]]
+
+** A first look at numerical continuation
+*** Diagram :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+  
+#+ATTR_LATEX: :width \textwidth
+[[./pac.png]]
+
+*** Explanation :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+    Predictor corrector scheme:
+    - Produce linear estimate of equilibrium point curve
+    - Use that to approximate the new equilibrium position
+    - Use a corrector to improve the estimate
+    - Prediction step \(\perp\) correction step
+    - Extra variable and constraint regularises the problem
+
+** System analysis
+
+1. Simulate the system to get some idea of what happens
+2. There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
+3. Track how the equilibrium changes as the slow subsystem variable \(z\) changes
+4. Track the limit cycles emanating from the Hopf
+
+** Periodic orbit continuation
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./epc-2.pdf]]
+
+** Periodic orbit continuation
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./epc-2-2.pdf]]
+
+** System analysis
+
+1. Simulate the system to get some idea of what happens
+2. There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
+3. Track how the equilibrium changes as the slow subsystem variable \(z\) changes
+4. Track the limit cycles emanating from the Hopf
+5. Reintroduce the slow subsystem
+
+** Putting it all together
+*** DIAGRAM    :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.65
+    :END:
+#+ATTR_LATEX: :height .85\textheight
+[[./burster_diagram.pdf]]
+
+*** EQUATION :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.35
+    :END:
+    
+\begin{align}
+\dot{z}(t) &= \varepsilon\left[s(x(t)-x_r)-z(t)\right]\nonumber \\
+&\approx \varepsilon\left[s(\bar{x} - x_r)-z(t)\right]\nonumber
+\end{align}
+
+** Limitations of continuation
+We now understand how a model bursts (hopefully!)
+
+Caveat: 
+#+BEGIN_EXPORT latex
+\vfill
+\begin{exampleblock}{}
+  {\large ``All models are wrong, but some are useful''}
+  \vskip5mm
+  \hspace*\fill{\small--- George Box}
+\end{exampleblock}
+\vfill
+#+END_EXPORT
+
+How much did we really learn about bursting cells, by looking at a phenomenological model with arbitrary parameters?
+
+
+* Control-based continuation
+** A novel alternative
+
+  * We can run continuation experiments on models, but those models aren't always meaningful
+  * Can we instead run a continuation procedure on a living cell?
+
+*** Control-based continuation (CBC)
+
+    A model-free method for running bifurcation analysis experiments on black-box systems
+
+** Control-based continuation
+#+BEGIN_EXPORT latex
+\begin{block}{Control-based continuation (CBC)}
+    A model-free method for running bifurcation analysis experiments on black-box systems
+\end{block}
+#+END_EXPORT
+
+#+ATTR_LATEX: :overlay [<+->]
+    * Let's us find stable and unstable equilibria
+    * Let's us find stable and unstable periodic orbits
+    * Let's us track those under variations in parameters
+    * No need to use a model to do this!
+
+** Control-based continuation
+#+BEGIN_EXPORT latex
+\begin{block}{Control-based continuation (CBC)}
+    A model-free method for running bifurcation analysis experiments on black-box systems
+\end{block}
+#+END_EXPORT
+
+#+ATTR_LATEX: :overlay [<+->]
+    * Can't choose arbitrary simulations, so use a control system to make the system behave how we want it to
+    * No control action \(\implies\) system acts under its natural dynamics
+    * Goal: find a control target that can be stabilised with no control action
+
+** Control-based continuation
+#+BEGIN_EXPORT latex
+\begin{block}{Goal}
+    Find a control target \(x_*(t)\) that can be stabilised with no control action
+\end{block}
+#+END_EXPORT
+
+    * Consider \(\dot{x} = f(x,t)\)
+    * A controller is a function \(u(x,t)\), such that the controlled system
+
+\begin{equation}
+\dot{x}_c = f(x_c,t) + u(x_c,t)
+\end{equation}
+
+satisfies \(\lim_{t\to T}\left[x(t)\right] = x_*(t)\)
+
+** Control-based continuation
+
+    - Say \(u(x,t) = 0\), when the control target is \(x_*(t)\)
+    - Controlled system is then given by
+\begin{align}
+\dot{x} &= f(x,t) + u(x,t) \nonumber \\
+&= f(x,t) + 0 \nonumber \\
+&= f(x,t)\nonumber
+\end{align}
+
+    - This is our original, open-loop system!
+
+    For control target \(x_*(t)\), the control scheme is said to be noninvasive, and the system acts under its natural dynamics
+
+** Basic example
+
+    - Consider \(\dot{x} = -x\)
+    - We add a controller to stabilise an arbitrary point \(x_*\)
+    - If we can find a point that requires no effort to stabilise, we've found an equilibrium
+    - We need to push the system to hold it at any \(x\neq0\)
+      - \(x=0\) is the only point requiring no pushing
+      - \(x=0\) therefore drives \(u(x,t)\) to zero, and is an equilibrium under open-loop dynamics
+
+** Another look at numerical continuation
+
+Numerical continuation is a method for computing implicitly defined manifolds
+   - Consider \(f(x,\lambda)=0\)
+   - Implicit function theorem \(\implies\) changing \lambda causes a change in \(x\)
+   - Continuation lets us find the manifold \(\lambda(x)\) implicitly defined by \(f(x,\lambda)=0\)
+     
+Normally, \(f\) is the RHS of an ODE.
+But what if it wasn't?
+
+** Back to CBC
+   * As it happens, \(u(x,t)=0\) is enough information to find the natural system dynamics \(x_*(t)\)
+   * If we consider \(x_*(t)\) as an implicit manifold, we can use continuation to track it under parameter changes
+
+** Typical CBC approach
+   * Let the system do its own thing; this gives us a start equilibrium
+   * Find a controller that stabilises it with zero control action
+   * Change a parameter slightly
+   * Record what the system now does
+   * Update the control target to once again have a zero control action
+
+** Typical CBC approach
+   Updating the control target:
+   * Set control target to match what the system did
+   * Run it under the new controller
+   * Repeat until control target = system output
+   * This drives control force to zero
+     
+Under this method, we can track equilibria and limit cycles as a parameter changes!
+
+
+* Future work
+** Presentation plan
+Hopefully you're not asleep yet!
+   * A brief introduction to neurons
+   * Bifurcations as neural encodings
+   * Methods for bifurcation analysis
+   * \color{bristolred} Future work
+     
+** Questions to answer
+   * How do things change when we add noise?
+   * How do we control a stochastic system?
+   * How do we control a neuron when we can't observe its state variables?
+   * How do we control a neuron when we don't have any model of it?
+   * How can we study global bifurcations using CBC?
+
+** Global bifurcations
+   * Local bifurcations are those that can be understood entirely from changes in invariant set stability
+     * Eg. Hopf, Saddle-Node
+   * Global bifurcations are those that can't
+     * Eg. homoclinic
+   * CBC allows us to track limit cycles and equilibria, but how can we change it to track global bifurcations?
+     
+
+** Noisy bifurcations
+   
+#+ATTR_LATEX: :height .87\textheight
+[[./noise.png]]
+
+* End
+** 
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+   [[./end.png]]
