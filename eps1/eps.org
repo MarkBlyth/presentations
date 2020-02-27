@@ -103,7 +103,7 @@ Neurons exhibit a wide range of complex dynamics, which provide a range of inter
 #+BEGIN_EXPORT latex
 \vfill
 #+END_EXPORT
-Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenological
+Neuron models seek to explain how currents charge and discharge the neuron
 
 ** The integrate-and-fire neuron
 *** Image :BMCOL:
@@ -119,10 +119,9 @@ Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenologica
     :END:
     
 \begin{equation}
-\frac{1}{C} \frac{\mathrm{d}V}{\mathrm{d}t} = I
+\frac{\mathrm{d}V}{\mathrm{d}t} = \frac{1}{C} I(t)
 \end{equation}
 
-   - \(\Delta\)voltage = current \(\div\) capacitance
    - If voltage \(\geq\) threshold:
      - Say a spike was fired
      - Reset voltage
@@ -130,6 +129,16 @@ Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenologica
    - Biophysical models just add more currents
 
 ** Ionic currents
+   * The membrane contains `holes' through which specific types of ions can pass
+   * These ion channels can open and close, so their resistance changes
+   * Changes in their conductance allow a neuron to spike
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+
+But how?
+
+** Sodium currents
 *** image :BMCOL:
     :PROPERTIES:
     :BEAMER_col: 0.5
@@ -193,8 +202,15 @@ FAST
 SLOW
 #+END_CENTER
 
-** Hodgkin Huxley
+** What do ion models look like?
 
+    * Current = conductance \times voltage
+    * Change in voltage = current \div capacitance
+
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+Hodgkin Huxley:
 [[./hh1.png]]
 
 
@@ -206,6 +222,15 @@ SLOW
    * \color{black} Methods for bifurcation analysis
    * Future work
      
+** Hodgkin Huxley again
+
+    * We can replace really fast currents with their asymptotic values, to simplify things
+    * That input current \(I\) is really interesting!
+#+BEGIN_EXPORT latex
+\vfill
+#+END_EXPORT
+[[./hh1.png]]
+
 ** Spiking dynamics
    
 *** EMPTY SPACE FOR FORMATTING                                        :BMCOL:
@@ -270,8 +295,8 @@ Regular saddle-node bifurcations are interesting too
 
 ** More bifurcations
 
-   * We can explain all neural excitability in terms of four bifurcations!
-   * (Usually) an input current drives the system across a bifurcation, causing spiking to start and stop
+   * We can explain all neuron behaviours in terms of four bifurcations!
+   * (Usually) an input current drives the neuron dynamics across a bifurcation, causing spiking to start and stop
      * Ionic currents and can also cause bifurcations (see bursting neurons bonus section)
      * Pharmacological agents can make this happen, too
    * The types of bifurcation a neuron undergoes can explain its behaviours and stimulus responses
@@ -328,24 +353,6 @@ where \( |\varepsilon| \ll 1\).
     * \(\dot{z}=0\) means \(z\) can be treated like a parameter
     * Let's treat \(z\) as a parameter and do a bifurcation analysis on it!
       
-** Hindmarsh-Rose fast subsystem
-    
-   #+BEGIN_EXPORT latex
-\begin{block}{Fast subsystem}
-    \begin{align}
-    \frac{\mathrm{d}x}{\mathrm{d}t} &= y - ax^3 +bx^2 -z + I~,\nonumber \\
-    \frac{\mathrm{d}y}{\mathrm{d}t} &= c - dx^2 - y~,\nonumber
-    \end{align}
-\end{block}
-   #+END_EXPORT
-
-where \(a\), \(b\), \(c\), \(d\), \(z\), \(I\) are parameters
-
-      * \(I\) models the input current to a cell
-      * \(b\) is a conductance-like variable, and mediates spiking behaviours
-      * \(z\) is the slow subsystem variable
-      * The rest are just... there?
-
 ** System analysis
 
     * Initially, fix parameters at their Wikipedia recommended values
@@ -481,11 +488,12 @@ How much did we really learn about bursting cells, by looking at a phenomenologi
 \end{block}
 #+END_EXPORT
 
+With CBC, we can...
 #+ATTR_LATEX: :overlay [<+->]
-    * Let's us find stable and unstable equilibria
-    * Let's us find stable and unstable periodic orbits
-    * Let's us track those under variations in parameters
-    * No need to use a model to do this!
+    * find stable and unstable equilibria
+    * find stable and unstable periodic orbits
+    * track those under variations in parameters
+    * no need to use a model to do this!
 
 ** Control-based continuation
 #+BEGIN_EXPORT latex
@@ -495,7 +503,7 @@ How much did we really learn about bursting cells, by looking at a phenomenologi
 #+END_EXPORT
 
 #+ATTR_LATEX: :overlay [<+->]
-    * Can't choose arbitrary simulations, so use a control system to make the system behave how we want it to
+    * Can't use arbitrary simulations, so use a control system to make the system behave how we want it to
     * No control action \(\implies\) system acts under its natural dynamics
     * Goal: find a control target that can be stabilised with no control action
 
@@ -513,7 +521,12 @@ How much did we really learn about bursting cells, by looking at a phenomenologi
 \dot{x}_c = f(x_c,t) + u(x_c,t)
 \end{equation}
 
-satisfies \(\lim_{t\to T}\left[x(t)\right] = x_*(t)\)
+satisfies \(\lim_{t\to T}\left[x_c(t)\right] = x_*(t)\)
+
+** Control-based continuation
+Basically...
+
+\(u(x,t)\) pushes the system to make it do what we want!
 
 ** Control-based continuation
 
@@ -529,16 +542,17 @@ satisfies \(\lim_{t\to T}\left[x(t)\right] = x_*(t)\)
 
     For control target \(x_*(t)\), the control scheme is said to be noninvasive, and the system acts under its natural dynamics
 
+** Control-based continuation
+Goal: find some \(x_*(t)\) that doesn't reqire any pushing
 ** Basic example
 
     - Consider \(\dot{x} = -x\)
     - We add a controller to stabilise an arbitrary point \(x_*\)
-    - If we can find a point that requires no effort to stabilise, we've found an equilibrium
     - We need to push the system to hold it at any \(x\neq0\)
       - \(x=0\) is the only point requiring no pushing
       - \(x=0\) therefore drives \(u(x,t)\) to zero, and is an equilibrium under open-loop dynamics
 
-** Another look at numerical continuation
+** COMMENT Another look at numerical continuation
 
 Numerical continuation is a method for computing implicitly defined manifolds
    - Consider \(f(x,\lambda)=0\)
@@ -548,25 +562,28 @@ Numerical continuation is a method for computing implicitly defined manifolds
 Normally, \(f\) is the RHS of an ODE.
 But what if it wasn't?
 
-** Back to CBC
+** COMMENT Back to CBC
    * As it happens, \(u(x,t)=0\) is enough information to find the natural system dynamics \(x_*(t)\)
    * If we consider \(x_*(t)\) as an implicit manifold, we can use continuation to track it under parameter changes
 
 ** Typical CBC approach
+#+ATTR_LATEX: :overlay [<+->]
    * Let the system do its own thing; this gives us a start equilibrium
    * Find a controller that stabilises it with zero control action
    * Change a parameter slightly
+     * System state moves away from control target slightly
    * Record what the system now does
    * Update the control target to once again have a zero control action
 
 ** Typical CBC approach
    Updating the control target:
+   
+#+ATTR_LATEX: :overlay [<+->]
    * Set control target to match what the system did
    * Run it under the new controller
    * Repeat until control target = system output
    * This drives control force to zero
-     
-Under this method, we can track equilibria and limit cycles as a parameter changes!
+   * Under this method, we can track equilibria and limit cycles as a parameter changes!
 
 
 * Future work
@@ -596,6 +613,7 @@ Hopefully you're not asleep yet!
    
 #+ATTR_LATEX: :height .87\textheight
 [[./noise.png]]
+
 
 * End
 ** 

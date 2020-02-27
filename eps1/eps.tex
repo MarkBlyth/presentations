@@ -1,4 +1,4 @@
-% Created 2020-02-25 Tue 17:56
+% Created 2020-02-27 Thu 14:47
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Intro}
-\label{sec:orgb2f72ad}
-\begin{frame}[label={sec:org07772f6}]{My project}
+\label{sec:orgde500e5}
+\begin{frame}[label={sec:orge706abb}]{My project}
 \begin{itemize}
 \item Neurons are interesting
 \item We have lots of models of them
@@ -51,7 +51,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org0f3a179}]{Presentation plan}
+\begin{frame}[label={sec:org8dd21e5}]{Presentation plan}
 \begin{itemize}
 \item \color{bristolred}{A brief introduction to neurons}
 \item \color{black} Bifurcations as neural encodings
@@ -62,8 +62,8 @@
 
 
 \section{A brief introduction to neurons}
-\label{sec:org59e7f87}
-\begin{frame}[label={sec:org050a2fd}]{But what is a neuron?}
+\label{sec:org961d694}
+\begin{frame}[label={sec:org7a1cf6e}]{But what is a neuron?}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 \begin{center}
@@ -81,13 +81,13 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org16c2285}]{Neurons spike!}
+\begin{frame}[label={sec:orgb4b1d42}]{Neurons spike!}
 \begin{center}
 \includegraphics[height=.8\textheight]{./excitability_classes.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org346bd99}]{How do we model them?}
+\begin{frame}[label={sec:orgfff7f49}]{How do we model them?}
 \begin{itemize}
 \item Membrane acts as a capacitor
 \item External currents charge it
@@ -95,10 +95,10 @@
 \end{itemize}
 
 \vfill
-Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenological
+Neuron models seek to explain how currents charge and discharge the neuron
 \end{frame}
 
-\begin{frame}[label={sec:orgf8ad122}]{The integrate-and-fire neuron}
+\begin{frame}[label={sec:orgf070ceb}]{The integrate-and-fire neuron}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -108,11 +108,10 @@ Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenologica
 
 \begin{column}{0.5\columnwidth}
 \begin{equation}
-\frac{1}{C} \frac{\mathrm{d}V}{\mathrm{d}t} = I
+\frac{\mathrm{d}V}{\mathrm{d}t} = \frac{1}{C} I(t)
 \end{equation}
 
 \begin{itemize}
-\item \(\Delta\)voltage = current \(\div\) capacitance
 \item If voltage \(\geq\) threshold:
 \begin{itemize}
 \item Say a spike was fired
@@ -125,7 +124,18 @@ Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenologica
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org4b602f2}]{Ionic currents}
+\begin{frame}[label={sec:orgf519ffe}]{Ionic currents}
+\begin{itemize}
+\item The membrane contains `holes' through which specific types of ions can pass
+\item These ion channels can open and close, so their resistance changes
+\item Changes in their conductance allow a neuron to spike
+\end{itemize}
+\vfill
+
+But how?
+\end{frame}
+
+\begin{frame}[label={sec:orgbcbc726}]{Sodium currents}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -144,7 +154,7 @@ Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenologica
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org9283916}]{Ionic currents}
+\begin{frame}[label={sec:org7cffb65}]{Ionic currents}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -162,7 +172,7 @@ Neuron models can be biophysically accurate (Hodgkin-Huxley), or phenomenologica
 \end{column}
 \end{columns}
 \end{frame}
-\begin{frame}[label={sec:org0890f32}]{Spiking mechanism}
+\begin{frame}[label={sec:org06bf165}]{Spiking mechanism}
 Disparate timescales cause spiking behaviour!
 
 
@@ -189,7 +199,14 @@ SLOW
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org78c1368}]{Hodgkin Huxley}
+\begin{frame}[label={sec:org7a25403}]{What do ion models look like?}
+\begin{itemize}
+\item Current = conductance \texttimes{} voltage
+\item Change in voltage = current \textdiv{} capacitance
+\end{itemize}
+
+\vfill
+Hodgkin Huxley:
 \begin{center}
 \includegraphics[width=.9\linewidth]{./hh1.png}
 \end{center}
@@ -197,9 +214,9 @@ SLOW
 
 
 \section{Bifurcations}
-\label{sec:org597cc09}
+\label{sec:orgf2c2dd4}
 
-\begin{frame}[label={sec:orge9c8d42}]{Presentation plan}
+\begin{frame}[label={sec:orgd3733db}]{Presentation plan}
 \begin{itemize}
 \item A brief introduction to neurons
 \item \color{bristolred}{Bifurcations as neural encodings}
@@ -208,7 +225,18 @@ SLOW
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org8b17aa8}]{Spiking dynamics}
+\begin{frame}[label={sec:org3369e4d}]{Hodgkin Huxley again}
+\begin{itemize}
+\item We can replace really fast currents with their asymptotic values, to simplify things
+\item That input current \(I\) is really interesting!
+\end{itemize}
+\vfill
+\begin{center}
+\includegraphics[width=.9\linewidth]{./hh1.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org32c819f}]{Spiking dynamics}
 \begin{columns}
 \begin{column}{0.1\columnwidth}
 \end{column}
@@ -225,7 +253,7 @@ How can we turn these spikes on and off?
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org8d13461}]{The SNIC bifurcation}
+\begin{frame}[label={sec:orgf2cc5dc}]{The SNIC bifurcation}
 \begin{center}
 \includegraphics[width=\textwidth]{./snic.png}
 \end{center}
@@ -236,7 +264,7 @@ How can we turn these spikes on and off?
 \item Causes spiking to stop / start
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgcf2465c}]{The SN bifurcation}
+\begin{frame}[label={sec:org953f777}]{The SN bifurcation}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -254,16 +282,16 @@ Regular saddle-node bifurcations are interesting too
 \end{column}
 \end{columns}
 \end{frame}
-\begin{frame}[plain,label={sec:orga0b0649}]{Bifurcations encode information!}
+\begin{frame}[plain,label={sec:org6229dd6}]{Bifurcations encode information!}
 \begin{center}
 \includegraphics[height=1.1\textheight]{./excitability_classes.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org65cb833}]{More bifurcations}
+\begin{frame}[label={sec:org36aa79a}]{More bifurcations}
 \begin{itemize}
-\item We can explain all neural excitability in terms of four bifurcations!
-\item (Usually) an input current drives the system across a bifurcation, causing spiking to start and stop
+\item We can explain all neuron behaviours in terms of four bifurcations!
+\item (Usually) an input current drives the neuron dynamics across a bifurcation, causing spiking to start and stop
 \begin{itemize}
 \item Ionic currents and can also cause bifurcations (see bursting neurons bonus section)
 \item Pharmacological agents can make this happen, too
@@ -274,8 +302,8 @@ Regular saddle-node bifurcations are interesting too
 
 
 \section{Bifurcation analysis}
-\label{sec:org5580387}
-\begin{frame}[label={sec:org4ee9fd5}]{Presentation plan}
+\label{sec:orgff2a539}
+\begin{frame}[label={sec:orged98a2b}]{Presentation plan}
 \begin{itemize}
 \item A brief introduction to neurons
 \item Bifurcations as neural encodings
@@ -284,7 +312,7 @@ Regular saddle-node bifurcations are interesting too
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgaad54cf}]{Bursting neurons}
+\begin{frame}[label={sec:org1cff64b}]{Bursting neurons}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \includegraphics[width=1.2\textwidth]{./burst.pdf}
@@ -301,7 +329,7 @@ Regular saddle-node bifurcations are interesting too
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org802d7d9}]{The Hindmarsh-Rose model}
+\begin{frame}[label={sec:org0a4afce}]{The Hindmarsh-Rose model}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{align}
@@ -325,25 +353,7 @@ where \(|\varepsilon| \ll 1\).
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org0048129}]{Hindmarsh-Rose fast subsystem}
-\begin{block}{Fast subsystem}
-    \begin{align}
-    \frac{\mathrm{d}x}{\mathrm{d}t} &= y - ax^3 +bx^2 -z + I~,\nonumber \\
-    \frac{\mathrm{d}y}{\mathrm{d}t} &= c - dx^2 - y~,\nonumber
-    \end{align}
-\end{block}
-
-where \(a\), \(b\), \(c\), \(d\), \(z\), \(I\) are parameters
-
-\begin{itemize}
-\item \(I\) models the input current to a cell
-\item \(b\) is a conductance-like variable, and mediates spiking behaviours
-\item \(z\) is the slow subsystem variable
-\item The rest are just\ldots{} there?
-\end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:org0690168}]{System analysis}
+\begin{frame}[label={sec:org51a329d}]{System analysis}
 \begin{itemize}
 \item Initially, fix parameters at their Wikipedia recommended values
 \begin{itemize}
@@ -360,26 +370,26 @@ where \(a\), \(b\), \(c\), \(d\), \(z\), \(I\) are parameters
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org1af3bd2}]{Sampling some trajectories}
+\begin{frame}[label={sec:org8107955}]{Sampling some trajectories}
 \begin{center}
 \includegraphics[height=.9\textheight]{./trajectory.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgfe56d1f}]{System analysis}
+\begin{frame}[label={sec:orgfeb376a}]{System analysis}
 \begin{enumerate}
 \item Simulate the system to get some idea of what happens
 \item There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org5211e33}]{Phase plane analysis}
+\begin{frame}[label={sec:orgeafab9e}]{Phase plane analysis}
 \begin{center}
 \includegraphics[height=.9\textheight]{./phaseplane.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org36175e3}]{System analysis}
+\begin{frame}[label={sec:orgd63820c}]{System analysis}
 \begin{enumerate}
 \item Simulate the system to get some idea of what happens
 \item There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
@@ -387,13 +397,13 @@ where \(a\), \(b\), \(c\), \(d\), \(z\), \(I\) are parameters
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgf46e8ab}]{Equilibrium point curve}
+\begin{frame}[label={sec:orgeb515b6}]{Equilibrium point curve}
 \begin{center}
 \includegraphics[height=.9\textheight]{./epc-1.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org4fb7586}]{A first look at numerical continuation}
+\begin{frame}[label={sec:org2ed4544}]{A first look at numerical continuation}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -414,7 +424,7 @@ Predictor corrector scheme:
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org1e89d6c}]{System analysis}
+\begin{frame}[label={sec:orgb17492c}]{System analysis}
 \begin{enumerate}
 \item Simulate the system to get some idea of what happens
 \item There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
@@ -423,19 +433,19 @@ Predictor corrector scheme:
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org859235f}]{Periodic orbit continuation}
+\begin{frame}[label={sec:org08b776b}]{Periodic orbit continuation}
 \begin{center}
 \includegraphics[height=.9\textheight]{./epc-2.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgc0358e0}]{Periodic orbit continuation}
+\begin{frame}[label={sec:org0b7cd4a}]{Periodic orbit continuation}
 \begin{center}
 \includegraphics[height=.9\textheight]{./epc-2-2.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgbdd81d3}]{System analysis}
+\begin{frame}[label={sec:orge12a2a8}]{System analysis}
 \begin{enumerate}
 \item Simulate the system to get some idea of what happens
 \item There's a limit cycle, so do a phase plane analysis and search for an equilibrium inside it
@@ -445,7 +455,7 @@ Predictor corrector scheme:
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgd41f1d9}]{Putting it all together}
+\begin{frame}[label={sec:org5055900}]{Putting it all together}
 \begin{columns}
 \begin{column}{0.65\columnwidth}
 \begin{center}
@@ -462,7 +472,7 @@ Predictor corrector scheme:
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgc47626c}]{Limitations of continuation}
+\begin{frame}[label={sec:org45df36e}]{Limitations of continuation}
 We now understand how a model bursts (hopefully!)
 
 Caveat: 
@@ -479,8 +489,8 @@ How much did we really learn about bursting cells, by looking at a phenomenologi
 
 
 \section{Control-based continuation}
-\label{sec:org4ab6c15}
-\begin{frame}[label={sec:org7a48655}]{A novel alternative}
+\label{sec:orge3a9fdc}
+\begin{frame}[label={sec:orgd6bd551}]{A novel alternative}
 \begin{itemize}
 \item We can run continuation experiments on models, but those models aren't always meaningful
 \item Can we instead run a continuation procedure on a living cell?
@@ -491,32 +501,33 @@ A model-free method for running bifurcation analysis experiments on black-box sy
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org067b9d1}]{Control-based continuation}
+\begin{frame}[label={sec:org2e1e6de}]{Control-based continuation}
 \begin{block}{Control-based continuation (CBC)}
     A model-free method for running bifurcation analysis experiments on black-box systems
 \end{block}
 
+With CBC, we can\ldots{}
 \begin{itemize}[<+->]
-\item Let's us find stable and unstable equilibria
-\item Let's us find stable and unstable periodic orbits
-\item Let's us track those under variations in parameters
-\item No need to use a model to do this!
+\item find stable and unstable equilibria
+\item find stable and unstable periodic orbits
+\item track those under variations in parameters
+\item no need to use a model to do this!
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orge090dc8}]{Control-based continuation}
+\begin{frame}[label={sec:org8c3f973}]{Control-based continuation}
 \begin{block}{Control-based continuation (CBC)}
     A model-free method for running bifurcation analysis experiments on black-box systems
 \end{block}
 
 \begin{itemize}[<+->]
-\item Can't choose arbitrary simulations, so use a control system to make the system behave how we want it to
+\item Can't use arbitrary simulations, so use a control system to make the system behave how we want it to
 \item No control action \(\implies\) system acts under its natural dynamics
 \item Goal: find a control target that can be stabilised with no control action
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org7309cb1}]{Control-based continuation}
+\begin{frame}[label={sec:orgd21691a}]{Control-based continuation}
 \begin{block}{Goal}
     Find a control target \(x_*(t)\) that can be stabilised with no control action
 \end{block}
@@ -530,10 +541,16 @@ A model-free method for running bifurcation analysis experiments on black-box sy
 \dot{x}_c = f(x_c,t) + u(x_c,t)
 \end{equation}
 
-satisfies \(\lim_{t\to T}\left[x(t)\right] = x_*(t)\)
+satisfies \(\lim_{t\to T}\left[x_c(t)\right] = x_*(t)\)
 \end{frame}
 
-\begin{frame}[label={sec:org9549eec}]{Control-based continuation}
+\begin{frame}[label={sec:orge661cdc}]{Control-based continuation}
+Basically\ldots{}
+
+\(u(x,t)\) pushes the system to make it do what we want!
+\end{frame}
+
+\begin{frame}[label={sec:org7bb4b32}]{Control-based continuation}
 \begin{itemize}
 \item Say \(u(x,t) = 0\), when the control target is \(x_*(t)\)
 \item Controlled system is then given by
@@ -551,11 +568,13 @@ satisfies \(\lim_{t\to T}\left[x(t)\right] = x_*(t)\)
 For control target \(x_*(t)\), the control scheme is said to be noninvasive, and the system acts under its natural dynamics
 \end{frame}
 
-\begin{frame}[label={sec:org15f57a3}]{Basic example}
+\begin{frame}[label={sec:orgd37cdf7}]{Control-based continuation}
+Goal: find some \(x_*(t)\) that doesn't reqire any pushing
+\end{frame}
+\begin{frame}[label={sec:org797baa0}]{Basic example}
 \begin{itemize}
 \item Consider \(\dot{x} = -x\)
 \item We add a controller to stabilise an arbitrary point \(x_*\)
-\item If we can find a point that requires no effort to stabilise, we've found an equilibrium
 \item We need to push the system to hold it at any \(x\neq0\)
 \begin{itemize}
 \item \(x=0\) is the only point requiring no pushing
@@ -564,51 +583,35 @@ For control target \(x_*(t)\), the control scheme is said to be noninvasive, and
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org381ed59}]{Another look at numerical continuation}
-Numerical continuation is a method for computing implicitly defined manifolds
-\begin{itemize}
-\item Consider \(f(x,\lambda)=0\)
-\item Implicit function theorem \(\implies\) changing \(\lambda\) causes a change in \(x\)
-\item Continuation lets us find the manifold \(\lambda(x)\) implicitly defined by \(f(x,\lambda)=0\)
-\end{itemize}
-
-Normally, \(f\) is the RHS of an ODE.
-But what if it wasn't?
-\end{frame}
-
-\begin{frame}[label={sec:org727af82}]{Back to CBC}
-\begin{itemize}
-\item As it happens, \(u(x,t)=0\) is enough information to find the natural system dynamics \(x_*(t)\)
-\item If we consider \(x_*(t)\) as an implicit manifold, we can use continuation to track it under parameter changes
-\end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:orgbb7d87d}]{Typical CBC approach}
-\begin{itemize}
+\begin{frame}[label={sec:org5ff61cd}]{Typical CBC approach}
+\begin{itemize}[<+->]
 \item Let the system do its own thing; this gives us a start equilibrium
 \item Find a controller that stabilises it with zero control action
 \item Change a parameter slightly
+\begin{itemize}
+\item System state moves away from control target slightly
+\end{itemize}
 \item Record what the system now does
 \item Update the control target to once again have a zero control action
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgc877400}]{Typical CBC approach}
+\begin{frame}[label={sec:org755195b}]{Typical CBC approach}
 Updating the control target:
-\begin{itemize}
+
+\begin{itemize}[<+->]
 \item Set control target to match what the system did
 \item Run it under the new controller
 \item Repeat until control target = system output
 \item This drives control force to zero
+\item Under this method, we can track equilibria and limit cycles as a parameter changes!
 \end{itemize}
-
-Under this method, we can track equilibria and limit cycles as a parameter changes!
 \end{frame}
 
 
 \section{Future work}
-\label{sec:org9f8d068}
-\begin{frame}[label={sec:orgc14b200}]{Presentation plan}
+\label{sec:orgd4918d6}
+\begin{frame}[label={sec:org7cbe0f4}]{Presentation plan}
 Hopefully you're not asleep yet!
 \begin{itemize}
 \item A brief introduction to neurons
@@ -618,7 +621,7 @@ Hopefully you're not asleep yet!
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org814d9c8}]{Questions to answer}
+\begin{frame}[label={sec:org5a523d3}]{Questions to answer}
 \begin{itemize}
 \item How do things change when we add noise?
 \item How do we control a stochastic system?
@@ -628,7 +631,7 @@ Hopefully you're not asleep yet!
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org7d02e16}]{Global bifurcations}
+\begin{frame}[label={sec:orgf19a748}]{Global bifurcations}
 \begin{itemize}
 \item Local bifurcations are those that can be understood entirely from changes in invariant set stability
 \begin{itemize}
@@ -643,15 +646,16 @@ Hopefully you're not asleep yet!
 \end{frame}
 
 
-\begin{frame}[label={sec:orgbe5e618}]{Noisy bifurcations}
+\begin{frame}[label={sec:orgc2ed4d9}]{Noisy bifurcations}
 \begin{center}
 \includegraphics[height=.87\textheight]{./noise.png}
 \end{center}
 \end{frame}
 
+
 \section{End}
-\label{sec:orga9bf29a}
-\begin{frame}[plain,label={sec:org80db03d}]{}
+\label{sec:org920a4ac}
+\begin{frame}[plain,label={sec:orgcf30e38}]{}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./end.png}
 \end{center}
