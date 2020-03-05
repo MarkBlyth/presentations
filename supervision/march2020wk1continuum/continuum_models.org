@@ -1,0 +1,149 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: A continuum approach to neuron modelling
+#+DATE: [2020-03-09 Mon]
+
+* Background
+** Overview
+   * Challenges with using the MEA
+   * Possible solutions (network- and microfluidic-based methods)
+   * A better solution (continuum)
+   * Literature precedent
+
+* Challenges
+** Main challenge with the MEA
+   * Loss of spatial resolution, since we can no longer measure and perturb individual cells
+   * Emergent behaviours mean we can't study dynamics of individual neurons; would have to study network dynamics instead
+   * Too many unknowns to build a realistic network model...
+
+** Issues with the network model
+   * No geometric information 
+     * We can make a model of neuron networks, but there's no easy way to relate an agent in the network to the position of a living cell
+     * This matters, as we can't predict the spatial dynamics, and therefore the effects of stimulating each electrode, without this information
+   * No topological information
+     * We don't know who connects to who, in our neuron network
+     * This means we can't produce an accurate network model
+   * Too many equations for simulations
+     * 200,000 neurons is too many to simulate!
+   * Too many parameters to accurately determine
+     * Even just coupling strength adds between 200,000 and 40,000,000,000 (200,000^2) extra parameters to the model
+
+** Some possible solutions
+   * Constrain the network geometry using on-chip microchannels
+     * This has been done in the literature
+     * Doesn't tell us much about connection strengths
+     * Would be a very hard device to make
+     * Requires making another new device
+   * Use synchronisation-based network models
+     * Changing one of 200,000 network connection strengths probably won't change much in the dynamics
+     * Can use this lack of sensitivity to make simpler models of neuron synchronisation
+     * But, this synchronisation models won't work for any case other than synchronisation (limits the dynamics with specific assumptions)
+
+** A proposed alternative
+   * Assume we have an arbitrarily large number of neurons
+   * Every neuron connects to every other neuron within its local neighbourhood
+   * Treat it as a continuum (neural field, rather than point neurons)
+   * Build a PDE model
+
+** Benefits of a continuum model (1)
+   * No need to know the network geometry; any given `neuron' is identified by its point in the domain
+   * No need to define a network topology; every `neuron' interacts locally with those in its neighbourhood
+   * Far fewer parameters are required to characterise the system
+     * Don't need to specify a set of parameters for each agent in a network system
+   * Becomes tractable to study much more sophisticated dynamics than with the network model (beyond simple synchronisation!)
+   * We no longer care about what individual cells are doing, and can therefore get away with the lower spatial resolution of the electrodes
+     * Instead, we're measuring the average continuum value across some small region, which is a sufficient measurement; don't need to know the state of every neuron in the network
+
+** Benefits of a continuum model (2)
+   * No need to individually perturb single neurons - it suffices to model a current input across some subdomain of the PDE's space
+   * Microfluidic electrodes have a very natural mathematical interpretation
+     * For an accurate model, neurons can be thought of as `solving' the continuum PDE across their network
+     * Numerical methods for solving the model would typically use orthogonal collocation
+     * A set of meshpoints are defined, and orthogonal basis functions are chosen such that they solve the PDE at those mesh points
+     * The electrodes are therefore a physical analog of these collocation mesh points!
+     * Very natural transition between numerical methods, and physical experiments
+
+* Literature precedent
+** Literature precedent
+   * There's models for neural fields
+     * Bressloff, Paul C. "Spatiotemporal dynamics of continuum neural fields." Journal of Physics A: Mathematical and Theoretical 45.3 (2011): 033001.
+     * Seems to be based on some rather dubious assumptions (rate-based networks, assume SNIC neurons)
+   * There's also cable models for spatially extended neurons
+     * Designed to model signal propagation down an axon
+     * Could possibly produce a 2d spatially extended system as a continuum model?
+     * I don't yet know how important the synaptic dynamics are on continuum dynamics
+** The Belousov-Zhabotinksy reaction
+Chemical reaction, displaying complex dynamics away from equilibrium.
+I claim it behaves in the same way as neurons:
+    * Consider reactants as `ions inside a neuron'
+    * Consider products as `ions outside a neuron'
+    * Consider catalyst concentration as membrane potential
+      * Stimulates the transition of reactants into products (and reverse)
+      * Equivalently, stimulates the movement of ions into a cell (and out of it)
+Dynamics of the BZ reaction are therefore analogous to those of a neural continuum.
+
+This is analogy interesting, as there's lots of research on the various behaviours of the BZ reaction that could be reapplied to predict dynamics of a large neural population.
+But, interestingly...
+
+** Controlling the BZ reaction
+    * The BZ reaction is a continuum system.
+    * Methods have been demonstrated for tracking its dynamics, suggesting that similar approaches may work for neurons.
+    * These follow an OGY/ ETDF style approach.
+
+Petrov, Valery, Michael J. Crowley, and Kenneth Showalter. "Tracking unstable periodic orbits in the Belousov-Zhabotinsky reaction." Physical review letters 72.18 (1994): 2955.
+
+Petrov, Valery, Michael F. Crowley, and Kenneth Showalter. "An adaptive control algorithm for tracking unstable periodic orbits." International Journal of Bifurcation and Chaos 4.05 (1994): 1311-1317.
+    
+** Epilepsy, coherent structures, and Turing instabilities
+   * Epilepsy is characterised by waves travelling across the surface of the brain [SOURCE?]
+   * Travelling waves are a type of `coherent structure' (some structure that appears and persists in the dynamics)
+   * More generally, Turing patterns refer to the appearance of coherent structures in reaction-diffusion systems (like BZ reaction!)
+   * Since we've added a spatial domain, we now have new ways to bifurcate
+     * Lose stability in temporal dimension - traditional bifurcation
+     * Lose stability in spatial dimension - Turing instability
+   * Turing patterns and instabilities form new bifurcations we could control and test for
+     * ...possibly bifurcations that lead to epileptic dynamics?
+
+** Studying continuum models
+   * Turing patterns are a very well studied area - lots of literature to draw from
+   * There's also lots of literature on PDEs
+   * (I conjecture) it would be considerably easier to study bifurcations in the PDEs than in a massive network
+
+** Interlude for pretty pictures
+*** BZ :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+   [[./BZ.jpg]]
+
+*** TPs :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+[[./turingpatterns.png]]
+
+** Handy to know...
+       Alan is an expert in this area.
+
+* Plan suggestion
+** Some issues
+   * The continuum model discussed in previous review is rate-based; doesn't generalise to arbitrary neurons, only good for cortical (SNIC) neurons
+   * A spatially extended cubic Lienard model would give the dynamics of arbitrary neuron populations, if and only if synaptic dynamics are non-critical
+** Possible project plan
+   * Produce a neuron normal form model
+     * Krasi's cubic Lienard + a slow subsystem
+   * Generate a neural continuum model from a spatially extended normal form
+   * Analyse bifurcations etc. in the model, to get an idea of what the actual cells will do
+   * Develop a CBC approach to track those bifurcations
+     
+Note that a spatially extended neuron model might not be sufficient; the review cited earlier would be a good place to start on understanding good continuum models.
+
+** Possible project plan
+
+Nice but not necessarily essential:
+   * Bigger MEA (more cells = more like a continuum)
+   * More electrodes (more collocation meshpoints = more accurate model)
