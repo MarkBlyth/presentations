@@ -83,14 +83,20 @@ I claim it behaves in the same way as neurons:
     * Consider catalyst concentration as membrane potential
       * Stimulates the transition of reactants into products (and reverse)
       * Equivalently, stimulates the movement of ions into a cell (and out of it)
-Dynamics of the BZ reaction are therefore analogous to those of a neural continuum.
+Dynamics of the BZ reaction are therefore analogous to neural dynamics
+    * Stirred system is like an ODE model
+      * Can show mixed-mode bursting-like oscillations, and relaxation oscillations
+    * Unstirred system is like a spatially extended continuum neuron
 
-This is analogy interesting, as there's lots of research on the various behaviours of the BZ reaction that could be reapplied to predict dynamics of a large neural population.
-But, interestingly...
+** The Belousov-Zhanosinsky reaction
+
+    * This is analogy interesting, as there's lots of research on the various behaviours of the BZ reaction that could be reapplied to predict dynamics of a large neural population.
+    * BZ reaction is a reaction-diffusion system, which Alan does lots of research on
+    * There's a literature precedent for bifurcation analysis of it
 
 ** Controlling the BZ reaction
     * The BZ reaction is a continuum system.
-    * Methods have been demonstrated for tracking its dynamics, suggesting that similar approaches may work for neurons.
+    * Methods have been demonstrated for tracking its dynamics, suggesting that similar approaches may work for neural continuums
     * These follow an OGY/ ETDF style approach.
 
 Petrov, Valery, Michael J. Crowley, and Kenneth Showalter. "Tracking unstable periodic orbits in the Belousov-Zhabotinsky reaction." Physical review letters 72.18 (1994): 2955.
@@ -125,9 +131,6 @@ Petrov, Valery, Michael F. Crowley, and Kenneth Showalter. "An adaptive control 
     :END:
     
 [[./turingpatterns.png]]
-
-** Handy to know...
-       Alan is an expert in this area.
 
 * Plan suggestion
 ** Some issues
