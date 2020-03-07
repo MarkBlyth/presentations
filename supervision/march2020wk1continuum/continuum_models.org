@@ -7,11 +7,31 @@
 #+DATE: [2020-03-09 Mon]
 
 * Background
-** Overview
+** Presentation overview
+   * Week's summary
    * Challenges with using the MEA
    * Possible solutions (network- and microfluidic-based methods)
    * A better solution (continuum)
    * Literature precedent
+     
+(This is a selection of ideas more than anything, I haven't put invested much time into researching them yet!)
+
+** Week summary
+   * Made recommended changes to the paper
+     * Yet to write the tutorial section, so no draft yet
+   * Clean room
+     * Induction
+     * Plasma bonding
+     * Evaporating
+   * SCEEM research conference
+
+** Bath ML conference
+
+https://mathml2020.github.io/
+
+    * Conference discussing interesting maths in machine learning
+    * Relevant to my undergrad work
+    * Possible poster submission?
 
 * Challenges
 ** Main challenge with the MEA
