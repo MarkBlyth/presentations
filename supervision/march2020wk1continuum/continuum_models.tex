@@ -1,4 +1,4 @@
-% Created 2020-03-06 Fri 11:46
+% Created 2020-03-07 Sat 18:01
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,19 +30,48 @@
 \maketitle
 
 \section{Background}
-\label{sec:org77a7e72}
-\begin{frame}[label={sec:org866023a}]{Overview}
+\label{sec:orgec673a4}
+\begin{frame}[label={sec:org2d04e5c}]{Presentation overview}
 \begin{itemize}
+\item Week's summary
 \item Challenges with using the MEA
 \item Possible solutions (network- and microfluidic-based methods)
 \item A better solution (continuum)
 \item Literature precedent
 \end{itemize}
+
+(This is a selection of ideas more than anything, I haven't put invested much time into researching them yet!)
+\end{frame}
+
+\begin{frame}[label={sec:org1bee182}]{Week summary}
+\begin{itemize}
+\item Made recommended changes to the paper
+\begin{itemize}
+\item Yet to write the tutorial section, so no draft yet
+\end{itemize}
+\item Clean room
+\begin{itemize}
+\item Induction
+\item Plasma bonding
+\item Evaporating
+\end{itemize}
+\item SCEEM research conference
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org1f2b85b}]{Bath ML conference}
+\url{https://mathml2020.github.io/}
+
+\begin{itemize}
+\item Conference discussing interesting maths in machine learning
+\item Relevant to my undergrad work
+\item Possible poster submission?
+\end{itemize}
 \end{frame}
 
 \section{Challenges}
-\label{sec:org4eeada4}
-\begin{frame}[label={sec:org244baa3}]{Main challenge with the MEA}
+\label{sec:orgdd8bc00}
+\begin{frame}[label={sec:orgd6768ce}]{Main challenge with the MEA}
 \begin{itemize}
 \item Loss of spatial resolution, since we can no longer measure and perturb individual cells
 \item Emergent behaviours mean we can't study dynamics of individual neurons; would have to study network dynamics instead
@@ -50,7 +79,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org2956778}]{Issues with the network model}
+\begin{frame}[label={sec:org7f4b23d}]{Issues with the network model}
 \begin{itemize}
 \item No geometric information 
 \begin{itemize}
@@ -73,7 +102,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orge567322}]{Some possible solutions}
+\begin{frame}[label={sec:orgb7527fa}]{Some possible solutions}
 \begin{itemize}
 \item Constrain the network geometry using on-chip microchannels
 \begin{itemize}
@@ -91,7 +120,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org35bbe58}]{A proposed alternative}
+\begin{frame}[label={sec:org4ec6c81}]{A proposed alternative}
 \begin{itemize}
 \item Assume we have an arbitrarily large number of neurons
 \item Every neuron connects to every other neuron within its local neighbourhood
@@ -100,7 +129,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org8b755d1}]{Benefits of a continuum model (1)}
+\begin{frame}[label={sec:org9ccd615}]{Benefits of a continuum model (1)}
 \begin{itemize}
 \item No need to know the network geometry; any given `neuron' is identified by its point in the domain
 \item No need to define a network topology; every `neuron' interacts locally with those in its neighbourhood
@@ -116,7 +145,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org6502ccc}]{Benefits of a continuum model (2)}
+\begin{frame}[label={sec:org72411ac}]{Benefits of a continuum model (2)}
 \begin{itemize}
 \item No need to individually perturb single neurons - it suffices to model a current input across some subdomain of the PDE's space
 \item Microfluidic electrodes have a very natural mathematical interpretation
@@ -131,8 +160,8 @@
 \end{frame}
 
 \section{Literature precedent}
-\label{sec:org4743e52}
-\begin{frame}[label={sec:org4ee95ba}]{Literature precedent}
+\label{sec:org2aa1d8a}
+\begin{frame}[label={sec:org0b38591}]{Literature precedent}
 \begin{itemize}
 \item There's models for neural fields
 \begin{itemize}
@@ -147,7 +176,7 @@
 \end{itemize}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org0bfc0ae}]{The Belousov-Zhabotinksy reaction}
+\begin{frame}[label={sec:org5626252}]{The Belousov-Zhabotinksy reaction}
 Chemical reaction, displaying complex dynamics away from equilibrium.
 I claim it behaves in the same way as neurons:
 \begin{itemize}
@@ -169,7 +198,7 @@ Dynamics of the BZ reaction are therefore analogous to neural dynamics
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgde028da}]{The Belousov-Zhanosinsky reaction}
+\begin{frame}[label={sec:orgafe5142}]{The Belousov-Zhanosinsky reaction}
 \begin{itemize}
 \item This is analogy interesting, as there's lots of research on the various behaviours of the BZ reaction that could be reapplied to predict dynamics of a large neural population.
 \item BZ reaction is a reaction-diffusion system, which Alan does lots of research on
@@ -177,7 +206,7 @@ Dynamics of the BZ reaction are therefore analogous to neural dynamics
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org87c7c09}]{Controlling the BZ reaction}
+\begin{frame}[label={sec:org6cc1897}]{Controlling the BZ reaction}
 \begin{itemize}
 \item The BZ reaction is a continuum system.
 \item Methods have been demonstrated for tracking its dynamics, suggesting that similar approaches may work for neural continuums
@@ -189,7 +218,7 @@ Petrov, Valery, Michael J. Crowley, and Kenneth Showalter. "Tracking unstable pe
 Petrov, Valery, Michael F. Crowley, and Kenneth Showalter. "An adaptive control algorithm for tracking unstable periodic orbits." International Journal of Bifurcation and Chaos 4.05 (1994): 1311-1317.
 \end{frame}
 
-\begin{frame}[label={sec:org7e2a750}]{Epilepsy, coherent structures, and Turing instabilities}
+\begin{frame}[label={sec:org09d7f5b}]{Epilepsy, coherent structures, and Turing instabilities}
 \begin{itemize}
 \item Epilepsy is characterised by waves travelling across the surface of the brain [SOURCE?]
 \item Travelling waves are a type of `coherent structure' (some structure that appears and persists in the dynamics)
@@ -206,7 +235,7 @@ Petrov, Valery, Michael F. Crowley, and Kenneth Showalter. "An adaptive control 
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org07d55e9}]{Studying continuum models}
+\begin{frame}[label={sec:orgf9135fe}]{Studying continuum models}
 \begin{itemize}
 \item Turing patterns are a very well studied area - lots of literature to draw from
 \item There's also lots of literature on PDEs
@@ -214,7 +243,7 @@ Petrov, Valery, Michael F. Crowley, and Kenneth Showalter. "An adaptive control 
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org6564887}]{Interlude for pretty pictures}
+\begin{frame}[label={sec:orgc75435d}]{Interlude for pretty pictures}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -231,14 +260,14 @@ Petrov, Valery, Michael F. Crowley, and Kenneth Showalter. "An adaptive control 
 \end{frame}
 
 \section{Plan suggestion}
-\label{sec:orge1613eb}
-\begin{frame}[label={sec:org1c85d56}]{Some issues}
+\label{sec:org280bcdf}
+\begin{frame}[label={sec:orgd53f176}]{Some issues}
 \begin{itemize}
 \item The continuum model discussed in previous review is rate-based; doesn't generalise to arbitrary neurons, only good for cortical (SNIC) neurons
 \item A spatially extended cubic Lienard model would give the dynamics of arbitrary neuron populations, if and only if synaptic dynamics are non-critical
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orgc5d7126}]{Possible project plan}
+\begin{frame}[label={sec:org66f9a83}]{Possible project plan}
 \begin{itemize}
 \item Produce a neuron normal form model
 \begin{itemize}
@@ -252,7 +281,7 @@ Petrov, Valery, Michael F. Crowley, and Kenneth Showalter. "An adaptive control 
 Note that a spatially extended neuron model might not be sufficient; the review cited earlier would be a good place to start on understanding good continuum models.
 \end{frame}
 
-\begin{frame}[label={sec:org8d62eb3}]{Possible project plan}
+\begin{frame}[label={sec:org381da19}]{Possible project plan}
 Nice but not necessarily essential:
 \begin{itemize}
 \item Bigger MEA (more cells = more like a continuum)
