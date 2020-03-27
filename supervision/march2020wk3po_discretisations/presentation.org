@@ -54,19 +54,28 @@
 Can we continue periodic orbits without discretisation?
      
 ** Discretisation-free method: benefits and issues
-   * By avoiding discretisation, we can deal with exteedingly fast-changing signals easily
+   * By avoiding discretisation, we can deal with fast-changing signals easily
    * The learning step allows us to average out the noise, in a way that would be difficult using discretisation methods, meaning more numerical stability
    * Uses some machine learning -- a buzzword that seems to bring in citations...
+   * Fourier is a more natural discretisation choice for periodically excited systems
+     * If we can partition the control action into a controller and a periodic forcing term, it makes sense to do so
+     * For neurons, where the stimulus and output are different, we can't do this partitioning, so we lose the benefits of Fourier
 
 ** Graphic representation
    [[./po_family.pdf]]
    
 ** Basic strategy
-   * Learn a model of the periodic orbit surface
-   * Use that model to project forward to the next periodic orbit
+   * Learn a local model of the periodic orbit surface
+   * Use that model to predict the next periodic orbit
      * Learning and projecting forms the predictor step
-   * Iterate down on to the surface
-     * Iterating down forms the corrector step
+   * Take the learned, predicted PO model as the control target
+   * Iteratively update it, orthogonally to the forward-projection 
+     * This iterating forms the corrector step
+
+No need to discretise the signal, as we fit a continuous model to the data and work from that instead.
+
+   * The zero problem is given by the noninvasive control requirement, rather than from a model
+   * This means that we don't actually need to find a discretisation of the periodic orbit, unlike in model-based zero-problems
 
 ** A topology interlude
    * A homotopy \(H\) is a continuous deformation \(H:X \times [0,1] \to Y\) between two topological spaces \(X\) and \(Y\)
@@ -107,11 +116,12 @@ The overall goal is to learn a continuous homotopic transformation for the predi
    * F_0 estimation and state space reconstruction is much like that in my master's thesis
    * Might even be able to get away without the state space reconstruction, but intuitively it seems like everything would work better doing it
 
-
 ** Benefits and issues (again)
    * By avoiding discretisation, we can deal with exteedingly fast-changing signals easily
    * The learning step allows us to average out the noise, in a way that would be difficult using discretisation methods, meaning more numerical stability
-   * Uses some machine learning -- a buzzword that seems to bring in citations...
+   * Fourier is a more natural discretisation choice for periodically excited systems
+     * If we can partition the control action into a controller and a periodic forcing term, it makes sense to do so
+     * For neurons, where the stimulus and output are different, we can't do this partitioning, so we lose the benefits of Fourier
    * Prediction step should be fairly straightforward
    * Correction step /might/ be straightforward, but has the potential to be more challenging
 
@@ -122,4 +132,6 @@ The overall goal is to learn a continuous homotopic transformation for the predi
    * Further programming marking
    * Lab meeting Wednesday; make some slides for that
      * Current plan: present everything I've written in the paper
-   * Try implementing discretisation-free CBC on the Duffing code?
+     * Nb. I have managed to get Zoom to work, but can't use Skype for business
+   * Try implementing Fourier CBC for a neuron
+   * Adapt that for discretisation-free CBC

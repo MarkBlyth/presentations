@@ -1,4 +1,4 @@
-% Created 2020-03-26 Thu 16:27
+% Created 2020-03-27 Fri 11:39
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,15 +30,15 @@
 \maketitle
 
 \section{Background}
-\label{sec:org7f22efa}
-\begin{frame}[label={sec:org8897243}]{Week's goal}
+\label{sec:org74dc956}
+\begin{frame}[label={sec:orgd33470a}]{Week's goal}
 \begin{itemize}
 \item Finish off redrafting paper
 \item Start working towards an \emph{in-silico} CBC
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org49befb9}]{Week's activities}
+\begin{frame}[label={sec:org80e5494}]{Week's activities}
 \begin{itemize}
 \item Finished off redrafting paper
 \item Started reading a paper for a single-cell model to test CBC on [1]
@@ -59,8 +59,8 @@
 \end{frame}
 
 \section{Discretisation-free CBC}
-\label{sec:orge826b21}
-\begin{frame}[label={sec:org5c3acf8}]{Continuation background: points}
+\label{sec:org40faab0}
+\begin{frame}[label={sec:org95abb1d}]{Continuation background: points}
 \begin{itemize}
 \item Continuation works in a predictor corrector scheme
 \begin{itemize}
@@ -78,7 +78,7 @@
 For points (equilibria, equilibrium bifurcations) everything works nicely
 \end{frame}
 
-\begin{frame}[label={sec:orgcd31c37}]{Continuation background: orbits}
+\begin{frame}[label={sec:org6412ecc}]{Continuation background: orbits}
 \begin{itemize}
 \item A periodic orbit is some function \(f(t,\lambda),~t\in[0,1]\)
 \begin{itemize}
@@ -94,7 +94,7 @@ For points (equilibria, equilibrium bifurcations) everything works nicely
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgda79251}]{Issues with discretisation}
+\begin{frame}[label={sec:org3a5838c}]{Issues with discretisation}
 \begin{itemize}
 \item Can't use collocation methods without a model
 \item Spiking signals would need a lot of Fourier harmonics (quick-changing means lots of high-frequency energy); high dimensional continuation systems are hard
@@ -105,35 +105,48 @@ For points (equilibria, equilibrium bifurcations) everything works nicely
 Can we continue periodic orbits without discretisation?
 \end{frame}
 
-\begin{frame}[label={sec:orgb69177e}]{Discretisation-free method: benefits and issues}
+\begin{frame}[label={sec:orgd1565ea}]{Discretisation-free method: benefits and issues}
 \begin{itemize}
-\item By avoiding discretisation, we can deal with exteedingly fast-changing signals easily
+\item By avoiding discretisation, we can deal with fast-changing signals easily
 \item The learning step allows us to average out the noise, in a way that would be difficult using discretisation methods, meaning more numerical stability
 \item Uses some machine learning -- a buzzword that seems to bring in citations\ldots{}
+\item Fourier is a more natural discretisation choice for periodically excited systems
+\begin{itemize}
+\item If we can partition the control action into a controller and a periodic forcing term, it makes sense to do so
+\item For neurons, where the stimulus and output are different, we can't do this partitioning, so we lose the benefits of Fourier
+\end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org0322a0c}]{Graphic representation}
+\begin{frame}[label={sec:org510cf3b}]{Graphic representation}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./po_family.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org2c4f0a5}]{Basic strategy}
+\begin{frame}[label={sec:org333e646}]{Basic strategy}
 \begin{itemize}
-\item Learn a model of the periodic orbit surface
-\item Use that model to project forward to the next periodic orbit
+\item Learn a local model of the periodic orbit surface
+\item Use that model to predict the next periodic orbit
 \begin{itemize}
 \item Learning and projecting forms the predictor step
 \end{itemize}
-\item Iterate down on to the surface
+\item Take the learned, predicted PO model as the control target
+\item Iteratively update it, orthogonally to the forward-projection 
 \begin{itemize}
-\item Iterating down forms the corrector step
+\item This iterating forms the corrector step
 \end{itemize}
+\end{itemize}
+
+No need to discretise the signal, as we fit a continuous model to the data and work from that instead.
+
+\begin{itemize}
+\item The zero problem is given by the noninvasive control requirement, rather than from a model
+\item This means that we don't actually need to find a discretisation of the periodic orbit, unlike in model-based zero-problems
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orged14d88}]{A topology interlude}
+\begin{frame}[label={sec:org41cdae7}]{A topology interlude}
 \begin{itemize}
 \item A homotopy \(H\) is a continuous deformation \(H:X \times [0,1] \to Y\) between two topological spaces \(X\) and \(Y\)
 \item Consider a homotopy \(H\) between functions \(f_1\), \(f_2\), parameterised in some variable \(t\)
@@ -149,7 +162,7 @@ Can we continue periodic orbits without discretisation?
 The overall goal is to learn a continuous homotopic transformation for the predictor/corrector, which can be applied to raw, undiscretised data
 \end{frame}
 
-\begin{frame}[label={sec:org373f040}]{Mathematical representation}
+\begin{frame}[label={sec:orged004a6}]{Mathematical representation}
 \begin{itemize}
 \item Use machine learning to find a homotopy between successive orbits \(f(t, \lambda_{i-1})\), \(f(t, \lambda_i)\)
 \item Use this homotopy as a predictor for the next orbit
@@ -165,7 +178,7 @@ The overall goal is to learn a continuous homotopic transformation for the predi
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org87db716}]{Learning a homotopy}
+\begin{frame}[label={sec:org66ca0c3}]{Learning a homotopy}
 \begin{enumerate}
 \item Set \(\lambda = \lambda_0\)
 \item Record data for a while
@@ -178,7 +191,7 @@ The overall goal is to learn a continuous homotopic transformation for the predi
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org75b1813}]{The machine learning step}
+\begin{frame}[label={sec:org93ebe57}]{The machine learning step}
 \begin{itemize}
 \item Gaussian processes are the ideal tool for learning \(f_i\), \(H_i\)
 \begin{itemize}
@@ -190,20 +203,23 @@ The overall goal is to learn a continuous homotopic transformation for the predi
 \end{itemize}
 \end{frame}
 
-
-\begin{frame}[label={sec:orgf36297e}]{Benefits and issues (again)}
+\begin{frame}[label={sec:org555351f}]{Benefits and issues (again)}
 \begin{itemize}
 \item By avoiding discretisation, we can deal with exteedingly fast-changing signals easily
 \item The learning step allows us to average out the noise, in a way that would be difficult using discretisation methods, meaning more numerical stability
-\item Uses some machine learning -- a buzzword that seems to bring in citations\ldots{}
+\item Fourier is a more natural discretisation choice for periodically excited systems
+\begin{itemize}
+\item If we can partition the control action into a controller and a periodic forcing term, it makes sense to do so
+\item For neurons, where the stimulus and output are different, we can't do this partitioning, so we lose the benefits of Fourier
+\end{itemize}
 \item Prediction step should be fairly straightforward
 \item Correction step \emph{might} be straightforward, but has the potential to be more challenging
 \end{itemize}
 \end{frame}
 
 \section{Next steps}
-\label{sec:org6251a10}
-\begin{frame}[label={sec:org065d0c7}]{Next steps}
+\label{sec:org855ef78}
+\begin{frame}[label={sec:org84f33e4}]{Next steps}
 \begin{itemize}
 \item Finish readings (Kuznetsov numerical bifurcation analysis, neuron model paper)
 \item Make any additional changes to the continuation paper
@@ -211,8 +227,10 @@ The overall goal is to learn a continuous homotopic transformation for the predi
 \item Lab meeting Wednesday; make some slides for that
 \begin{itemize}
 \item Current plan: present everything I've written in the paper
+\item Nb. I have managed to get Zoom to work, but can't use Skype for business
 \end{itemize}
-\item Try implementing discretisation-free CBC on the Duffing code?
+\item Try implementing Fourier CBC for a neuron
+\item Adapt that for discretisation-free CBC
 \end{itemize}
 \end{frame}
 \end{document}
