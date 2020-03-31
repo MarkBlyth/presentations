@@ -1,0 +1,245 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Speaker notes: numerical continuation in computational biology
+#+DATE:
+
+* Chapter 1
+  
+** 1 TITLE PAGE
+    * Been working on a review paper recently
+    * Aims to introduce some mathematical ideas to a biological audience
+    * This presentation follows the paper
+    * If anything doesn't make sense, point it out and ask questions!
+
+    Review paper discusses bifurcations, their applications to biology, and the different software tools that are available for studying them.
+
+** 2 What is computational biology?
+   * /Goal: use maths to understand the mechanisms behind living processes/
+    * Biological processes have lots of interacting systems, which can be challenging to reason about qualitatively
+    *  Maths gives us a rigorous framework / toolbox / language for investigating these processes
+
+   * /Differential equations are used to explain lots of these processes/
+     * /Hodgkin-Huxley: neural dynamics/
+      * Explains how ionic currents give rise to excitable behaviours in neurons
+
+     * /Lotka-Volterra: population dynamics/
+      * Describes how predators and prey compete
+
+     * /SIR model: epidemic dynamics/
+      * Descibes how rates of infection change during an epidemic
+       
+** 3 Differential equations for biology
+*** /Ordinary differential equation/                                :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+   /Description of how a system state changes in time/
+   
+*** 
+    * They're the equations of motion of a state
+    * Relate the current state value to how the state value is currently changing
+   
+
+** 3 Differential equations for biology
+*** /System state/                                                  :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+   /Minimal amount of information to describe something's behaviour/
+   
+*** 
+    State at any one time contains all the information required to determine the state at any future time
+
+    * For neurons, it would be channel conductances, and membrane potential
+    * For predator-prey, it's how many predators and how many prey there are
+    * For epidemics it's the number of uninfected, infected, and cured people
+   
+** 3 Differential equations for biology
+*** /Nonlinear system/                                              :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    /A set of ordinary differential equations, where the change in state doesn't follow a simple proportional relationship/
+   
+*** 
+    * Linear systems: state changes proportional to its present value
+    * Nonlinear systems: it doesn't
+    * Adds a lot of extra complexity
+      * Generically we can't write down a solution to nonlinear ODEs
+    * Upside: the extra complexity gives us extra richness: it lets us describe complex behaviours, and non-trivial phemomena
+
+** 4 Drawing pictures
+   * Phase plane diagrams let us draw pictures of differential equations
+   * This neuron model has state vars (x,y), so we can represent a state as a point on a plane
+   * As the states evolve under equations of motion, it moves around the plane
+   * Arrows show which way the state moves, from any given point
+   * We can track states, and draw the paths they follow as they move, giving lines
+   * These lines are called trajectories
+   * The red circle is a periodic trajectory -- it loops round and round constantly
+   * The blue dot is an equilibrium; if we start there, we'll stay there forever
+   * We call the way the states change, the `dynamics' of the system
+   * The other lines are nullclines, which we don't have to worry about here
+
+** 5 The role of parameters
+
+/Every equation has parameters:/
+(If we treat coefficients as parameters,) it's impossible to write an equation without them.
+      * /Some of these are fixed/
+	* Can't change how hungry a wolf is, in population dynamics
+	* Can't change how population size in an epidemic model
+      * /Some of these we can play with/
+	* Can change how many wolves we have in a population
+	* Can change the transfer rate in epidemic modelling (social distancing!)
+	
+/The exact behaviours of a system necessarily depend on these parameters/
+
+Sensible question: what happens if we change them?
+
+** 6 Bifurcations
+   Bifurcation theory studies how system dynamics change as we vary parameters.
+
+   * A change in the dynamics could be a fixed point appearing, in which case the system now settles down to a rest state
+   * It could also be a limit cycle appearing, perhaps meaning the system jumps from a rest state to an active limit cycle state
+   * Generally, bifurcations concern the appearance and disappearance of these features
+   * We also get things like period-doubling bifurcations, where a periodic orbit halves in speed, so that's not always the case
+     
+
+** 7 Biological bifurcations
+So, what is the significance of bifurcations in computational biology?
+
+Epigenetics gives us a nice example
+
+    * /Waddington describes cell specialisation like marbles rolling down a valley/
+      * The marbles roll along, staying in the bottom of the valley, in the same way as cells remain in a specific specialisation state
+
+    * /When the valley splits, two cell fates emerge/
+      * The marbles can either roll left or right, depending on where any external influences push it
+      * We now have two stable cell fates, instead of one, which we call bistability
+      * The system has changed from monostable to bistable
+      * This change is a bifurcation
+
+    * /This is a nice example of a bifurcation!/
+
+
+** 8 Biological bifurcations
+   * We can describe this more mathematically using a bifurcation diagram
+   * \(x\) axis shows the degree of specialisation, \(y\) axis shows cell fates
+   * Initially we have one cell fate, shown by the black line
+   * As specialisation increases, the cell fate branches into three
+   * One of these is unstable -- this is like the cell rolling along the top of the ridge between the two valleys; it could theoretically do that, but even the smallest nudge in either direction would sent it off away from this fate, and down to one of the stable ones
+   * We call this an unstable equilibrium, and denote it with a dashed line
+   * This corresponds to a pitchfork bifurcation
+     
+** 9 The role of bifurcation analysis in biology
+
+So, why should biologists care about bifurcations?   
+
+   * /Bifurcations can explain seisures, heart attacks, Parkinson's, and many other diseases!/
+     * Dynamical diseases: pathological behaviours can arise from unwanted changes in the body's dynamics
+     * If we can understand the bifurcations that cause these diseases, we can reason about how to prevent or cure them
+
+       \vfill
+CONTINUED 
+** 9 The role of bifurcation analysis in biology
+   * /Bifurcations can be used to explain the functionality of biological systems/
+     * Most results from classical neuroscience can be explained in terms of just four bifurcations
+     * This means we can also predict new cell behaviours; there's several cases where bifurcations have predicted cell behaviours that have later turned up in experiments
+
+       \vfill
+CONTINUED 
+** 9 The role of bifurcation analysis in biology
+   * /Bifurcations can be used to design biological systems/
+     * Artificial cell oscillators have been designed, exploiting the bifurcations present in cell signalling pathways
+     * The regions in which oscillations occur are found by searching for Hopf bifurcations
+       
+** 10 Methods for bifurcation analysis
+   * /Analytic calculations/
+     * Work out with a pen and paper when a bifurcation occurs
+     * Most rigorous method, but also exceedingly difficult even for comparatively simple systems
+   * /Brute force computation/
+     * Simulate the system for lots of different parameter values, and see what happens
+     * We risk missing subtle details
+     * It works for simple systems with small numbers of parameters, but when we have high-dimensional states, or lots of parameters to play with, it stops being useful
+       
+       \vfill
+CONTINUED 
+
+** 10 Methods for bifurcation analysis
+   * /Numerical continuation/
+     * This is a rigorous approach to finding bifurcations
+     * It's done on a computer, so it's easier than analytic computations, but more rigorous than brute force
+     * There's lots of different software for analysing bifurcations, and they all use numerical continuation to do that
+     * It's the go-to method!
+
+** 11 Numerical continuation
+   * /We use numerical continuation to track `interesting' points/
+     * Interesting points can be equilibria, bifurcation points, or even periodic orbits
+     * /We vary a parameter/
+     * /Continuation tells us how the point changes/
+     * Continuation lets us track thees interesting points as the parameter changes; formally, we say it traces out implicitly defined manifolds -- points, lines, planes at which interesting behaviours happen
+   * /Test functions indentify bifurcations/
+     * These are functions whose zero occur only when we have a bifurcation
+   * Together, the tracking and testing setup lets us find bifurcations algorithmically
+     
+     
+* Chapter 2
+** 12 Bifurcation analysis of a bursting neuron
+   * Neurons encode their information in spikes
+   * They don't always spike consistently; sometimes they alternate between a period of spiking and a period of resting
+   * The displayed plot, taken from wikipedia, shows a simulation of a bursting neuron
+   * Their dynamics appear as a result of having a rich bifurcation structure, so they're interesting to use for a bifurcation analysis
+   * Here I'm going to demonstrate how we could do such a bifurcation analysis
+     
+** 13 The Hindmarsh Rose model
+   * The plot shown previously was made by simulating the Hindmarsh Rose model, which gives a phenomenological model [EXPLAIN] for bursting neurons. We'll use that model here for the bifurcation analysis.
+   * The key thing to note is that \(r\) is very small
+     * As \(z\) changes much more slowly than \(x\) and \(y\), we can pretend it's a constant
+     * We then do a bifurcation analysis, using \(z\) as a parameter
+     * When we stop pretending \(z\) is constant, it will drive \(x,y\) -- the fast subsystem -- across the bifurcations we found earlier
+   * We therefore use numerical continuation to find bifurcations in the \(x,y\) equations, when \(z\) is taken as a parameter
+
+     
+** 14 Exploratory step
+   * We start by simply simulating the \(x,y\) system for default parameter values
+   * This gives us some idea of what to expect and where to start the analysis
+   * We can see an attracting limit cycle
+   * Since its in a plane, it must have a repelling equilibrium in the center
+   
+** 15 Initialisation step
+   * This is the same diagram we saw earlier
+   * The equilibrium in the center is a good place to start a continuation from (it's generally hard to start at a periodic orbit), so here all we're doing is finding exactly where that equilibrium is
+   * Now it's found, we can start looking for bifurcations
+     
+** 16 Equilibrium point curve
+   * We now take \(z\) as a parameter, and sweep it across a range of values
+   * We use numerical continuation to track how the equilibrium changes, as we vary \(z\)
+   * The plot shows the \(x\) position of the equilibrium, as a function of \(z\)
+   * The curve doubles back on itself twice. We call these points `fold' points, and they're actually a type of bifurcation
+   * The test functions have spotted another two bifurcations along the equilibrium point curve; these are Hopf points
+   * Periodic orbits appear at a Hopf bifurcation, so the next step is to track these
+
+** 17 Periodic orbit continuation
+   * The purple lines show the maximum and minimum of the periodic orbits
+   * If we were to look at the \(x,y\) plane, we would see a limit cycle here, much like the one we saw earlier
+   * These limit cycles provide the spiking behaviour of the neuron
+   * The equilibria give a resting state, where the neuron sits around doing nothing
+   * When these coexist, the neuron is able to either spike or sit silently, depending on other influences
+   * This actually gives us most of what we need to understand bursting behaviour
+
+** 18 Full system dynamics
+   * Here I've zoomed in on the area of parameter space where bursting occurs
+   * I've simulated the full system, including the \(z\) equation, and overlayed a trajectory onto the diagram
+   * This shows where the bursting behavior comes from
+   * A resting state disappears through a fold bifurcation, causing the system to jump onto the spiking limit cycles
+   * These limit cycles in turn disappear through a homoclinic bifurcation, making the system jump back to the resting state
+   * The slow variable \(z\) drives the fast subsystem back and forth across these two bifurcations, so the spikes periodically switch on and off, giving bursting.
+     
+* Chapter 3
+** 19 Software tools
+   /There's lots of software to do these sorts of calculations!/
+    * The paper has comparison tables in, and provides recommendations of which software to use when
+    * It's not a particularly exciting thing to put into a presentation, so I'm not going into any real detail about it
+    * The main takeaway is that there's good tools to do these calculations, some of which are powerful but hard to use, and others which are easy to use but less sophisticated.

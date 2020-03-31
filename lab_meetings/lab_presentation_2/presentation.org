@@ -1,0 +1,159 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Numerical continuation in computational biology
+#+DATE:
+
+* Chapter 1
+** What is computational biology?
+   * Goal: use maths to understand the mechanisms behind living processes
+   * Differential equations are used to explain lots of these processes
+     * Hodgkin-Huxley: neural dynamics
+     * Lotka-Volterra: population dynamics
+     * SIR model: epidemic dynamics
+       
+** Differential equations for biology
+*** Ordinary differential equation                                  :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+   Description of how a system state changes in time
+   
+*** System state :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+   Minimal amount of information to describe something's behaviour
+   
+*** Nonlinear system :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+   A set of ordinary differential equations, where the change in state doesn't follow a simple proportional relationship
+   
+** Drawing pictures
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./phaseplane.pdf]]
+
+** The role of parameters
+
+/Every/ equation has parameters:
+      * Some of these are fixed
+      * Some of these we can play with
+	
+The dynamics of a system necessarily depend on these parameters
+
+** Bifurcations
+#+BEGIN_EXPORT latex
+\begin{block}{Bifurcation}
+If the dynamics of a system change at some parameter value, a bifurcation is said to have occurred
+\end{block}
+\vfill
+#+END_EXPORT
+
+This usually means equilibria or periodic orbits appearing and disappearing -- but not always!
+
+** Biological bifurcations
+*** Diagram :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+#+BEGIN_EXPORT latex
+\includegraphics[width=\linewidth,trim={8cm 27cm 6cm 23cm},clip]{./surface2.pdf}
+#+END_EXPORT
+
+*** Description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+    * Waddington describes cell specialisation like marbles rolling down a valley
+    * When the valley splits, two cell fates emerge
+    * This is a nice example of a bifurcation!
+
+** Biological bifurcations
+*** Diagram :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+#+BEGIN_EXPORT latex
+\includegraphics[width=\linewidth,trim={8cm 27cm 6cm 23cm},clip]{./surface2.pdf}
+#+END_EXPORT
+
+*** Description :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+    [[./pitchfork.pdf]]
+
+** The role of bifurcation analysis in biology
+   * Bifurcations can explain seisures, heart attacks, Parkinson's, and many other diseases
+   * Bifurcations can be used to explain the functionality of biological systems
+   * Bifurcations can be used to design biological systems
+
+** Methods for bifurcation analysis
+ * Analytical calculations
+ * Brute force computation
+ * Numerical continuation
+
+** Numerical continuation
+   * We use numerical continuation to track `interesting' points
+     * We vary a parameter
+     * Continuation tells us how the point changes
+   * Test functions indentify bifurcations
+
+* Chapter 2
+** Bifurcation analysis of a bursting neuron
+
+#+ATTR_LATEX: :height .85\textheight
+   [[./wikipedia_HR.png]]
+** The Hindmarsh Rose model
+\begin{align}
+\frac{\mathrm{d} x}{\mathrm{d} t} &= y - ax^3 +bx^2 -z + I~,\\ \nonumber
+\frac{\mathrm{d} y}{\mathrm{d} t} &= c- dx^2 -y~,\\ 
+\frac{\mathrm{d} z}{\mathrm{d} t} &= r\left[s(x-x_R)-z\right]~.\nonumber
+\end{align}
+
+\vfill
+
+#+BEGIN_CENTER
+\(|r| \ll 1\)
+#+END_CENTER
+** Exploratory step
+#+ATTR_LATEX: :height .85\textheight
+[[./trajectory.pdf]]
+
+** Initialisation step
+#+ATTR_LATEX: :height .9\textheight
+[[./phaseplane.pdf]]
+** Equilibrium point curve
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./epc-1.pdf]]
+** Periodic orbit continuation
+
+#+ATTR_LATEX: :height .9\textheight
+[[./epc-2.pdf]]
+
+** Full system dynamics
+   
+#+ATTR_LATEX: :height .9\textheight
+[[./burster_diagram.pdf]]
+
+* Chapter 3
+** Software tools
+   There's lots of software to do these sorts of calculations!
+   
+* End
+** 
+  
+#+BEGIN_CENTER
+Questions? Feedback?
+#+END_CENTER
+
