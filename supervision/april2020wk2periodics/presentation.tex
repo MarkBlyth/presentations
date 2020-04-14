@@ -1,0 +1,200 @@
+% Created 2020-04-14 Tue 13:31
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\author{Mark Blyth}
+\date{\textit{[2020-04-15 Wed]}}
+\title{In Silico CBC}
+\hypersetup{
+ pdfauthor={Mark Blyth},
+ pdftitle={In Silico CBC},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.1.9)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Background}
+\label{sec:orgecfe713}
+\begin{frame}[label={sec:orgc3882b7}]{Week's goal}
+\begin{itemize}
+\item Redraft paper
+\item Work towards an \emph{in silico} single-cell CBC experiment
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org7c18716}]{Week's activities}
+\begin{itemize}
+\item Haven't touched the paper yet
+\item Making steady progress towards CBC simulations
+\begin{itemize}
+\item So far, the discretisation-free method looks like it will work
+\item There's some interesting problems for learning periodic orbit models, which have been my main focus
+\end{itemize}
+\item Code committed so far is available on GitHub \url{https://github.com/MarkBlyth/SingleCellCBC}
+\end{itemize}
+\end{frame}
+
+\section{Coding}
+\label{sec:org08f7944}
+\begin{frame}[label={sec:org0772d65}]{Coding}
+Coded up various bits:
+\begin{itemize}
+\item Model class, for running parameterised simulations
+\item Controller class, for adding controllers onto models
+\item Simple PID, efficient PD, full state-feedback control schemes
+\item Multiple-input-single-output (MISO) GPR scheme
+\item Abstract kernel class and square-exponential kernel instance
+\item Two frequency estimation algorithms
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgf02655b}]{Yet to code}
+\begin{itemize}
+\item Multiple-input-multiple-output (MIMO) GPR
+\item Period windowing
+\item Hyperparameter optimisation
+\item Periodic orbit prediction, correction
+\end{itemize}
+\end{frame}
+
+\section{Periodic modelling}
+\label{sec:orgaa0cafd}
+
+\begin{frame}[label={sec:orgef4ddb9}]{MIMO GPR}
+\begin{itemize}
+\item Either a MISO GPR for each output dimension, or\ldots{}
+\item Rederive GPR equations for MIMO, and alter MISO GPR class for the new MIMO behaviours
+\end{itemize}
+
+Former works only if each output dimension is assumed to be statistically independent.
+
+\begin{itemize}
+\item There's python libraries for GPR, but hyperparameter optimisation is particularly important for this application, so it's going to be easier to just code up a custom one
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org1bd2557}]{Period windowing (1)}
+\begin{itemize}
+\item We have a periodic signal \(f(t')\), taken from our observed system output (here, neuron spikes)
+\item We wish to split it into windows \(f_1(t), f_2(t), \dots\), \(t\in[0,1]\), such that \(f_i(1)=f_{i+1}(0)\) (periodicity)
+\item Then \(f_i(t)\) is a function representing the \(i\)'th period of the signal
+\begin{itemize}
+\item Eg. if \(f(t')=\sin(\frac{t'}{2\pi})\) with \(t\in[0,\infty)\), then \(f_1(t) = \sin(\frac{t}{2\pi})\), \(f_2(t) = \sin(\frac{t}{2\pi} + 2\pi)\), \(f_3(t) = \sin(\frac{t}{2\pi} + 4\pi)\), \(\dots\), with \(t\in[0,1]\)
+\item By periodicity we have \(f_i(t) = f_j(t)\), and \(f_i(1)=f_{i+1}(0)\)
+\end{itemize}
+\item Fitting a model \(t\to f_i(t)\) to these function observations gives us the periodic orbit model \(f^*(t)\) at the current parameter value
+\item It's hard to split data up into these periods!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgad5d32b}]{Period windowing (2)}
+Current windowing method:
+\begin{enumerate}
+\item Use autocorrelation methods to estimate fundamental frequency
+\item Use nonlinear least squares to refine this estimate
+\item Use the fundamental frequency estimate to partition data into cycles of period \(1/f_0\)
+\end{enumerate}
+
+Issue:
+\begin{itemize}
+\item Fundamental freqency estimation is subject to fairly large numerical errors (c. 1\%)
+\item Any numerical errors will cascade, so that we end up with \(f_1(t+\phi), f_2(t+2\phi),\dots\), which we can't accurately learn a model from
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[label={sec:org2511904}]{Period windowing (3)}
+Solution: since we can't accurately split up data, do it approximately and use the hyperparameter optimisation to refine it:
+
+\begin{itemize}
+\item Say data \(x_i\) was observed at time \(t'_i\)
+\item Rescale \(t'\) to \(t = at' + b\), so that\ldots{}
+\begin{itemize}
+\item \(t_i=0\) when \(x_i\) is the first datapoint in the period
+\item \(t_i=1\) when \(x_i\) is the last datapoint in the period
+\end{itemize}
+\item For accurate \(f_0\) estimation, let \(T = 1/f_0\); then for the \(k\)'th period,
+\begin{itemize}
+\item \(a_k = 1/T = f_0\) and \(b_k = kT = k/f_0\), so
+\item \(t = t'/T + kT\)
+\end{itemize}
+\end{itemize}
+
+But since the \(f_0\) estimate isn't accurate, take these values of \(a_k\), \(b_k\) as an initial estimate, then refine them by optimising alongside the other hyperparameters
+\end{frame}
+
+
+\section{GPR stuff}
+\label{sec:org363e613}
+\begin{frame}[label={sec:org9096923}]{Hyperparameter optimisation}
+\begin{itemize}
+\item Log-marginal-likelihood, \(p(y|X)\), gives the probability of seeing the outputs, given only the inputs
+\item Describes how well the class of model fits the data, independently of how well the model is actually fitted
+\item To optimise the hyperparameters, maximise this
+\begin{itemize}
+\item For a SE kernel, hyperparameters are signal noise \(\sigma^2_n\), signal variance \(\sigma^2_f\), characteristic lengths (decorrelation distances) \(l\), and windowing parameters \(a_k, b_k\)
+\end{itemize}
+\end{itemize}
+
+We can leverage periodicity to force a faster fit, by maximising the performance index
+\[K = p(y|X) - \lambda\|f(1) - f(0)\|^2\]
+ for fitted model \(f\), where \(\lambda\) determines the significance of periodicity.
+\end{frame}
+
+\begin{frame}[label={sec:orgc4a00ad}]{Gaussian process priors}
+\begin{itemize}
+\item The GPR kernel (covariance function) encodes our prior assumptions about the model
+\item Better priors give better posteriors
+\item Since we know we're modelling a periodic function, we can build better models by encoding this information in the prior
+\item We want a kernel that expands into periodic basis functions
+\item I haven't read it yet, but Rasmussen ch.4 should contain enough information to figure out how to do this
+\end{itemize}
+\end{frame}
+
+\section{Next steps}
+\label{sec:org61b0b0b}
+\begin{frame}[label={sec:orgf8a2c5b}]{Open problems}
+\begin{itemize}
+\item Rederive GPR equations for MIMO, and implement
+\item Come up with an appropriate kernel for periodic functions
+\item Build a hyperparameter optimisation scheme
+\item Use it to implement periodic orbit segmentation
+\item Put it all together to make a nice periodic orbit learning scheme
+\item Use the learning scheme in a predictor-corrector
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org96a5440}]{Next steps}
+\begin{itemize}
+\item Finish the bits mentioned previously
+\item Write up some bits about how I did it and why (I'll forget otherwise!)
+\item Re-code it up in C++?
+\begin{itemize}
+\item Mainly just an excuse for me to learn / practice C++ for scientific computing, but also\ldots{}
+\item C++ is faster and more efficient, which would be useful for speeding up actual experiments
+\item Low-level language, which makes it easier to run on embedded devices
+\end{itemize}
+\item Package everything up as a python library?
+\begin{itemize}
+\item Written to be very general, extensible, and well-documented code, so this shouldn't be a difficult step
+\item Might make things easier for other people to test out CBC ideas
+\end{itemize}
+\end{itemize}
+\end{frame}
+\end{document}
