@@ -42,7 +42,6 @@
     * They're the equations of motion of a state
     * Relate the current state value to how the state value is currently changing
    
-
 ** 3 Differential equations for biology
 *** /System state/                                                  :B_block:
     :PROPERTIES:
@@ -80,7 +79,7 @@
    * These lines are called trajectories
    * The red circle is a periodic trajectory -- it loops round and round constantly
    * The blue dot is an equilibrium; if we start there, we'll stay there forever
-   * We call the way the states change, the `dynamics' of the system
+   * *We call the way the states change, the `dynamics' of the system*
    * The other lines are nullclines, which we don't have to worry about here
 
 ** 5 The role of parameters
@@ -106,11 +105,11 @@ Sensible question: what happens if we change them?
    * Generally, bifurcations concern the appearance and disappearance of these features
    * We also get things like period-doubling bifurcations, where a periodic orbit halves in speed, so that's not always the case
      
-
 ** 7 Biological bifurcations
-So, what is the significance of bifurcations in computational biology?
-
+So, why should biologists care about bifurcations?
 Epigenetics gives us a nice example
+
+\vfill
 
     * /Waddington describes cell specialisation like marbles rolling down a valley/
       * The marbles roll along, staying in the bottom of the valley, in the same way as cells remain in a specific specialisation state
@@ -123,7 +122,6 @@ Epigenetics gives us a nice example
 
     * /This is a nice example of a bifurcation!/
 
-
 ** 8 Biological bifurcations
    * We can describe this more mathematically using a bifurcation diagram
    * \(x\) axis shows the degree of specialisation, \(y\) axis shows cell fates
@@ -135,7 +133,7 @@ Epigenetics gives us a nice example
      
 ** 9 The role of bifurcation analysis in biology
 
-So, why should biologists care about bifurcations?   
+Bifurcation theory has some interesting applications to biology:
 
    * /Bifurcations can explain seisures, heart attacks, Parkinson's, and many other diseases!/
      * Dynamical diseases: pathological behaviours can arise from unwanted changes in the body's dynamics
@@ -184,7 +182,6 @@ CONTINUED
      * These are functions whose zero occur only when we have a bifurcation
    * Together, the tracking and testing setup lets us find bifurcations algorithmically
      
-     
 * Chapter 2
 ** 12 Bifurcation analysis of a bursting neuron
    * Neurons encode their information in spikes
@@ -201,7 +198,6 @@ CONTINUED
      * When we stop pretending \(z\) is constant, it will drive \(x,y\) -- the fast subsystem -- across the bifurcations we found earlier
    * We therefore use numerical continuation to find bifurcations in the \(x,y\) equations, when \(z\) is taken as a parameter
 
-     
 ** 14 Exploratory step
    * We start by simply simulating the \(x,y\) system for default parameter values
    * This gives us some idea of what to expect and where to start the analysis
@@ -239,6 +235,8 @@ CONTINUED
      
 * Chapter 3
 ** 19 Software tools
+   I did all these simulations in Python, but...
+\vfill
    /There's lots of software to do these sorts of calculations!/
     * The paper has comparison tables in, and provides recommendations of which software to use when
     * It's not a particularly exciting thing to put into a presentation, so I'm not going into any real detail about it

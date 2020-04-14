@@ -1,4 +1,4 @@
-% Created 2020-03-31 Tue 16:45
+% Created 2020-04-01 Wed 15:38
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,9 +30,9 @@
 \maketitle
 
 \section{Chapter 1}
-\label{sec:org714520e}
+\label{sec:org28ebb48}
 
-\begin{frame}[label={sec:orgfe9f2a2}]{1 TITLE PAGE}
+\begin{frame}[label={sec:org7985250}]{1 TITLE PAGE}
 \begin{itemize}
 \item Been working on a review paper recently
 \item Aims to introduce some mathematical ideas to a biological audience
@@ -43,7 +43,7 @@
 Review paper discusses bifurcations, their applications to biology, and the different software tools that are available for studying them.
 \end{frame}
 
-\begin{frame}[label={sec:org1b02e71}]{2 What is computational biology?}
+\begin{frame}[label={sec:org4201679}]{2 What is computational biology?}
 \begin{itemize}
 \item \emph{Goal: use maths to understand the mechanisms behind living processes}
 \begin{itemize}
@@ -71,7 +71,7 @@ Review paper discusses bifurcations, their applications to biology, and the diff
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orga834507}]{3 Differential equations for biology}
+\begin{frame}[label={sec:org09a7cdb}]{3 Differential equations for biology}
 \begin{block}{\emph{Ordinary differential equation}}
 \emph{Description of how a system state changes in time}
 \end{block}
@@ -84,8 +84,7 @@ Review paper discusses bifurcations, their applications to biology, and the diff
 \end{block}
 \end{frame}
 
-
-\begin{frame}[label={sec:org6e7f0a9}]{3 Differential equations for biology}
+\begin{frame}[label={sec:org456e10b}]{3 Differential equations for biology}
 \begin{block}{\emph{System state}}
 \emph{Minimal amount of information to describe something's behaviour}
 \end{block}
@@ -101,7 +100,7 @@ State at any one time contains all the information required to determine the sta
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org0b0a59d}]{3 Differential equations for biology}
+\begin{frame}[label={sec:org52ec30a}]{3 Differential equations for biology}
 \begin{block}{\emph{Nonlinear system}}
 \emph{A set of ordinary differential equations, where the change in state doesn't follow a simple proportional relationship}
 \end{block}
@@ -119,7 +118,7 @@ State at any one time contains all the information required to determine the sta
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org42f6382}]{4 Drawing pictures}
+\begin{frame}[label={sec:org81f327e}]{4 Drawing pictures}
 \begin{itemize}
 \item Phase plane diagrams let us draw pictures of differential equations
 \item This neuron model has state vars (x,y), so we can represent a state as a point on a plane
@@ -129,12 +128,12 @@ State at any one time contains all the information required to determine the sta
 \item These lines are called trajectories
 \item The red circle is a periodic trajectory -- it loops round and round constantly
 \item The blue dot is an equilibrium; if we start there, we'll stay there forever
-\item We call the way the states change, the `dynamics' of the system
+\item \alert{We call the way the states change, the `dynamics' of the system}
 \item The other lines are nullclines, which we don't have to worry about here
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org97c9416}]{5 The role of parameters}
+\begin{frame}[label={sec:orgc5cc56a}]{5 The role of parameters}
 \emph{Every equation has parameters:}
 (If we treat coefficients as parameters,) it's impossible to write an equation without them.
 \begin{itemize}
@@ -155,7 +154,7 @@ State at any one time contains all the information required to determine the sta
 Sensible question: what happens if we change them?
 \end{frame}
 
-\begin{frame}[label={sec:org9081dfc}]{6 Bifurcations}
+\begin{frame}[label={sec:orga68f3e2}]{6 Bifurcations}
 Bifurcation theory studies how system dynamics change as we vary parameters.
 
 \begin{itemize}
@@ -166,11 +165,11 @@ Bifurcation theory studies how system dynamics change as we vary parameters.
 \end{itemize}
 \end{frame}
 
-
-\begin{frame}[label={sec:org94255c3}]{7 Biological bifurcations}
-So, what is the significance of bifurcations in computational biology?
-
+\begin{frame}[label={sec:org476f495}]{7 Biological bifurcations}
+So, why should biologists care about bifurcations?
 Epigenetics gives us a nice example
+
+\vfill
 
 \begin{itemize}
 \item \emph{Waddington describes cell specialisation like marbles rolling down a valley}
@@ -190,8 +189,7 @@ Epigenetics gives us a nice example
 \end{itemize}
 \end{frame}
 
-
-\begin{frame}[label={sec:org1a187cb}]{8 Biological bifurcations}
+\begin{frame}[label={sec:org233cae7}]{8 Biological bifurcations}
 \begin{itemize}
 \item We can describe this more mathematically using a bifurcation diagram
 \item \(x\) axis shows the degree of specialisation, \(y\) axis shows cell fates
@@ -203,8 +201,8 @@ Epigenetics gives us a nice example
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgdbf6a08}]{9 The role of bifurcation analysis in biology}
-So, why should biologists care about bifurcations?   
+\begin{frame}[label={sec:orgdcdd20c}]{9 The role of bifurcation analysis in biology}
+Bifurcation theory has some interesting applications to biology:
 
 \begin{itemize}
 \item \emph{Bifurcations can explain seisures, heart attacks, Parkinson's, and many other diseases!}
@@ -217,7 +215,7 @@ So, why should biologists care about bifurcations?
 \end{itemize}
 CONTINUED 
 \end{frame}
-\begin{frame}[label={sec:org733f0f7}]{9 The role of bifurcation analysis in biology}
+\begin{frame}[label={sec:org8328038}]{9 The role of bifurcation analysis in biology}
 \begin{itemize}
 \item \emph{Bifurcations can be used to explain the functionality of biological systems}
 \begin{itemize}
@@ -229,7 +227,7 @@ CONTINUED
 \end{itemize}
 CONTINUED 
 \end{frame}
-\begin{frame}[label={sec:org830f158}]{9 The role of bifurcation analysis in biology}
+\begin{frame}[label={sec:orgfc40892}]{9 The role of bifurcation analysis in biology}
 \begin{itemize}
 \item \emph{Bifurcations can be used to design biological systems}
 \begin{itemize}
@@ -239,7 +237,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org35936a6}]{10 Methods for bifurcation analysis}
+\begin{frame}[label={sec:org09f77bc}]{10 Methods for bifurcation analysis}
 \begin{itemize}
 \item \emph{Analytic calculations}
 \begin{itemize}
@@ -258,7 +256,7 @@ CONTINUED
 CONTINUED 
 \end{frame}
 
-\begin{frame}[label={sec:org43896bf}]{10 Methods for bifurcation analysis}
+\begin{frame}[label={sec:org544f7d5}]{10 Methods for bifurcation analysis}
 \begin{itemize}
 \item \emph{Numerical continuation}
 \begin{itemize}
@@ -270,7 +268,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org5bc2c7c}]{11 Numerical continuation}
+\begin{frame}[label={sec:org1cb71d0}]{11 Numerical continuation}
 \begin{itemize}
 \item \emph{We use numerical continuation to track `interesting' points}
 \begin{itemize}
@@ -287,10 +285,9 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-
 \section{Chapter 2}
-\label{sec:orgaacdb9a}
-\begin{frame}[label={sec:org442d74e}]{12 Bifurcation analysis of a bursting neuron}
+\label{sec:org334fbc3}
+\begin{frame}[label={sec:org54016c9}]{12 Bifurcation analysis of a bursting neuron}
 \begin{itemize}
 \item Neurons encode their information in spikes
 \item They don't always spike consistently; sometimes they alternate between a period of spiking and a period of resting
@@ -300,7 +297,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org372215b}]{13 The Hindmarsh Rose model}
+\begin{frame}[label={sec:orgc79b9d0}]{13 The Hindmarsh Rose model}
 \begin{itemize}
 \item The plot shown previously was made by simulating the Hindmarsh Rose model, which gives a phenomenological model [EXPLAIN] for bursting neurons. We'll use that model here for the bifurcation analysis.
 \item The key thing to note is that \(r\) is very small
@@ -313,8 +310,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-
-\begin{frame}[label={sec:org27d5b72}]{14 Exploratory step}
+\begin{frame}[label={sec:org36db54a}]{14 Exploratory step}
 \begin{itemize}
 \item We start by simply simulating the \(x,y\) system for default parameter values
 \item This gives us some idea of what to expect and where to start the analysis
@@ -323,7 +319,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb6f45b5}]{15 Initialisation step}
+\begin{frame}[label={sec:orgae5a311}]{15 Initialisation step}
 \begin{itemize}
 \item This is the same diagram we saw earlier
 \item The equilibrium in the center is a good place to start a continuation from (it's generally hard to start at a periodic orbit), so here all we're doing is finding exactly where that equilibrium is
@@ -331,7 +327,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org23a6d7d}]{16 Equilibrium point curve}
+\begin{frame}[label={sec:org83abb81}]{16 Equilibrium point curve}
 \begin{itemize}
 \item We now take \(z\) as a parameter, and sweep it across a range of values
 \item We use numerical continuation to track how the equilibrium changes, as we vary \(z\)
@@ -342,7 +338,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org522a77c}]{17 Periodic orbit continuation}
+\begin{frame}[label={sec:orga384bf1}]{17 Periodic orbit continuation}
 \begin{itemize}
 \item The purple lines show the maximum and minimum of the periodic orbits
 \item If we were to look at the \(x,y\) plane, we would see a limit cycle here, much like the one we saw earlier
@@ -353,7 +349,7 @@ CONTINUED
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org24a174d}]{18 Full system dynamics}
+\begin{frame}[label={sec:org8f6d0b8}]{18 Full system dynamics}
 \begin{itemize}
 \item Here I've zoomed in on the area of parameter space where bursting occurs
 \item I've simulated the full system, including the \(z\) equation, and overlayed a trajectory onto the diagram
@@ -365,8 +361,10 @@ CONTINUED
 \end{frame}
 
 \section{Chapter 3}
-\label{sec:orgb498ca4}
-\begin{frame}[label={sec:org4861b79}]{19 Software tools}
+\label{sec:org7975561}
+\begin{frame}[label={sec:org388a792}]{19 Software tools}
+I did all these simulations in Python, but\ldots{}
+\vfill
 \emph{There's lots of software to do these sorts of calculations!}
 \begin{itemize}
 \item The paper has comparison tables in, and provides recommendations of which software to use when
