@@ -1,4 +1,4 @@
-% Created 2020-04-17 Fri 15:48
+% Created 2020-04-20 Mon 10:22
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:orgf6c7bd8}
-\begin{frame}[label={sec:orgcc330c9}]{This week's goals}
+\label{sec:org5796d9d}
+\begin{frame}[label={sec:orga725be2}]{This week's goals}
 \begin{itemize}
 \item Rederive GPR for vector outputs
 \begin{itemize}
@@ -50,14 +50,46 @@
 \end{frame}
 
 \section{Kernels}
-\label{sec:orge3b22d2}
-\begin{frame}[label={sec:org5a6045a}]{Model fitting -- it sort of works!}
+\label{sec:org31d5929}
+\begin{frame}[label={sec:org8a6519f}]{Last time\ldots{}}
+\begin{columns}
+\begin{column}{0.6\columnwidth}
 \begin{center}
-\includegraphics[height=.9\textheight]{./gpr1.pdf}
+\includegraphics[trim={0cm 10cm 0cm 10cm},width=.9\linewidth]{./slide.pdf}
 \end{center}
+\end{column}
+
+\begin{column}{0.4\columnwidth}
+Splitting data into periods turns out to be easy:
+
+\begin{itemize}
+\item Rescale time as \(t = t' / T \mod T\)
+\item Periodic kernels take care of this automatically
+\begin{itemize}
+\item Choosing an appropriate kernel can make life much easier
+\end{itemize}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+\begin{frame}[label={sec:org92d6518}]{Model fitting -- it sort of works!}
+\begin{columns}
+\begin{column}{0.6\columnwidth}
+\begin{center}
+\includegraphics[height=.85\textheight]{./gpr1.pdf}
+\end{center}
+\end{column}
+
+\begin{column}{0.4\columnwidth}
+\begin{itemize}
+\item Trying to model a Fitzhugh-Nagumo output with a Gaussian process
+\item Some wiggliness between datapoints (more on that later!) but it generally works
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org773a803}]{30 seconds intro to Gaussian processes}
+\begin{frame}[label={sec:org64da275}]{30 seconds intro to Gaussian processes}
 \begin{itemize}
 \item Gives us a Gaussian distribution at any given time
 \item That Gaussian distribution is the PDF of our function value at that time
@@ -67,7 +99,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org6d04eae}]{GPR kernels}
+\begin{frame}[label={sec:orgea39bb3}]{GPR kernels}
 \begin{itemize}
 \item They specify our prior distributions over functions
 \item Good kernels = good priors = good results
@@ -75,7 +107,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgefb0037}]{Periodic kernels}
+\begin{frame}[label={sec:org3b7186d}]{Periodic kernels}
 Data are periodic, so it makes sense to have a kernel that's periodic 
 
 \begin{itemize}
@@ -85,7 +117,7 @@ Data are periodic, so it makes sense to have a kernel that's periodic
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org2500959}]{Aperiodic kernels}
+\begin{frame}[label={sec:orgb526f10}]{Aperiodic kernels}
 To avoid period-errors, use an aperiodic kernel and overlay each period's data on top of each other
 
 \begin{itemize}
@@ -95,7 +127,7 @@ To avoid period-errors, use an aperiodic kernel and overlay each period's data o
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org85c95b7}]{Hyperparameters}
+\begin{frame}[label={sec:orgaa08836}]{Hyperparameters}
 Both periodic and aperiodic kernels rely on hyperparameters; often\ldots{}
 \begin{itemize}
 \item \(l\): how similar nearby datapoints are
@@ -110,7 +142,7 @@ There's an interplay between kernel choice and hyperparameter selection:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org28d3acd}]{Characteristic lengths}
+\begin{frame}[label={sec:org84f3eea}]{Characteristic lengths}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 \begin{center}
@@ -134,13 +166,13 @@ Bigger version on the next slide
 \end{columns}
 \end{frame}
 
-\begin{frame}[plain,label={sec:org3de7fed}]{Characteristic lengths}
+\begin{frame}[plain,label={sec:orgfc01200}]{Characteristic lengths}
 \begin{center}
 \includegraphics[height=1.2\textheight]{./ls.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org27c7500}]{The effects of \(l\)}
+\begin{frame}[label={sec:orgabb781e}]{The effects of \(l\)}
 \begin{columns}
 \begin{column}{0.7\columnwidth}
 \begin{center}
@@ -156,32 +188,34 @@ Bigger version on the next slide
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org9112c1b}]{Solution}
+\begin{frame}[label={sec:org1569479}]{Solution}
 There's kernels for modelling variable \(l\), but\ldots{}
 \begin{itemize}
-\item \(l\) becomes a function in space
+\item \(l\) itself becomes a function of input variables
 \item No longer a single hyperparameter to fit, but an enitre hyperfunction
 \item Hyperparameter space goes from 3-dimensional to infinite!
 \item One approach models the \(l\) function as a Gaussian process, and demonstrates an efficient / computationally tractable way of fitting it
-\item The paper is hard
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orga094890}]{Generalised spectral mixture kernels}
+\begin{frame}[label={sec:org5c0304c}]{Generalised spectral mixture kernels}
 \begin{itemize}
 \item Use GPR to generate a kernel for the specific input data
 \item Provides a tractable way of fitting this kernel
 \item Once fitted for one periodic orbit, it will still work well for the rest
 \item Automatically deals with periodicity, non-stationarity, so we resolve the periodic kernel dilemma!
+\item The paper is hard
 \end{itemize}
+
+\vfill
 
 Remes, Sami, Markus Heinonen, and Samuel Kaski. "Non-stationary spectral kernels." Advances in Neural Information Processing Systems. 2017.
 \end{frame}
 
 
 \section{Next steps}
-\label{sec:org179cbc4}
-\begin{frame}[label={sec:orgebbee8a}]{Next steps}
+\label{sec:orgfbcaf8b}
+\begin{frame}[label={sec:orga4fd8c5}]{Next steps}
 \begin{itemize}
 \item Work through the paper to understanding
 \begin{itemize}

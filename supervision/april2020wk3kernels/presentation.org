@@ -17,10 +17,39 @@
      * Not got this far yet
 
 * Kernels
-** Model fitting -- it sort of works!
+** Last time...
+*** SLIDE :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+#+ATTR_LATEX: :options trim={0cm 10cm 0cm 10cm}
+[[./slide.pdf]]
 
-   #+ATTR_LATEX: :height .9\textheight
+*** TEXT :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+    
+Splitting data into periods turns out to be easy:
+
+    * Rescale time as \(t = t' / T \mod T\)
+    * Periodic kernels take care of this automatically
+      * Choosing an appropriate kernel can make life much easier
+** Model fitting -- it sort of works!
+*** FIG :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+   #+ATTR_LATEX: :height .85\textheight
    [[./gpr1.pdf]]
+   
+*** TEXT :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+    
+    * Trying to model a Fitzhugh-Nagumo output with a Gaussian process
+    * Some wiggliness between datapoints (more on that later!) but it generally works
 
 ** 30 seconds intro to Gaussian processes
    * Gives us a Gaussian distribution at any given time
@@ -105,11 +134,10 @@ Bigger version on the next slide
    
 ** Solution
    There's kernels for modelling variable \(l\), but...
-     * \(l\) becomes a function in space
+     * \(l\) itself becomes a function of input variables
      * No longer a single hyperparameter to fit, but an enitre hyperfunction
      * Hyperparameter space goes from 3-dimensional to infinite!
      * One approach models the \(l\) function as a Gaussian process, and demonstrates an efficient / computationally tractable way of fitting it
-     * The paper is hard
        
 ** Generalised spectral mixture kernels
 
@@ -117,6 +145,9 @@ Bigger version on the next slide
    * Provides a tractable way of fitting this kernel
    * Once fitted for one periodic orbit, it will still work well for the rest
    * Automatically deals with periodicity, non-stationarity, so we resolve the periodic kernel dilemma!
+   * The paper is hard
+     
+\vfill
    
 Remes, Sami, Markus Heinonen, and Samuel Kaski. "Non-stationary spectral kernels." Advances in Neural Information Processing Systems. 2017.
 
