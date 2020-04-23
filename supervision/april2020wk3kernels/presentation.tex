@@ -1,4 +1,4 @@
-% Created 2020-04-20 Mon 10:22
+% Created 2020-04-20 Mon 10:27
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:org5796d9d}
-\begin{frame}[label={sec:orga725be2}]{This week's goals}
+\label{sec:org44fefbd}
+\begin{frame}[label={sec:org3a90747}]{This week's goals}
 \begin{itemize}
 \item Rederive GPR for vector outputs
 \begin{itemize}
@@ -50,8 +50,8 @@
 \end{frame}
 
 \section{Kernels}
-\label{sec:org31d5929}
-\begin{frame}[label={sec:org8a6519f}]{Last time\ldots{}}
+\label{sec:org0262886}
+\begin{frame}[label={sec:orgb0a4e3b}]{Last time\ldots{}}
 \begin{columns}
 \begin{column}{0.6\columnwidth}
 \begin{center}
@@ -72,7 +72,7 @@ Splitting data into periods turns out to be easy:
 \end{column}
 \end{columns}
 \end{frame}
-\begin{frame}[label={sec:org92d6518}]{Model fitting -- it sort of works!}
+\begin{frame}[label={sec:org06671a7}]{Model fitting -- it sort of works!}
 \begin{columns}
 \begin{column}{0.6\columnwidth}
 \begin{center}
@@ -89,17 +89,17 @@ Splitting data into periods turns out to be easy:
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org64da275}]{30 seconds intro to Gaussian processes}
+\begin{frame}[label={sec:org05c7433}]{30 seconds intro to Gaussian processes}
 \begin{itemize}
-\item Gives us a Gaussian distribution at any given time
-\item That Gaussian distribution is the PDF of our function value at that time
-\item Works by maintaining a probability distribution over candidate functions
-\item Constructed by using Bayes' rule to condition on the evidence and form a posterior function distribution
-\item Bayes' rule needs good priors!
+\item Here, takes time as an input, and outputs a Gaussian distribution at that time
+\item The Gaussian distribution is the probability distribution of our function value, at that time
+\item This works by maintaining a probability distribution over candidate functions
+\item Bayes' rule is to condition on the evidence, and form a posterior function distribution
+\item \emph{Bayes' rule needs good priors!}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgea39bb3}]{GPR kernels}
+\begin{frame}[label={sec:org66be8b1}]{GPR kernels}
 \begin{itemize}
 \item They specify our prior distributions over functions
 \item Good kernels = good priors = good results
@@ -107,7 +107,7 @@ Splitting data into periods turns out to be easy:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3b7186d}]{Periodic kernels}
+\begin{frame}[label={sec:org837e8cc}]{Periodic kernels}
 Data are periodic, so it makes sense to have a kernel that's periodic 
 
 \begin{itemize}
@@ -117,7 +117,7 @@ Data are periodic, so it makes sense to have a kernel that's periodic
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb526f10}]{Aperiodic kernels}
+\begin{frame}[label={sec:org1bdb697}]{Aperiodic kernels}
 To avoid period-errors, use an aperiodic kernel and overlay each period's data on top of each other
 
 \begin{itemize}
@@ -127,7 +127,7 @@ To avoid period-errors, use an aperiodic kernel and overlay each period's data o
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgaa08836}]{Hyperparameters}
+\begin{frame}[label={sec:org9477670}]{Hyperparameters}
 Both periodic and aperiodic kernels rely on hyperparameters; often\ldots{}
 \begin{itemize}
 \item \(l\): how similar nearby datapoints are
@@ -142,7 +142,7 @@ There's an interplay between kernel choice and hyperparameter selection:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org84f3eea}]{Characteristic lengths}
+\begin{frame}[label={sec:org02735a2}]{Characteristic lengths}
 \begin{columns}
 \begin{column}{0.4\columnwidth}
 \begin{center}
@@ -166,13 +166,13 @@ Bigger version on the next slide
 \end{columns}
 \end{frame}
 
-\begin{frame}[plain,label={sec:orgfc01200}]{Characteristic lengths}
+\begin{frame}[plain,label={sec:org5e7211f}]{Characteristic lengths}
 \begin{center}
 \includegraphics[height=1.2\textheight]{./ls.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgabb781e}]{The effects of \(l\)}
+\begin{frame}[label={sec:orgedc8584}]{The effects of \(l\)}
 \begin{columns}
 \begin{column}{0.7\columnwidth}
 \begin{center}
@@ -188,7 +188,7 @@ Bigger version on the next slide
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org1569479}]{Solution}
+\begin{frame}[label={sec:org98cafa9}]{Solution}
 There's kernels for modelling variable \(l\), but\ldots{}
 \begin{itemize}
 \item \(l\) itself becomes a function of input variables
@@ -198,7 +198,7 @@ There's kernels for modelling variable \(l\), but\ldots{}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org5c0304c}]{Generalised spectral mixture kernels}
+\begin{frame}[label={sec:org10fb20b}]{Generalised spectral mixture kernels}
 \begin{itemize}
 \item Use GPR to generate a kernel for the specific input data
 \item Provides a tractable way of fitting this kernel
@@ -214,8 +214,8 @@ Remes, Sami, Markus Heinonen, and Samuel Kaski. "Non-stationary spectral kernels
 
 
 \section{Next steps}
-\label{sec:orgfbcaf8b}
-\begin{frame}[label={sec:orga4fd8c5}]{Next steps}
+\label{sec:orgd62692b}
+\begin{frame}[label={sec:org0b0ac5a}]{Next steps}
 \begin{itemize}
 \item Work through the paper to understanding
 \begin{itemize}

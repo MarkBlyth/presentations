@@ -52,11 +52,11 @@ Splitting data into periods turns out to be easy:
     * Some wiggliness between datapoints (more on that later!) but it generally works
 
 ** 30 seconds intro to Gaussian processes
-   * Gives us a Gaussian distribution at any given time
-   * That Gaussian distribution is the PDF of our function value at that time
-   * Works by maintaining a probability distribution over candidate functions
-   * Constructed by using Bayes' rule to condition on the evidence and form a posterior function distribution
-   * Bayes' rule needs good priors!
+   * Here, takes time as an input, and outputs a Gaussian distribution at that time
+   * The Gaussian distribution is the probability distribution of our function value, at that time
+   * This works by maintaining a probability distribution over candidate functions
+   * Bayes' rule is to condition on the evidence, and form a posterior function distribution
+   * /Bayes' rule needs good priors!/
      
 ** GPR kernels
    * They specify our prior distributions over functions
