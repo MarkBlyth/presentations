@@ -211,16 +211,18 @@ Source: Heinonen, Markus, et al. "Non-stationary gaussian process regression wit
 * The GP choice
 ** Choice of GPs
    * Spectral kernels and the pictured nonstationary GP method will both work well for neuron data
-   * The best method is the one that's
-     * quickest to train
-     * easiest to implement
-   * More advanced learning methods are harder to understand and implement
-     * Instead of spending weeks reinventing the wheel, existing codes should be used
+   * The spectral method
+     * allows sparsity, so is fast to train
+     * provides efficient, easy methods for fitting latent function hyperparameters
+     * provides state-of-the-art results
+     * has efficient open-source code available, so is easier to use
        
+That's therefore the method of choice
+
 \vfill
 
-Which one of these two I choose therefore depends on what software implementations are available.
-   
+Remes, Sami, Markus Heinonen, and Samuel Kaski. "Neural Non-Stationary Spectral Kernel." arXiv preprint arXiv:1811.10978 (2018).
+
 
 * Next steps
 ** Next steps
