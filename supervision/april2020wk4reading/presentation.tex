@@ -1,4 +1,4 @@
-% Created 2020-04-23 Thu 16:41
+% Created 2020-04-27 Mon 11:02
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:org351f798}
-\begin{frame}[label={sec:orge7f418c}]{Week's goal}
+\label{sec:org2f5398a}
+\begin{frame}[label={sec:org62c7434}]{Week's goal}
 Last week\ldots{}
 \begin{itemize}
 \item Kernel choice is critical to getting usable results from a GP (moreso than hyperparameters?)
@@ -47,7 +47,7 @@ This week\ldots{}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org0e69d41}]{Week's activities}
+\begin{frame}[label={sec:orgaf9099c}]{Week's activities}
 \begin{itemize}
 \item Read about modelling non-stationarity in GPs
 \begin{itemize}
@@ -67,7 +67,7 @@ This week\ldots{}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3d89569}]{Presentation points}
+\begin{frame}[label={sec:org191da3b}]{Presentation points}
 \begin{enumerate}
 \item Highlight what the requirements are for \emph{in silico} experiments
 \begin{itemize}
@@ -90,8 +90,8 @@ This week\ldots{}
 
 
 \section{GP requirements}
-\label{sec:org09367fb}
-\begin{frame}[label={sec:org8007db6}]{Why GPs?}
+\label{sec:org8ae88c9}
+\begin{frame}[label={sec:orgbcf2461}]{Why GPs?}
 Always useful to remember why we're doing things!
 
 \vfill
@@ -114,7 +114,7 @@ Always useful to remember why we're doing things!
 This usage case defines our requirements of the Gaussian processes
 \end{frame}
 
-\begin{frame}[label={sec:org1ad597d}]{The best GP}
+\begin{frame}[label={sec:orgeb4d41c}]{The best GP}
 The best Gaussian process model satisfies the following:
 
 \vfill
@@ -140,7 +140,37 @@ The best Gaussian process model satisfies the following:
 How simple we can go depends on the data we expect to see
 \end{frame}
 
-\begin{frame}[label={sec:orgb4efd0a}]{Data characteristics for \emph{in silico} CBC}
+\begin{frame}[label={sec:org367854f}]{Nice GPs}
+A \emph{`nice'} Gaussian process is stationary:
+
+\vfill
+
+\begin{itemize}
+\item Strong stationarity: moments (hyperparameters) remain constant across the signal
+\item Weak stationarity: mean, variance remain constant across the signal
+\item Standard kernels assume stationarity
+\item Stationary GP models are analytically tractable, with simple closed-form solutions
+\end{itemize}
+
+\vfill
+\end{frame}
+
+\begin{frame}[label={sec:org34070bc}]{Practical GPs}
+Realistic data aren't stationary; there's two main approaches to handle this:
+
+\vfill
+
+\begin{itemize}
+\item Learn a transformation of the data, so that the transformed data are stationary
+\item Learn a kernel that can handle the non-stationarity observed in the signal
+\end{itemize}
+
+\vfill
+
+Non-stationary models are not always analytically tractable, and require more advanced solution methods.
+\end{frame}
+
+\begin{frame}[label={sec:org669b97f}]{Data characteristics for \emph{in silico} CBC}
 With computer experiments, we have\ldots{}
 
 \vfill
@@ -161,22 +191,11 @@ With computer experiments, we have\ldots{}
 \item Noise can have constant variance
 \end{itemize}
 \end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:org561662a}]{Choice of GPs for \emph{in silico} CBC}
-\begin{itemize}
-\item Small amounts of data mean we don't need any clever speedup methods
-\item Constant-variance noise means we don't need to try modelling heteroscedastic behaviours
-\item Gaussian noise means we don't have warp data into a Gaussian process
-\item Multiple-timescale dynamics mean we can't rely on stationarity
-\end{itemize}
-
-\vfill
 
 The only non-standard requirement is that the covariance function must be non-stationary.
 \end{frame}
 
-\begin{frame}[label={sec:org8a183d6}]{Data characteristics for \emph{in vitro} CBC}
+\begin{frame}[label={sec:org3698cd0}]{Data characteristics for \emph{in vitro} CBC}
 With real experiments, we have\ldots{}
 
 \vfill
@@ -194,7 +213,7 @@ With real experiments, we have\ldots{}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb8e270c}]{Issues with GPs for \emph{in vitro} CBC}
+\begin{frame}[label={sec:org949970f}]{Issues with GPs for \emph{in vitro} CBC}
 \begin{itemize}
 \item Lots of data
 \begin{itemize}
@@ -219,38 +238,8 @@ Luckily there's a range of solutions to all these problems!
 
 
 \section{Fancy GPs}
-\label{sec:orgc823da4}
-\begin{frame}[label={sec:org0fcf95c}]{Nice GPs}
-A \emph{`nice'} Gaussian process is stationary:
-
-\vfill
-
-\begin{itemize}
-\item Strong stationarity: moments (hyperparameters) remain constant across the signal
-\item Weak stationarity: mean, variance remain constant across the signal
-\item Standard kernels assume stationarity
-\item Stationary GP models are analytically tractable, with simple closed-form solutions
-\end{itemize}
-
-\vfill
-\end{frame}
-
-\begin{frame}[label={sec:org3bc0707}]{Practical GPs}
-Realistic data aren't stationary; there's two main approaches to handle this:
-
-\vfill
-
-\begin{itemize}
-\item Learn a transformation of the data, so that the transformed data are stationary
-\item Learn a kernel that can handle the non-stationarity observed in the signal
-\end{itemize}
-
-\vfill
-
-Non-stationary models are not always analytically tractable, and require more advanced solution methods.
-\end{frame}
-
-\begin{frame}[label={sec:org8ef5ee7}]{Warping GPs}
+\label{sec:org8549c92}
+\begin{frame}[label={sec:orga7b3dec}]{Warping GPs}
 \begin{itemize}
 \item Gaussian proesses assume observations are distributed Gaussian'ly about a true function value
 \item When this isn't true, we can try to learn a transformation from the original data to some latent variables, such that the latent variables \emph{are} Gaussian
@@ -260,7 +249,7 @@ Non-stationary models are not always analytically tractable, and require more ad
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org04dfb42}]{Nonstationary Gaussian processes}
+\begin{frame}[label={sec:org7612fc3}]{Nonstationary Gaussian processes}
 \begin{itemize}
 \item Take the standard square-exponential kernel
 \item Replace the hyperparameters with latent functions (while retaining PD)
@@ -273,7 +262,7 @@ Non-stationary models are not always analytically tractable, and require more ad
 \end{itemize}
 \end{frame}
 
-\begin{frame}[plain,label={sec:orgcc737d5}]{Nonstationary GPs work well on biological data}
+\begin{frame}[plain,label={sec:orgddc51b3}]{Nonstationary GPs work well on biological data}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./nonstationary.png}
 \end{center}
@@ -285,7 +274,7 @@ Source: Heinonen, Markus, et al. "Non-stationary gaussian process regression wit
 \emph{This also shows how important kernel choice is -- couldn't do that with an SE kernel!}
 \end{frame}
 
-\begin{frame}[label={sec:org588a13d}]{Spectral kernels}
+\begin{frame}[label={sec:org01a81ff}]{Spectral kernels}
 \begin{itemize}
 \item Bochner's theorem relates the power spectrum of a signal to its covariance
 \item A custom kernel can be designed by fitting a GP to the signal power spectrum, and inverse-Fourier-transforming the result
@@ -304,7 +293,7 @@ Source: Heinonen, Markus, et al. "Non-stationary gaussian process regression wit
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org4542752}]{Sparse Gaussian processes}
+\begin{frame}[label={sec:org90ef1f1}]{Sparse Gaussian processes}
 \begin{itemize}
 \item Gaussian processes train in \(\mathcal{O}(n^3)\); this is too slow for \(n>\mathcal{O}(10^3)\) datapoints
 \item When faced with big data, we could train a GP by selecting a subset of data to work with
@@ -326,8 +315,8 @@ Source: Heinonen, Markus, et al. "Non-stationary gaussian process regression wit
 
 
 \section{The GP choice}
-\label{sec:orgc7fe757}
-\begin{frame}[label={sec:org712d0cf}]{Choice of GPs}
+\label{sec:org56758db}
+\begin{frame}[label={sec:org41aeab6}]{Choice of GPs}
 \begin{itemize}
 \item Spectral kernels and the pictured nonstationary GP method will both work well for neuron data
 \item The spectral method
@@ -346,10 +335,19 @@ That's therefore the method of choice
 Remes, Sami, Markus Heinonen, and Samuel Kaski. "Neural Non-Stationary Spectral Kernel." arXiv preprint arXiv:1811.10978 (2018).
 \end{frame}
 
+\begin{frame}[plain,label={sec:orgc18fcd8}]{}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./niceplot.png}
+\end{center}
+\end{frame}
 
 \section{Next steps}
-\label{sec:orgfc7ebd5}
-\begin{frame}[label={sec:orgc24583a}]{Next steps}
+\label{sec:org096e920}
+\begin{frame}[label={sec:orgbb19b69}]{Next steps}
+Coursework marking, then\ldots{}
+
+\vfill
+
 \begin{itemize}
 \item Days / immediate: Go back and make changes to the continuation paper
 \item Week  / medium-term: (Once the paper is finished), find code for, implement, and test the chosen GP scheme

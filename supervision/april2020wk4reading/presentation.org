@@ -77,6 +77,30 @@ The best Gaussian process model satisfies the following:
 
 How simple we can go depends on the data we expect to see
 	
+** Nice GPs
+A /`nice'/ Gaussian process is stationary:
+
+\vfill
+
+    * Strong stationarity: moments (hyperparameters) remain constant across the signal
+    * Weak stationarity: mean, variance remain constant across the signal
+    * Standard kernels assume stationarity
+    * Stationary GP models are analytically tractable, with simple closed-form solutions
+
+\vfill
+
+** Practical GPs
+Realistic data aren't stationary; there's two main approaches to handle this:
+
+\vfill
+
+    * Learn a transformation of the data, so that the transformed data are stationary
+    * Learn a kernel that can handle the non-stationarity observed in the signal
+
+\vfill
+
+Non-stationary models are not always analytically tractable, and require more advanced solution methods.
+
 ** Data characteristics for /in silico/ CBC
 
 With computer experiments, we have...
@@ -91,18 +115,9 @@ With computer experiments, we have...
       * We know exactly what the noise distribution is
       * Noise can be exactly Gaussian
       * Noise can have constant variance
-	
-** Choice of GPs for /in silico/ CBC
-
-   * Small amounts of data mean we don't need any clever speedup methods
-   * Constant-variance noise means we don't need to try modelling heteroscedastic behaviours
-   * Gaussian noise means we don't have warp data into a Gaussian process
-   * Multiple-timescale dynamics mean we can't rely on stationarity
-
-\vfill
 
 The only non-standard requirement is that the covariance function must be non-stationary.
-
+	
 ** Data characteristics for /in vitro/ CBC
    
 With real experiments, we have...
@@ -132,30 +147,6 @@ Luckily there's a range of solutions to all these problems!
 
 
 * Fancy GPs
-** Nice GPs
-A /`nice'/ Gaussian process is stationary:
-
-\vfill
-
-    * Strong stationarity: moments (hyperparameters) remain constant across the signal
-    * Weak stationarity: mean, variance remain constant across the signal
-    * Standard kernels assume stationarity
-    * Stationary GP models are analytically tractable, with simple closed-form solutions
-
-\vfill
-
-** Practical GPs
-Realistic data aren't stationary; there's two main approaches to handle this:
-
-\vfill
-
-    * Learn a transformation of the data, so that the transformed data are stationary
-    * Learn a kernel that can handle the non-stationarity observed in the signal
-
-\vfill
-
-Non-stationary models are not always analytically tractable, and require more advanced solution methods.
-
 ** Warping GPs
    * Gaussian proesses assume observations are distributed Gaussian'ly about a true function value
    * When this isn't true, we can try to learn a transformation from the original data to some latent variables, such that the latent variables /are/ Gaussian
@@ -223,9 +214,20 @@ That's therefore the method of choice
 
 Remes, Sami, Markus Heinonen, and Samuel Kaski. "Neural Non-Stationary Spectral Kernel." arXiv preprint arXiv:1811.10978 (2018).
 
+** 
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./niceplot.png]]
+
 
 * Next steps
 ** Next steps
+Coursework marking, then...
+
+\vfill
+
     * Days / immediate: Go back and make changes to the continuation paper
     * Week  / medium-term: (Once the paper is finished), find code for, implement, and test the chosen GP scheme
     * Weeks / longer-term: code the predictor-corrector methods, giving a completed CBC code
