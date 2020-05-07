@@ -1,0 +1,221 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: SOTA GPRs for neural data
+#+DATE:
+
+* Background
+** Goals
+   * Redraft the continuation paper
+     * Week 1
+   * Implement and test some GP schemes
+     * Week 2
+
+* GPs
+** My SEKernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./cosinekernel1.pdf]]
+
+\vfill
+Reasonable fit, but fixed lengthscales means it struggles at timescale changes. Good baseline. Bad for real neurons.
+
+** My SEKernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./cosinekernel2.pdf]]
+
+\vfill
+Reasonable fit, but fixed lengthscales means it struggles at timescale changes. Good baseline. Bad for real neurons.
+
+** Generalised nonstationary spectral kernels
+   * Method identified in the literature review as being applicable to neuron data
+   * Fits into a sparse GP framework -- good for experiments
+   * Models nonstationarity -- varying length scales, function variance
+     * Lengthscales quantify local similarity (think: wiggliness)
+     * Multiple timescale dynamics means wiggliness changes across the signal
+   * Open source code available!
+
+\vfill
+https://github.com/sremes/nssm-gp
+
+** Published results
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+[[./niceplot.png]]
+
+Provides state-of-the-art performance on test data
+
+** My results
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[./neural_gsm.pdf]]
+
+It does look to have varying lengthscales, but it doesn't work well!
+
+** Possible issues
+   * I don't trust the code
+     * Provided code relies on outdated, incompatible tensorflow, GPFlow versions; wouldn't run
+     * I rewrote so it would run, but don't know tensorflow, GPFlow, so bad fit could be a code issue
+   * Not enough data?
+   * Bad training?
+     * I don't know anything about the tensorflow optimizers
+   * Generally bad method?
+     * This was tested using algos from a preprint
+     * A near-identical algo was published in a conference, might work better?
+
+** Other approaches
+Try other nonstationary kernels, or...
+\vfill
+   * Could use a good stationary kernel and hope its good enough
+   * Real neurons have very short, fast spikes. Could use one kernel for the spikes, and another for the rest
+   * GPFlow implements a switching kernel
+     * Develop some sort of algo to detect where to switch kernels
+     * Fit a switching kernel, based around these changepoints
+   * Could use hidden Markov chains for a piecewise model
+     
+** Other nonstationary kernels
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./nonstationary.png]]
+
+Source: Heinonen, Markus, et al. "Non-stationary gaussian process regression with hamiltonian monte carlo." Artificial Intelligence and Statistics. 2016.
+
+\vfill
+
+Similar idea to the method I already tried, but hopefully with more usable code.
+
+** Hidden Markov chain model
+   * Assume there's two dynamics, \(f_q(t)\) for quiescence, \(f_s(t)\) for spiking
+   * Each dynamics are modelled as a random process
+   * Hidden (latent) variable \(\theta\) dictates whether the neuron is spiking or quiescent
+   * \(\theta\) follows a random process to initiate the transition from quiescence to spiking
+   * Model: 
+\begin{equation}
+f(t,\theta) = 
+\begin{cases}
+f_q(t) & \quad \text{if } \theta=0\\
+f_s(t) & \quad \text{if } \theta=1
+\end{cases}
+\end{equation}
+    \vfill 
+Might be easy, might be hard
+
+** Good stationary kernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+#+ATTR_LATEX: :width .8\textwidth
+[[./fkl_1.pdf]]
+
+Uses the function-space distribution over kernels method; code adapted from
+
+https://github.com/wjmaddox/spectralgp
+
+** Good stationary kernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+#+ATTR_LATEX: :width .8\textwidth
+[[./fkl_2.pdf]]
+
+Uses the function-space distribution over kernels method; code adapted from
+
+https://github.com/wjmaddox/spectralgp
+
+** Good stationary kernel
+
+Caveat: 
+   * Fitzhugh-Nagumo is slower changing than real neuron data
+     * Real data would likely be strongly nonstationary, in which case this wouldn't work
+       \vfill
+   * Good stationary kernels would be useful for a switching kernel, or a hidden Markov chain model
+     * Have a good stationary kernel for the active phase
+     * Have a good stationary kernel for the quiescent phase
+     * Switch between them at the appropriate points
+
+** Good stationary kernel
+   
+Note:
+   * The stationary method shown here is a spectral mixture kernel  -- SMK
+   * The unsuccessful method was a generalised (nonstationary) spectral mixture kernel -- GSMK
+   * A GSMK can model any SMK
+     * Anything an SMK can model, a GSMK can model equally well
+     * Reverse is not true
+   * Unsuccessful results are likely down to practice (coding issues), rather than theory (invalid kernel choice)
+
+** Sidenote on GPFlow
+   * Based on tensorflow
+     * Very fast, very powerful
+   * Lots of the SOTA work uses GPFlow or GPyTorch
+   * Might be worth learning how to use it
+     * Can implement and test more advanced kernels that way
+
+* COMMENT Corrector design
+** Some thoughts on corrector design
+Two choices for corrector design -- discretised, or continuous
+    * Discretised:
+      * Potentially challenging to discretise
+      * Likely high-dimensional (needs lots of discretising points)
+      * Slow startup (requires at least one Jacobian computation)
+      * Fits in with existing methods (known to work, well-tested)
+      * Can use GP model as a `nice' (noise-free, everywhere-evaluatable) base to discretise from
+    * Continuous:
+      * Doesn't require discretisation
+      * No issues from high dimensonality
+      * Potentially faster as a result
+      * /Untried, undeveloped, and might not work/
+	
+** An idea for non-discretised correctors
+   * Main goal of CBC: find \(x^*(t)\) such that \(\forall t, u(x,x^*)=0\)
+   * Alternative formulation:
+     * Let \(S[x^*] = \int_0^T u^2(x,x^*) \mathrm{d}t\) measure control invasiveness
+     * \(S: \mathcal{H} \to \mathbb{R}\) is a functional on control actions \(x^*\)
+     * CBC becomes a calculus of variations problem; find \(x^*(t)\) that minimises \(S\)
+     * Calculus of variations provides a framework for finding minimising functions
+   * Calculus of variations
+     * Well-studied in optimal control; lots of precedent to build on
+     * Shifts the noninvasiveness requirement away from the continuation scheme, and onto the controller
+       
+** Variational noninvasiveness
+   * Idea:
+     * Set up CBC as a calculus of variations problem
+     * Reach noninvasiveness by minimising functional \(S\)
+     * Find a numerical method to do this though iterations on control target \(x^*(t)\)
+   * Use the variational equations to reformulate Newton iterations onto functions, rather than vectors
+   * Variational setup allows us to encode extra information about the system (control laws, etc.)
+     * Extra information can then be exploited for faster / more robust iterations
+     \vfill
+   * Might allow an efficient, discretisation-free corretion step
+   * Might just not work
+
+* Next steps
+** Next steps
+   * GPs are tricky on fast-changing data; I still think they'd be useful / worth the time and effort:
+     * Clean data source
+     * Could allow CBC to be interfaced with existing continuation methods...
+     * ...or could be used to make a novel, application-specific / discretization-free continuation method
+
+       \vfill
+
+   * More GPR testing
+     * Try other kernels (GPFlow periodic, Heinonen Hamiltonian Monte-Carlo, switching, \dots)
+     * Try to get GSM kernel to work?
+     * Switching kernels?
+     * Learn about Tensorflow and GPFlow?
