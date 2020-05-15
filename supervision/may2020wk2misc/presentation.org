@@ -1,0 +1,145 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: GPR on non-trivial data
+#+DATE:
+
+* Background
+** Week's work
+   * Redraft the continuations paper
+     * Done, but I want another full read
+   * Test GPR on various different cases
+     * Different models
+     * Stochastic and deterministic simulations
+     * Many and few datapoints
+   * Other stuff: tidied up my assortments of codes
+       
+* Models
+** Stochasticity
+
+   * Looked into stochastic neuron models
+     * They're hard -- requires stochastic calculus, stochastic integrators, etc., which I don't know anything about
+   * Produce all sorts of non-trivial dynamics
+     * Stochastic and coherence resonance
+     * P-bifurcations
+
+\vfill
+
+   * Very interesting area, but also another can of worms
+   * Suggestion: test GPR on deterministic models + noise, then move on to stochastics
+     * Start reading a stochastics textbook?
+
+** GPR testing
+   * Set up a script to generate lots of neuron simulations /[next slides]/
+   * Working on adding in the simpler kernels I've been playing with
+   * Goal: test...
+     * four models (FH, HR, HR fast, HH)...
+     * with three kernels (SE, modulo, cosine)...
+     * with and without noise
+   * 24 different cases
+     * The code structure makes it easy to switch between cases
+     * Taking a long time to fit each kernel (log-likelihood had an error!)
+
+** Neuron models - Fitzhugh Nagumo
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./clean_FH.pdf]]
+
+** Fitzhugh Nagumo, SEKernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./FH_SEKernel.pdf]]
+
+** Fitzhugh Nagumo, modulo kernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[./FH_Modulo.pdf]]
+
+** Fitzhugh Nagumo, cosine kernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[./FH_CosineKernel.pdf]]
+
+** Neuron models - Hindmarsh Rose fast subsystem
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./noisy_HR_fast.pdf]]
+
+** Neuron models - Hodgkin Huxley
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./noisy_HH.pdf]]
+
+(This took a long time!)
+
+** Hodgkin Huxley SEKernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./HH_SEKernel.pdf]]
+
+** Hodgkin Huxley SEKernel
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./HH_noise.pdf]]
+
+** Neuron models
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width \textwidth
+[[./clean_HR.pdf]]
+
+* Next steps
+** Codes
+
+CBC code:
+
+https://github.com/MarkBlyth/SingleCellCBC
+
+\vfill
+GPR code:
+
+https://github.com/MarkBlyth/gpr_tests
+
+\vfill
+
+Can also put presentations on GitHub?
+
+** Next steps
+   * /[More]/ teaching
+   * Full re-read of paper
+\vfill
+
+then...
+
+\vfill
+   * More GPR testing
+     * Add more kernels into the testing setup
+     * Test everything!
