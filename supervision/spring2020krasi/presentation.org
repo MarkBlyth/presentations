@@ -1,0 +1,188 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Spring project summary
+#+DATE: [2020-05-25 Mon]
+
+* Previous
+** Last meeting
+Discussion about single-cell and multi-cell approaches
+\vfill
+Single-cell: 
+#+ATTR_LATEX: :overlay [<+->]
+    * Strong literature precedent for what to expect
+    * Lots of accepted models to test /in-silico/
+    * Easy-to-spot bifurcations
+      * Hopf, fold both easily detectable with CBC
+    * Reuse Bath single-cell microfluidics device
+
+
+** Last meeting
+Discussion about single-cell and multi-cell approaches
+\vfill
+Multi-cell: 
+#+ATTR_LATEX: :overlay [<+->]
+    * Assume there's an arbitrarily large number of cells
+      * Neural continuum fields (limited descriptive ability)
+      * Spatially extended cubic Lienard system
+    * Search experimentally and numerically for PDE bifurcations
+      * Not an area I know much about (yet...)
+    * Can build on work by Krasi's Munich collaborators
+    * Or could reuse Bath microfluidic device
+      * Would require minor alterations to increase spatial resolution
+
+
+** Single- vs multi-cell
+Deciding factors:
+
+\vfill
+   
+    * No lab access for the forseeable future
+      * Work can be guided less by experiments
+    * Single-cell easier than multi-cell
+      * I know enough about single-cell CBC to start working on it
+
+\vfill
+
+Conclusion: work on single-cell case
+
+
+* Current
+** Current goals
+   * Single-cell /in-silico/ CBC
+   * Tutorial-review paper for numerical continuation
+   
+** Challenges of /in-silico/ CBC
+Data aren't ideal to work with:
+\vfill
+   * Real signals are noise-corrupted
+     * Difficult to filter off, since spikes contain lots of high-frequency components
+     * Hard to run continuation on stochastic and noisy signals
+     * Current work
+\vfill
+   * Neurons are fast-spiking
+     * Fourier discretisation won't work
+     * Discretisations need to be very high-dimensional, making Jacobian very slow to find
+     * Next work
+       
+\vfill
+       
+** Issue 1: noise corruption
+Instead of running continuation on noisy signal measurements, let's run it on a surrogate data source
+     
+#+ATTR_LATEX: :width .9\textwidth
+[[./GPR_demo.pdf]]
+
+** Surrogate models
+Surrogate models don't always work well!
+
+#+ATTR_LATEX: :width .9\textwidth
+[[./HHraw.pdf]]
+
+** Surrogate models
+Surrogate models don't always work well!
+
+#+ATTR_LATEX: :width .9\textwidth
+[[./HH.pdf]]
+
+
+** Machine learning for dynamical systems
+   * Current approach: Gaussian process regression
+     * Predict new points as an intelligently weighted sum of example points
+   * Bayesian kernel method
+     * Kernel specifies a distribution over basis functions
+     * Good kernel choice = good data fit
+   * Most kernels are stationary, and can't handle the spiking behaviours of neurons
+     
+\vfill
+
+Current goal: find an ML approach to fitting a surrogate model
+
+
+* Next
+  
+** Next questions
+   * Predictor-corrector design
+   * Stochastic models
+
+** Continuation issues
+    * Discretisation is required to make predictor-corrector methods work
+    * It has issues for fast-spiking data
+      * Slow to find a Jacobian
+      * High noise-sensitivity
+    * Discretisation-free predictor-correctors might overcome these
+
+** Alternative continuation approach
+Predictor-corrector design:
+\vfill
+    * We could try discretisation-free predictor steps, using a surrogate model
+      * Let \(f_i(t)\) be the surrogate model for system behaviours at parameter \(\lambda_i\)
+      * Given periodic orbits \(f_{i-1},~f_i\), predict \(f_{i+1} = f_i + h \big[f_i - f_{i-1}\big]\)
+    * Corrector step would be harder
+	
+** An idea for discretisation-free correction
+Main goal of CBC: find \(x^*(t)\) such that \(\forall t, u(x,x^*)=0\).
+
+\vfill
+Alternative formulation:
+#+ATTR_LATEX: :overlay [<+->]
+     * Let \(S[x^*] = \int_0^T u^2(x,x^*) \mathrm{d}t\) measure control invasiveness
+     * \(S: \mathcal{H} \to \mathbb{R}\) is a functional on control actions \(x^*\)
+     * CBC becomes a calculus of variations problem; find \(x^*(t)\) that minimises \(S\)
+     * \(S=0\) if and only if \(x^*(t)\) is an invariant set of the open-loop system
+
+\vfill
+** Calculus of variations
+Alternative formulation: find \(x^*(t)\) that minimises \(S[x^*]\)
+
+\vfill
+
+     * Calculus of variations provides a framework for finding minimising functions
+     * Might be possible to define an iteration scheme on functions, rather than discretisations
+
+\vfill
+Calculus of variations
+     * Well-studied in control theory; lots of precedent to build on
+     * Shifts the noninvasiveness requirement away from the continuation scheme, and onto the controller
+       
+** Variational noninvasiveness
+Ideally, corrector would find some iteration sequence \(f_1,~f_2,~\dots\), such that \(S[f_i] > S[f_{i-1}]\)
+    * Then we've found a function-space iteration scheme to reach noninvasive control
+    * Works on functions at every step, so we avoid the issues of discretisation
+\vfill
+Might be a dead-end.
+
+** Variational noninvasiveness
+Overall idea:
+    * Set up CBC as a calculus of variations problem
+    * Reach noninvasiveness by minimising functional \(S\)
+    * Find a numerical method to do this though iterations on control target \(x^*(t)\)
+    * Use the variational equations to reformulate Newton iterations onto functions, rather than vectors
+      * Main question: is this even possible?
+
+** Stochastic models
+Real neurons are stochastic
+    * Stochasticity introduces new challenges
+      * Coherence and stochastic resonance
+      * Random attractors
+      * Stochastic calculus
+    * Current work: CBC on noise-corrupted simulations
+    * Next work: CBC on true stochastic models
+
+\vfill
+
+
+** Goals
+Actions:
+    * Find a surrogate modelling method for neural data
+    * Attempt a discretisation-free corrector?
+    * Run CBC on deterministic models, then stochastic
+
+\vfill
+
+Results:
+   * Write up surrogate modelling into a conference abstract /[July]/
+     * Maybe a conference paper /[September]/
+   * Use surrogate modelling for an /in-silico/ CBC paper /[next year?]/
