@@ -1,4 +1,4 @@
-% Created 2020-05-22 Fri 11:41
+% Created 2020-06-01 Mon 09:49
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Previous}
-\label{sec:orgf89715d}
-\begin{frame}[label={sec:orga023713}]{Last meeting}
+\label{sec:org2c57db8}
+\begin{frame}[label={sec:org195a749}]{Last meeting}
 Discussion about single-cell and multi-cell approaches
 \vfill
 Single-cell: 
@@ -47,7 +47,7 @@ Single-cell:
 \end{frame}
 
 
-\begin{frame}[label={sec:orgbf79652}]{Last meeting}
+\begin{frame}[label={sec:orgd2e8c53}]{Last meeting}
 Discussion about single-cell and multi-cell approaches
 \vfill
 Multi-cell: 
@@ -70,7 +70,7 @@ Multi-cell:
 \end{frame}
 
 
-\begin{frame}[label={sec:orgcf8136c}]{Single- vs multi-cell}
+\begin{frame}[label={sec:orgf004362}]{Single- vs multi-cell}
 Deciding factors:
 
 \vfill
@@ -93,15 +93,15 @@ Conclusion: work on single-cell case
 
 
 \section{Current}
-\label{sec:org6d77b43}
-\begin{frame}[label={sec:org17690ff}]{Current goals}
+\label{sec:org97e4509}
+\begin{frame}[label={sec:orgcf579b1}]{Current goals}
 \begin{itemize}
 \item Single-cell \emph{in-silico} CBC
 \item Tutorial-review paper for numerical continuation
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org67b7d3c}]{Challenges of \emph{in-silico} CBC}
+\begin{frame}[label={sec:orga80a685}]{Challenges of \emph{in-silico} CBC}
 Data aren't ideal to work with:
 \vfill
 \begin{itemize}
@@ -109,7 +109,6 @@ Data aren't ideal to work with:
 \begin{itemize}
 \item Difficult to filter off, since spikes contain lots of high-frequency components
 \item Hard to run continuation on stochastic and noisy signals
-\item Current work
 \end{itemize}
 \end{itemize}
 \vfill
@@ -118,81 +117,131 @@ Data aren't ideal to work with:
 \begin{itemize}
 \item Fourier discretisation won't work
 \item Discretisations need to be very high-dimensional, making Jacobian very slow to find
-\item Next work
 \end{itemize}
 \end{itemize}
 
 \vfill
 \end{frame}
 
-\begin{frame}[label={sec:org90d13d2}]{Issue 1: noise corruption}
+\begin{frame}[label={sec:org2e93256}]{Issue 1: noise corruption}
 Instead of running continuation on noisy signal measurements, let's run it on a surrogate data source
+\begin{itemize}[<+->]
+\item Assume no knowledge of the system
+\begin{itemize}
+\item CBC is a model-free method
+\end{itemize}
+\item Come up with some surrogate model to replace the observed data
+\begin{itemize}
+\item Must filter out the noise
+\item Must handle experimental issues (missing measurements, uneven spacing, small amounts of data)
+\end{itemize}
+\item Surrogate model can then be analysed as desired
+\begin{itemize}
+\item Smooth, clean datasource (no noise, no missing points, full interpolation)
+\item Accurate derivatives, of arbitrary order
+\item Allows for accurate delay embeddings, collocation discretisation -- conventional continuation can be used on it
+\end{itemize}
+\end{itemize}
 
+\vfill
+\end{frame}
+
+\begin{frame}[label={sec:orgee407e3}]{Candidate surrogate models}
+\begin{itemize}[<+->]
+\item Truncated Fourier series
+\begin{itemize}
+\item Currently used in CBC
+\item Bad for noisy or spiking data
+\end{itemize}
+\item Wavelet decomposition
+\begin{itemize}
+\item `Enveloped' oscillations
+\end{itemize}
+\item Splines
+\begin{itemize}
+\item Piecewise-polynomial model
+\end{itemize}
+\item Gaussian process regression
+\begin{itemize}
+\item Statistically optimal, when noise is Gaussian
+\end{itemize}
+\end{itemize}
+
+These require no preexisting knowledge \emph{[loosely speaking]}, and work well with sparse data
+\end{frame}
+
+\begin{frame}[label={sec:org745afa2}]{Gaussian process regression}
 \begin{center}
 \includegraphics[width=.9\textwidth]{./GPR_demo.pdf}
 \end{center}
+
+GPR can recover the underlying signal from noise-corrupted observations
 \end{frame}
 
-\begin{frame}[label={sec:orgf7e66b6}]{Surrogate models}
-Surrogate models don't always work well!
-
+\begin{frame}[label={sec:orgedf2408}]{Surrogate models}
 \begin{center}
 \includegraphics[width=.9\textwidth]{./HHraw.pdf}
 \end{center}
+
+GP surrogate models don't always work well!
 \end{frame}
 
-\begin{frame}[label={sec:orgd250d0d}]{Surrogate models}
-Surrogate models don't always work well!
-
+\begin{frame}[label={sec:orgd9932a3}]{Surrogate models}
 \begin{center}
-\includegraphics[width=.9\textwidth]{./HH.pdf}
+\includegraphics[width=.9\textwidth]{./HH_FKL_test.pdf}
 \end{center}
+GP surrogate models don't always work well!
 \end{frame}
 
-
-\begin{frame}[label={sec:orgabca2d7}]{Machine learning for dynamical systems}
-\begin{itemize}
-\item Current approach: Gaussian process regression
-\begin{itemize}
-\item Predict new points as an intelligently weighted sum of example points
-\end{itemize}
+\begin{frame}[label={sec:org35be246}]{Machine learning for dynamical systems}
+\begin{itemize}[<+->]
+\item Current approach: Gaussian process regression; predict new points as an intelligently weighted sum of example points
 \item Bayesian kernel method
 \begin{itemize}
 \item Kernel specifies a distribution over basis functions
 \item Good kernel choice = good data fit
 \end{itemize}
-\item Most kernels are stationary, and can't handle the spiking behaviours of neurons
+\item Most kernels are stationary
+\begin{itemize}
+\item Assumes statistical properties are time-invariant \emph{[they're not]}
+\item Can't handle the spiking behaviours of neurons
+\end{itemize}
 \end{itemize}
 
 \vfill
 
-Current goal: find an ML approach to fitting a surrogate model
+Current goal: find a good approach to fitting a surrogate model
 \end{frame}
 
 
 \section{Next}
-\label{sec:orgd022894}
+\label{sec:orgf548bb9}
 
-\begin{frame}[label={sec:orgd519b16}]{Next questions}
+\begin{frame}[label={sec:org2157b55}]{Next questions}
 \begin{itemize}
+\item Surrogate models on real data
 \item Predictor-corrector design
 \item Stochastic models
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org4e4a4ab}]{Continuation issues}
+\begin{frame}[label={sec:org621bd50}]{Continuation issues}
 \begin{itemize}
 \item Discretisation is required to make predictor-corrector methods work
-\item It has issues for fast-spiking data
 \begin{itemize}
-\item Slow to find a Jacobian
+\item Can't run continuation on a function; must discretise it into a vector
+\end{itemize}
+\item Discretisation has issues when used on fast-spiking data
+\begin{itemize}
+\item Requires lots of datapoints
+\item Slow to find a Jacobian for Newton-iterations
 \item High noise-sensitivity
 \end{itemize}
-\item Discretisation-free predictor-correctors might overcome these
+\item Surrogate models and discretisation-free predictor-correctors might help overcome these
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb927845}]{Alternative continuation approach}
+\begin{frame}[label={sec:orge747583}]{Alternative continuation approach}
 Predictor-corrector design:
 \vfill
 \begin{itemize}
@@ -201,83 +250,35 @@ Predictor-corrector design:
 \item Let \(f_i(t)\) be the surrogate model for system behaviours at parameter \(\lambda_i\)
 \item Given periodic orbits \(f_{i-1},~f_i\), predict \(f_{i+1} = f_i + h \big[f_i - f_{i-1}\big]\)
 \end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
 \item Corrector step would be harder
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orga1223d4}]{An idea for discretisation-free correction}
-Main goal of CBC: find \(x^*(t)\) such that \(\forall t, u(x,x^*)=0\).
-
+\begin{frame}[label={sec:org764dcc9}]{Stochastic models}
+Another challenge: real neurons are stochastic
 \vfill
-Alternative formulation:
-\begin{itemize}[<+->]
-\item Let \(S[x^*] = \int_0^T u^2(x,x^*) \mathrm{d}t\) measure control invasiveness
-\item \(S: \mathcal{H} \to \mathbb{R}\) is a functional on control actions \(x^*\)
-\item CBC becomes a calculus of variations problem; find \(x^*(t)\) that minimises \(S\)
-\item \(S=0\) if and only if \(x^*(t)\) is an invariant set of the open-loop system
-\end{itemize}
-
-\vfill
-\end{frame}
-\begin{frame}[label={sec:org540d2f5}]{Calculus of variations}
-Alternative formulation: find \(x^*(t)\) that minimises \(S[x^*]\)
-
-\vfill
-
-\begin{itemize}
-\item Calculus of variations provides a framework for finding minimising functions
-\item Might be possible to define an iteration scheme on functions, rather than discretisations
-\end{itemize}
-
-\vfill
-Calculus of variations
-\begin{itemize}
-\item Well-studied in control theory; lots of precedent to build on
-\item Shifts the noninvasiveness requirement away from the continuation scheme, and onto the controller
-\end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:org8a12d41}]{Variational noninvasiveness}
-Ideally, corrector would find some iteration sequence \(f_1,~f_2,~\dots\), such that \(S[f_i] > S[f_{i-1}]\)
-\begin{itemize}
-\item Then we've found a function-space iteration scheme to reach noninvasive control
-\item Works on functions at every step, so we avoid the issues of discretisation
-\end{itemize}
-\vfill
-Might be a dead-end.
-\end{frame}
-
-\begin{frame}[label={sec:org3f46807}]{Variational noninvasiveness}
-Overall idea:
-\begin{itemize}
-\item Set up CBC as a calculus of variations problem
-\item Reach noninvasiveness by minimising functional \(S\)
-\item Find a numerical method to do this though iterations on control target \(x^*(t)\)
-\item Use the variational equations to reformulate Newton iterations onto functions, rather than vectors
-\begin{itemize}
-\item Main question: is this even possible?
-\end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:orge1f8045}]{Stochastic models}
-Real neurons are stochastic
 \begin{itemize}
 \item Stochasticity introduces new challenges
 \begin{itemize}
 \item Coherence and stochastic resonance
 \item Random attractors
 \item Stochastic calculus
+\item Not an area I know much about \emph{[yet\ldots{}]}
 \end{itemize}
 \item Current work: CBC on noise-corrupted simulations
-\item Next work: CBC on true stochastic models
+\item Next work: CBC on truly stochastic models
 \end{itemize}
 
 \vfill
+
+Big question: how different would truly stochastic models be?
 \end{frame}
 
 
-\begin{frame}[label={sec:org3fe9893}]{Goals}
+\begin{frame}[label={sec:org37f5b1e}]{Goals}
 Actions:
 \begin{itemize}
 \item Find a surrogate modelling method for neural data
@@ -295,5 +296,61 @@ Results:
 \end{itemize}
 \item Use surrogate modelling for an \emph{in-silico} CBC paper \emph{[next year?]}
 \end{itemize}
+\end{frame}
+
+
+\section{Normal supervision slides}
+\label{sec:orgf75e015}
+\begin{frame}[label={sec:org57a9471}]{BONUS: Week's work}
+\begin{itemize}[<+->]
+\item Functional kernel learning now works
+\begin{itemize}
+\item Stationary kernel method
+\item Performs well on Fitzhugh-Nagumo
+\item Performs badly on Hodgkin-Huxley
+\end{itemize}
+\item New model validation method
+\begin{itemize}
+\item Run a high-accuracy solver, for lots of datapoints
+\item Downsample
+\item Train models on half the datapoints, test them on the other half
+\item Could optionally do an error integral, since we have a continuous model
+\end{itemize}
+\item Looked into noise-training
+\begin{itemize}
+\item Couldn't find anything
+\end{itemize}
+\item Non-stationary kernel is not working
+\item Support vector regression
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org03b9887}]{BONUS: SVR}
+\begin{itemize}[<+->]
+\item SVR is the regression-equivalent of a support vector machine
+\begin{itemize}
+\item Another popular kernel method
+\end{itemize}
+\item It works moderately well on neuron data
+\begin{itemize}
+\item Fast!
+\item Fair performance on non-stationary data
+\item Doesn't always average out noise well
+\end{itemize}
+\item Another idea: ensemble models
+\begin{itemize}
+\item Fit a few different models (GPR, splines, SVR, etc)
+\item Use something analogous to sensory fusion, to combine model predictions
+\item Gradient boosting: combine several weak learners to make a single strong learner
+\end{itemize}
+\end{itemize}
+
+Only worth trying after I've tested all the other regression methods
+\end{frame}
+
+\begin{frame}[label={sec:org779d04b}]{BONUS: SVR}
+\begin{center}
+\includegraphics[width=\textwidth]{./SVR.pdf}
+\end{center}
 \end{frame}
 \end{document}

@@ -60,59 +60,91 @@ Data aren't ideal to work with:
    * Real signals are noise-corrupted
      * Difficult to filter off, since spikes contain lots of high-frequency components
      * Hard to run continuation on stochastic and noisy signals
-     * Current work
 \vfill
    * Neurons are fast-spiking
      * Fourier discretisation won't work
      * Discretisations need to be very high-dimensional, making Jacobian very slow to find
-     * Next work
        
 \vfill
        
 ** Issue 1: noise corruption
 Instead of running continuation on noisy signal measurements, let's run it on a surrogate data source
+#+ATTR_LATEX: :overlay [<+->]
+    * Assume no knowledge of the system
+      * CBC is a model-free method
+    * Come up with some surrogate model to replace the observed data
+      * Must filter out the noise
+      * Must handle experimental issues (missing measurements, uneven spacing, small amounts of data)
+    * Surrogate model can then be analysed as desired
+      * Smooth, clean datasource (no noise, no missing points, full interpolation)
+      * Accurate derivatives, of arbitrary order
+      * Allows for accurate delay embeddings, collocation discretisation -- conventional continuation can be used on it
+	
+\vfill
+
+** Candidate surrogate models
+#+ATTR_LATEX: :overlay [<+->]
+    * Truncated Fourier series
+      * Currently used in CBC
+      * Bad for noisy or spiking data
+    * Wavelet decomposition
+      * `Enveloped' oscillations
+    * Splines
+      * Piecewise-polynomial model
+    * Gaussian process regression
+      * Statistically optimal, when noise is Gaussian
+	
+These require no preexisting knowledge /[loosely speaking]/, and work well with sparse data
      
+** Gaussian process regression
 #+ATTR_LATEX: :width .9\textwidth
 [[./GPR_demo.pdf]]
 
+GPR can recover the underlying signal from noise-corrupted observations
+
 ** Surrogate models
-Surrogate models don't always work well!
 
 #+ATTR_LATEX: :width .9\textwidth
 [[./HHraw.pdf]]
 
+GP surrogate models don't always work well!
+
 ** Surrogate models
-Surrogate models don't always work well!
 
 #+ATTR_LATEX: :width .9\textwidth
-[[./HH.pdf]]
-
+[[./HH_FKL_test.pdf]]
+GP surrogate models don't always work well!
 
 ** Machine learning for dynamical systems
-   * Current approach: Gaussian process regression
-     * Predict new points as an intelligently weighted sum of example points
+#+ATTR_LATEX: :overlay [<+->]
+   * Current approach: Gaussian process regression; predict new points as an intelligently weighted sum of example points
    * Bayesian kernel method
      * Kernel specifies a distribution over basis functions
      * Good kernel choice = good data fit
-   * Most kernels are stationary, and can't handle the spiking behaviours of neurons
+   * Most kernels are stationary
+     * Assumes statistical properties are time-invariant /[they're not]/
+     * Can't handle the spiking behaviours of neurons
      
 \vfill
 
-Current goal: find an ML approach to fitting a surrogate model
+Current goal: find a good approach to fitting a surrogate model
 
 
 * Next
   
 ** Next questions
+   * Surrogate models on real data
    * Predictor-corrector design
    * Stochastic models
 
 ** Continuation issues
     * Discretisation is required to make predictor-corrector methods work
-    * It has issues for fast-spiking data
-      * Slow to find a Jacobian
+      * Can't run continuation on a function; must discretise it into a vector
+    * Discretisation has issues when used on fast-spiking data
+      * Requires lots of datapoints
+      * Slow to find a Jacobian for Newton-iterations
       * High noise-sensitivity
-    * Discretisation-free predictor-correctors might overcome these
+    * Surrogate models and discretisation-free predictor-correctors might help overcome these
 
 ** Alternative continuation approach
 Predictor-corrector design:
@@ -120,9 +152,10 @@ Predictor-corrector design:
     * We could try discretisation-free predictor steps, using a surrogate model
       * Let \(f_i(t)\) be the surrogate model for system behaviours at parameter \(\lambda_i\)
       * Given periodic orbits \(f_{i-1},~f_i\), predict \(f_{i+1} = f_i + h \big[f_i - f_{i-1}\big]\)
+\vfill
     * Corrector step would be harder
 	
-** An idea for discretisation-free correction
+** COMMENT An idea for discretisation-free correction
 Main goal of CBC: find \(x^*(t)\) such that \(\forall t, u(x,x^*)=0\).
 
 \vfill
@@ -134,7 +167,7 @@ Alternative formulation:
      * \(S=0\) if and only if \(x^*(t)\) is an invariant set of the open-loop system
 
 \vfill
-** Calculus of variations
+** COMMENT Calculus of variations
 Alternative formulation: find \(x^*(t)\) that minimises \(S[x^*]\)
 
 \vfill
@@ -147,14 +180,14 @@ Calculus of variations
      * Well-studied in control theory; lots of precedent to build on
      * Shifts the noninvasiveness requirement away from the continuation scheme, and onto the controller
        
-** Variational noninvasiveness
+** COMMENT Variational noninvasiveness
 Ideally, corrector would find some iteration sequence \(f_1,~f_2,~\dots\), such that \(S[f_i] > S[f_{i-1}]\)
     * Then we've found a function-space iteration scheme to reach noninvasive control
     * Works on functions at every step, so we avoid the issues of discretisation
 \vfill
 Might be a dead-end.
 
-** Variational noninvasiveness
+** COMMENT Variational noninvasiveness
 Overall idea:
     * Set up CBC as a calculus of variations problem
     * Reach noninvasiveness by minimising functional \(S\)
@@ -163,15 +196,19 @@ Overall idea:
       * Main question: is this even possible?
 
 ** Stochastic models
-Real neurons are stochastic
+Another challenge: real neurons are stochastic
+\vfill
     * Stochasticity introduces new challenges
       * Coherence and stochastic resonance
       * Random attractors
       * Stochastic calculus
+      * Not an area I know much about /[yet...]/
     * Current work: CBC on noise-corrupted simulations
-    * Next work: CBC on true stochastic models
+    * Next work: CBC on truly stochastic models
 
 \vfill
+
+Big question: how different would truly stochastic models be?
 
 
 ** Goals
@@ -186,3 +223,41 @@ Results:
    * Write up surrogate modelling into a conference abstract /[July]/
      * Maybe a conference paper /[September]/
    * Use surrogate modelling for an /in-silico/ CBC paper /[next year?]/
+
+     
+* Normal supervision slides
+** BONUS: Week's work
+#+ATTR_LATEX: :overlay [<+->]
+   * Functional kernel learning now works
+     * Stationary kernel method
+     * Performs well on Fitzhugh-Nagumo 
+     * Performs badly on Hodgkin-Huxley
+   * New model validation method
+     * Run a high-accuracy solver, for lots of datapoints
+     * Downsample
+     * Train models on half the datapoints, test them on the other half
+     * Could optionally do an error integral, since we have a continuous model
+   * Looked into noise-training
+     * Couldn't find anything
+   * Non-stationary kernel is not working
+   * Support vector regression
+
+** BONUS: SVR
+#+ATTR_LATEX: :overlay [<+->]
+ * SVR is the regression-equivalent of a support vector machine
+   * Another popular kernel method
+ * It works moderately well on neuron data
+   * Fast!
+   * Fair performance on non-stationary data
+   * Doesn't always average out noise well
+ * Another idea: ensemble models
+   * Fit a few different models (GPR, splines, SVR, etc)
+   * Use something analogous to sensory fusion, to combine model predictions
+   * Gradient boosting: combine several weak learners to make a single strong learner
+     
+Only worth trying after I've tested all the other regression methods
+
+** BONUS: SVR
+
+#+ATTR_LATEX: :width \textwidth
+[[./SVR.pdf]]
