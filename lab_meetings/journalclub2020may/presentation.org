@@ -1,0 +1,341 @@
+#+OPTIONS: H:3 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: The codimension of pseudo-plateau bursting
+#+DATE: [2020-05-27 Wed]
+
+* Background
+** SUMMARY
+*** Paper goals
+    * Determine the codimension-classification of pseudo-plateau bursting
+    * Propose a normal form for bursting
+\vfill
+
+*** Plan de jour
+
+    * *30 second intro to neurons*
+      * *What do neurons do?*
+      * *What are bursting neurons?*
+      * *How and why do we categorise them?*
+    * Section 2: Towards a normal form for bursting
+    * Section 3: Transitions between bursting classes
+    * Section 4:Codimension-classification of pseudo-plateau bursting
+    * Section 5: Conclusion
+
+** What are bursters?
+*** Neurons spike
+    
+#+ATTR_LATEX: :width .9\textwidth
+[[./HHraw.pdf]]
+
+Neurons encode information in action potentials
+
+
+*** Ionic currents
+
+#+ATTR_LATEX: :width .9\textwidth
+[[./voltage-gated.jpg]]
+
+Action potentials happen from ions flowing into and out of the cell
+
+
+*** Hodgkin-Huxley
+\begin{eqnarray}
+\frac{dV}{dt} &=& \left[I_{inj} - \bar{g}_{Na}m^3h(V-V_{Na}) -\bar{g}_Kn^4(V-V_K) - g_L (V-V_L)\right]/C\nonumber\\
+\frac{dn}{dt} &=& \alpha_n(V) (1-n) - \beta_n(V)n\nonumber\\
+\frac{dm}{dt} &=& \alpha_m(V) (1-m) - \beta_m(V)m\nonumber\\
+\frac{dh}{dt} &=& \alpha_h(V) (1-h) - \beta_h(V)h\nonumber  
+\end{eqnarray}
+
+\vfill
+
+We can understand the causes of spike generation with differential equations
+
+
+
+
+*** Nonlinear dynamics
+    
+#+ATTR_LATEX: :height .75\textheight :options trim={0cm 0.5cm 0cm 0cm}, clip
+[[./phaseplane.pdf]]
+
+Neuron dynamics rely on limit cycles and equilibria
+
+
+*** Bifurcations
+
+[[./Ellburst.jpg]]
+
+Equilibria and limit cycles an appear through bifurcations
+
+
+*** KEY POINT: bursting
+#+ATTR_LATEX: :height .75\textheight :options trim={0cm 0.75cm 0cm 1.25cm}, clip
+[[./clean_HR.pdf]]
+
+Ionic currents can appear to drive the neuron over bifurcations -- this is bursting!
+
+*** Why do cells burst?
+   * More reliable for transmitting over synapses
+     * Higher signal-to-noise ratio
+\vfill
+   * Maintain an elevated \(Ca^{2+}\) state
+     * Promotes neurotransmitter release
+     * Promotes hormone release
+\vfill
+   * Occur in both the brain and elsewhere
+     * pre-Botzinger complex bursters control respiration
+     * Pituitory somatotroph bursters /[not neurons]/ use bursts to release hormones
+
+
+*** Why do we categorise them?
+Lots of work is done to categorise bursters, but why?
+\vfill
+    * Complete classification would describe all the ways a cell could be excitable
+\vfill
+    * Hints at similarities and differences between cells
+      * Small parameter changes can sometimes shift cells into different burster categories
+      * `Close' cell categories usually perform similar tasks
+
+
+*** How do we categorise bursters?
+#+ATTR_LATEX: :height .75\textheight 
+[[./categories.png]]
+
+Under this scheme, there's 16 planar bursters
+
+
+*** Multiple timescale dynamics
+
+    The previous bursting data can be modelled by
+
+\[\dot{x} = f(x,y)~,\]
+\[\dot{y} = \epsilon g(x,y)~,\]
+\[|\epsilon| \ll 1~.\]
+
+   * Assume \(\epsilon=0\)
+   * Spiking is switched off by bifurcations in \(x\)
+     * \(y\) becomes a parameter to cause these bifurcations
+
+
+*** How do we categorise bursters?
+#+ATTR_LATEX: :height .75\textheight :options trim={0cm 0.75cm 0cm 1.25cm}, clip
+[[./burster_diagram.pdf]]
+
+This is a fold-homoclinic burster
+
+
+
+*** A better classification
+    
+#+ATTR_LATEX: :overlay [<+->]
+    * Several bifurcations can happen at the same point
+      * A singularity is a point where one or more bifurcations happen
+    * If we add some small terms to a singularity /(unfold it)/, we get a bifurcation space
+      * We get a model where we can vary some parameters and see some bifurcations
+    * A burster will sit in the unfolding of some singularity
+      * More unfolding parameters = more complexity
+      * More unfolding parameters = higher codimension
+
+*** A better classification
+    
+Classify in terms of...
+\vfill
+    * Singularity codimension
+      * Measures the complexity of the burster
+    * Bifurcations to turn spikes on and off
+      * Describes the dynamics of the burster
+
+* Section 2
+** SUMMARY
+*** Plan de jour
+
+    * 30 second intro to neurons
+    * *Section 2: Towards a normal form for bursting*
+    * Section 3: Transitions between bursting classes
+    * Section 4: Codimension-classification of pseudo-plateau bursting
+    * Section 5: Conclusion
+
+** Normal forms
+*** Normal forms
+#+ATTR_LATEX: :overlay [<+->]
+    * Biological models can be complex
+    * We can often find simpler models that do the same thing
+      * /`Same thing'/ usually means same bifurcation structure
+    * A normal form is a simple model that shows prototypical example behaviours
+    * A burster normal form is a simple model that can describe the bifurcation structure of any bursting neuron \vfill
+      
+\vfill
+
+*** Normal form requirements
+#+ATTR_LATEX: :height .75\textheight 
+[[./categories.png]]
+
+A burster normal form must be able to operate as all of these classes
+
+*** Model form
+    * The proposed model has \(f(x,y)\) with a complex bifurcation structure...
+
+\[\dot{x} = f(x,y)~,\]
+
+    * ...and a simple \(g(x,y)\) to drive \(f\) over some bifurcations
+
+\[y(t) = A\sin(\omega t)\]
+
+*** Appropriate models
+    * Golubitsky found a lot of bursters near the codimension-3 degenerate Bogdanov-Takens singularity:
+   
+\[f(x,y) = \binom{\quad y\hfill}{-y + \mu x - x^3 + y(\nu + 3x + x^2)}\]
+
+    * Has a rich enough bifurcation structure to show most bursting types
+
+*** How about this?
+****  :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+[[./PPB.png]]
+
+****  :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+     
+    * Pituitory cells can also burst
+    * Looks similar to previous bursters
+    * No stable limit cycle!
+      * */How do we categorise this?/*
+
+\vfill
+	
+This is pseudo-plateau bursting
+
+*** The codimension of pseudo-plateau bursting
+#+ATTR_LATEX: :width .8\textwidth    
+[[./psb.png]]
+
+    * Pseudo-plateau bursting has a similar bifurcation structure to the others
+    * It doesn't seem to appear near a degenerate Bogdanov-Takens singularity!
+      
+*** Singularity choices
+    * The original paper goal was to classify the pseudo-plateau burster
+    * The burster doesn't seem to appear in codim-3 degenerate Bodganov-Takens unfolding
+      * The singularity must not be able to exhibit all known bursting types
+      * It can't be a normal form!
+
+\vfill	
+
+Let's free up a parameter:
+
+\[\dot{x} = \binom{\quad y \hfill}{-y + \mu_2 x - x^3 + y(\nu + bx - x^2)}\]
+
+*** A new model
+We have
+
+\begin{align}
+\dot{x_1} &= y \nonumber \\
+\dot{x_2} &= y + \mu_2 x - x^3 + y(\nu + bx - x^2) \nonumber \\
+ y &= A \sin(\omega t)  \nonumber
+\end{align}	
+
+    * This is the unfolding of a doubly-degenerate Takens-Bogdanov singularity
+    * It contains more dynamical richness -- enough to show pseudo-plateau bursting
+    * How do we analyse it?
+
+*** Model analysis
+We can't plot 4-dimensional bifurcation diagrams, so we need to get creative...
+
+#+ATTR_LATEX: :overlay [<+->]
+    * The \(b\) axis consists of degenerate Bogdanov-Takens singularities
+    * Small \(b\) means we're near the doubly-degenerate BT singularity
+      * We have a richer bifurcation structure in the surrounding neighbourhood than for the degenerate BT
+    * Let's look for bifurcations at the edge of this small-\(b\) neighbourhood
+      * Take \(b\) small
+      * Find the surface of a ball around the chosen \(b\)
+      * We now have a 2d parameter space!
+
+*** Bifurcation structure
+    :PROPERTIES:
+    :BEAMER_opt: plain
+    :END:
+#+ATTR_LATEX: :width .9\textwidth
+[[./bif.png]]
+
+    * This parameter subspace contains the pseudo-plateau burster
+    * The model is a good normal form candidate
+
+*** Section 2 summary
+    
+#+ATTR_LATEX: :overlay [<+->]
+    * A normal form is a simple model that can display a target bifurcation structure
+    * The degenerate Takens-Bogdanov singularity unfolding is /[probably]/ not usable for a normal form
+      * The known unfoldings don't contain pseudo-plateau bursters
+      * Unknown unfoldings might
+    * A doubly-degenerate Bogdanov-Takens singularity /does/ contain pseudo-plateau bursters
+      * It is as close as we can currently get to a normal form
+
+* Section 3
+** SUMMARY
+*** Plan de jour
+
+    * 30 second intro to neurons
+    * Section 2: Towards a normal form for bursting
+    * *Section 3: Transitions between bursting classes*
+    * Section 4: Codimension-classification of pseudo-plateau bursting
+    * Section 5: Conclusion
+
+** Section 3
+*** We can transition between classes
+#+ATTR_LATEX: :overlay [<+->]
+ * Plateau and pseudo-plateau bursting cells are similar, functionally and developmentally
+ * So are their bifurcation structures: we can switch between the two classes by modifying a single parameter
+   * This parameter is analogous to Calcium current activation
+ * Similar cells have similar bifurcation structures
+ * Biological robustness: we can mess around with parameters and still see similar behaviour
+
+*** 
+    :PROPERTIES:
+    :BEAMER_opt: plain
+    :END:
+    
+#+ATTR_LATEX: :height 1.4\textheight
+[[./3d.png]]
+
+
+* Section 4
+** SUMMARY
+*** Plan de jour
+
+    * 30 second intro to neurons
+    * Section 2: Towards a normal form for bursting
+    * Section 3: Transitions between bursting classes
+    * *Section 4: Codimension-classification of pseudo-plateau bursting*
+    * Section 5: Conclusion
+
+** Section 4
+*** Section 4
+    * The pseudo-plateau burster appears in a codimension-4 unfolding
+      * It must be at most a codim-4 -category system
+    * There's different forms the unfolding could take; this section justifies why they aren't used
+
+     
+* Section 5
+** Section 5
+*** Plan de jour
+
+    * 30 second intro to neurons
+    * Section 2: Towards a normal form for bursting
+    * Section 3: Transitions between bursting classes
+    * Section 4: Codimension-classification of pseudo-plateau bursting
+    * *Section 5: Conclusion*
+      
+*** Conclusions
+ #+ATTR_LATEX: :overlay [<+->]
+    * We can categorise bursting cells according to their codimension
+    * Pseudo-plateau bursting can't be categorised as a codim-3 burster
+    * The unfolding of a doubly-degenerate Bogdanov-Takens singularity can display pseudo-plateau bursting
+      * Burster must be at most codim-4
+      * The singularity unfolding can act as a burster normal form
+    * Cells can easily transition between bursting classes, in biologically meaningful ways
