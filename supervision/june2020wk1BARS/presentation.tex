@@ -1,4 +1,4 @@
-% Created 2020-06-05 Fri 15:02
+% Created 2020-06-08 Mon 10:49
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:org93cc080}
-\begin{frame}[label={sec:orgd32cb8d}]{Week's goal}
+\label{sec:org3a4ab46}
+\begin{frame}[label={sec:org5842576}]{Week's goal}
 Keep working through different regression models:
 \vfill
 \begin{itemize}
@@ -45,7 +45,7 @@ Keep working through different regression models:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org38bd3d8}]{Week's goal}
+\begin{frame}[label={sec:orga71ed93}]{Week's goal}
 \begin{itemize}
 \item \alert{Function-space distribution over kernels}
 \begin{itemize}
@@ -68,8 +68,8 @@ Keep working through different regression models:
 
 
 \section{Matern kernel}
-\label{sec:org57a00c2}
-\begin{frame}[label={sec:org99ae610}]{Matern kernel}
+\label{sec:orgfcf16e8}
+\begin{frame}[label={sec:org317d848}]{Matern kernel}
 \begin{itemize}
 \item SEKernel is \(C^\infty\) smooth
 \item Matern kernel generalises this to arbitrary degrees of smoothness
@@ -82,7 +82,7 @@ Keep working through different regression models:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[plain,label={sec:orga64bea2}]{Can sometimes smooth data}
+\begin{frame}[plain,label={sec:orgce8e801}]{Can sometimes smooth data}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -106,7 +106,7 @@ Hindmarsh-Rose fast
 \end{columns}
 \end{frame}
 
-\begin{frame}[plain,label={sec:org91fcb75}]{\ldots{}but not always}
+\begin{frame}[plain,label={sec:org0c224a2}]{\ldots{}but not always}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -130,7 +130,7 @@ Hodgkin-Huxley
 \end{columns}
 \end{frame}
 
-\begin{frame}[plain,label={sec:org973ac53}]{\ldots{}but not always}
+\begin{frame}[plain,label={sec:orgc853557}]{\ldots{}but not always}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -156,8 +156,8 @@ Real data
 
 
 \section{MSPEs}
-\label{sec:org2df4991}
-\begin{frame}[label={sec:org1b1ddb2}]{MSPEs}
+\label{sec:orgc0a7457}
+\begin{frame}[label={sec:orgc27909d}]{MSPEs}
 Exactly how good are any fits?
 \vfill
 \begin{itemize}
@@ -174,7 +174,7 @@ Exactly how good are any fits?
 The downsampling step causes problems with a GPR fit
 \end{frame}
 
-\begin{frame}[plain,label={sec:org8a1d207}]{Model fits}
+\begin{frame}[plain,label={sec:org23978bc}]{Model fits}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -196,7 +196,7 @@ Simulated with 348 datapoints
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgbc91982}]{MSPEs}
+\begin{frame}[label={sec:orgcfd6836}]{MSPEs}
 Validation results can't always be trusted - MSPE values are often too high.
 Possible hand-wavy explanation:
 \begin{itemize}[<+->]
@@ -216,7 +216,7 @@ Possible hand-wavy explanation:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org6d38b61}]{Fixing MSPE}
+\begin{frame}[label={sec:orgb680401}]{Fixing MSPE}
 Alternative approaches to MSPE:
 \begin{itemize}
 \item Leave-one-out cross validation 
@@ -240,7 +240,7 @@ MSPE only seems to break on PeriodicKernels or Hodgkin Huxley dataset
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org216b5b9}]{Real data}
+\begin{frame}[label={sec:org6710978}]{Real data}
 \begin{itemize}
 \item Real data is the best test of a regression model
 \item Lack of ground-truth makes it harder to evaluate models on real data
@@ -254,14 +254,14 @@ MSPE only seems to break on PeriodicKernels or Hodgkin Huxley dataset
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgdbb3871}]{Real data, splines model}
+\begin{frame}[label={sec:org48a5efc}]{Real data, splines model}
 \begin{center}
 \includegraphics[width=.9\textwidth]{./hist.pdf}
 \end{center}
 \vfill
 \end{frame}
 
-\begin{frame}[label={sec:org0732950}]{Real data}
+\begin{frame}[label={sec:org5f5781c}]{Real data}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -285,7 +285,7 @@ MSPE only seems to break on PeriodicKernels or Hodgkin Huxley dataset
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:orgd377990}]{Calculated MSPEs}
+\begin{frame}[label={sec:org02a4e79}]{Calculated MSPEs}
 \begin{center}
 \begin{tabular}{lrlrr}
 \hline
@@ -305,7 +305,7 @@ HRFast & 1.48\,(-7) & \alert{4.30(-9)} & 2.37\,(-6) & 1.22\,(-2)\\
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org555ed0f}]{Calculated MSPEs}
+\begin{frame}[label={sec:orga15dd39}]{Calculated MSPEs}
 \begin{center}
 \begin{tabular}{lrrrr}
 \hline
@@ -327,8 +327,8 @@ HRFast & 1.17\,(-2) & 1.16\,(-2) & \alert{1.11e-2} & 2.18\,(-2)\\
 
 
 \section{Splines vs GPR}
-\label{sec:org1fb8bb5}
-\begin{frame}[label={sec:org2d40f28}]{Splines}
+\label{sec:org5209505}
+\begin{frame}[label={sec:org2b74fd0}]{Splines}
 \begin{itemize}[<+->]
 \item `Tie' together pieces of polynomials at knot-points
 \item Lower degree-of-freedom than GPR, so they forcibly remove noise \emph{[see later slide]}
@@ -349,7 +349,7 @@ HRFast & 1.17\,(-2) & 1.16\,(-2) & \alert{1.11e-2} & 2.18\,(-2)\\
 \end{frame}
 
 
-\begin{frame}[label={sec:org4392278}]{Free-knot splines}
+\begin{frame}[label={sec:orgcea1bef}]{Free-knot splines}
 A clever approach: free-knot splines
 \begin{itemize}[<+->]
 \item Automatically choose both location and number of knots
@@ -364,7 +364,7 @@ A clever approach: free-knot splines
 \end{frame}
 
 
-\begin{frame}[plain,label={sec:org4ebdf23}]{Splines vs GPR}
+\begin{frame}[plain,label={sec:org57a8d4d}]{Splines vs GPR}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -391,7 +391,7 @@ GPR (SEKernel)
 \end{frame}
 
 
-\begin{frame}[plain,label={sec:org4172f2d}]{Splines vs GPR}
+\begin{frame}[plain,label={sec:org8dbeab2}]{Splines vs GPR}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -417,7 +417,7 @@ GPR (SEKernel)
 \end{frame}
 
 
-\begin{frame}[label={sec:org899c8a7}]{Real data, splines model}
+\begin{frame}[label={sec:org4b5a1fa}]{Real data, splines model}
 \begin{center}
 \includegraphics[width=.9\textwidth]{./hist.pdf}
 \end{center}
@@ -425,7 +425,7 @@ GPR (SEKernel)
 \end{frame}
 
 
-\begin{frame}[plain,label={sec:org4176b49}]{Not perfect, but good enough}
+\begin{frame}[plain,label={sec:org38c56f4}]{Not perfect, but good enough}
 \begin{columns}
 \begin{column}{0.5\columnwidth}
 \begin{center}
@@ -442,7 +442,7 @@ GPR (SEKernel)
 \end{frame}
 
 
-\begin{frame}[label={sec:orgc729b39}]{Splines caveats}
+\begin{frame}[label={sec:org0a0d345}]{Splines caveats}
 \begin{itemize}[<+->]
 \item BARS works well, without any hyperparameter tuning
 \item ISSUE: I don't know how or why it works
@@ -467,8 +467,8 @@ GPR (SEKernel)
 
 
 \section{Other ideas}
-\label{sec:orgc78cf39}
-\begin{frame}[label={sec:org902d9e6}]{Abandoned ideas}
+\label{sec:org30d9468}
+\begin{frame}[label={sec:org9ab271b}]{Abandoned ideas}
 \begin{itemize}
 \item Generalised spectral mixture kernels
 \begin{itemize}
@@ -494,7 +494,7 @@ GPR (SEKernel)
 \end{frame}
 
 
-\begin{frame}[label={sec:org6397256}]{Other models for a paper}
+\begin{frame}[label={sec:org621f6a2}]{Other models for a paper}
 \begin{itemize}
 \item NARMAX
 \item Wavelets
@@ -514,8 +514,8 @@ GPR (SEKernel)
 
 
 \section{Next steps}
-\label{sec:org1886949}
-\begin{frame}[label={sec:org74af6b3}]{Next steps}
+\label{sec:orgb73c317}
+\begin{frame}[label={sec:orge295d5c}]{Next steps}
 \begin{itemize}[<+->]
 \item Dig into free-knot splines literature
 \begin{itemize}
@@ -528,7 +528,7 @@ GPR (SEKernel)
 \end{itemize}
 \item Write up my own implementation
 \begin{itemize}
-\item Allows for validation, interplation
+\item Allows for validation, interpolation
 \end{itemize}
 \end{itemize}
 
@@ -545,7 +545,7 @@ Then\ldots{}
 
 
 \section{GPR tests}
-\label{sec:org9b87f56}
+\label{sec:orgf7b5f33}
 
 \begin{verbatim}
 ./model_tester.py -d HRFast -m MySEKernel

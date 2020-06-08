@@ -417,7 +417,7 @@ GPR (SEKernel)
      * Useful for justifying why it's a good model, and when it will and won't work
      * Will help decide whether periodic BARS is possible
    * Write up my own implementation
-     * Allows for validation, interplation 
+     * Allows for validation, interpolation 
 
 Then...
 #+ATTR_LATEX: :overlay [<+->]
