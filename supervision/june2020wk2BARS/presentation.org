@@ -1,0 +1,223 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Bayesian free-knot splines
+#+DATE: [2020-06-15 Mon]
+
+* Background
+** Week's goals
+   * *Make changes to continuations paper*
+     * *Looked at feedback, haven't started making changes yet*
+\vfill
+   * *Fix MSPE downsampling errors*
+     * *Haven't fixed this yet*
+\vfill
+   * Implement and test free-knot splines
+     * Learn how it works
+     * Code it up
+     * *Use it to validate splines method*
+       
+* Splines overview
+** Bayesian free-knot splines
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+Identified as being a good method for modelling neuron data
+
+***   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+[[./BARS.pdf]]
+
+***  :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+[[./BARS2.pdf]]
+
+
+** How it works
+    1. Assume a spline model fits the data
+\vfill
+    2. Find a distribution over spline models, given the data
+\vfill
+    3. Condition on this distribution with new data, to get posterior estimates
+
+* Step 1
+** Step 0: problem setup
+   * Take some data \(Y_i = g(x_i) + \varepsilon\)
+     * \(\varepsilon\sim\mathcal{N}\{0, \sigma^2\}\)
+     * \(\sigma\) unknown
+     * \(g\) unknown
+     * \(Y_i\) random variables
+     * Then, \(Y_i|x_i, \sigma\sim\mathcal{N}\{g(x_i), \sigma^2\}\)
+\vfill
+   * Goal: estimate \(g\) from noisy samples \((x_i, Y_i)\)
+\vfill
+This is a very standard problem formulation so far...
+     
+** Step 1: spline model
+   * Model latent function \(g\) as being some piecewise-polynomial function \(f\)
+   * Tie polynomials together at knot-points \(\xi_i\)
+     
+\begin{equation}
+f(x) = 
+    \begin{cases}
+        f_1(x)~, \quad x\in[a,\xi_0)\\
+	f_2(x)~, \quad x\in[\xi_0, \xi_1)\\
+	\dots \\
+	f_{k+2}~,\quad x\in[\xi_k, b]
+    \end{cases}
+\end{equation}
+    
+    * \(f_i(x)\) is an \(\mathcal{O}(3)\) polynomial passing through \((\xi_{i-1},g(\xi_{i-1}))\), \((\xi_i, g(\xi_i))\)
+      * ...or allow the polynomials to pass /near/ the knot-points, for smoothing splines
+     
+** Spline bases
+#+ATTR_LATEX: :overlay [<+->]
+   * Calculating the coefficients for each \(f_i\) is inconvenient
+   * Nicer approach:
+     * Let \(f(x) = \sum_i \beta_i b_i(x)\)
+     * Functions \(b_i\) form a basis for some spline \(f(x)\) with \(k\) knots at \(\{\xi_0, \dots, \xi_k\}\)
+   * \(b_i\) are found by
+     * Specifying knot locations
+     * Requiring \(\mathcal{C}^1\) smoothness
+     * Assuming linearity outside of data range
+       
+   * \(b_i\) are called basis splines
+     * Our model now becomes \(Y_i | x_i, \beta, \sigma, \xi \sim \mathcal{N}\{\sum_i \beta_i b_i(x_i), \sigma^2\}\)
+       
+** Easy approach
+#+ATTR_LATEX: :overlay [<+->]
+   * Choose a nice number of knots \(k\)
+   * Choose a uniformly spaced knot-set \(\xi\)
+   * Guess \(\sigma\)
+   * Find a MLE for \(\beta\)
+
+\vfill
+
+Downside: bad choices for any of these parameters will give bad results:
+
+#+ATTR_LATEX: :overlay [<+->]
+    * Too few knots = underparameterised = can't capture shape of data
+    * Too many knots = overparameterised = overfit data and capture noise
+    * Bad knot positioning = function can't adapt to changing rates
+
+* Step 2
+
+** Step 2: find a distribution over models
+#+ATTR_LATEX: :overlay [<+->]
+    * Specify a prior belief \(\pi_k(k)\) for the numer of knots we have
+      * Eg. discrete uniform on \([k_{min}, k_{max}]\)
+    * Specify a prior belief \(\pi_\xi(\xi|k)\) on the knot positions \(\xi\), for any given number of knots
+      * Eg. uniform on range of data
+    * Specify a prior belief \(\pi_\sigma(\sigma)\) on the noise level
+    * Specify a prior on \(\beta\)
+      
+Joint probability: \(p(k,\xi,\beta,\sigma,y) = p(y|\beta, \sigma)\pi_\sigma(\sigma)\pi_\beta(\beta|\sigma,\xi,k)\pi_\xi(\xi|k)\pi_k(k)\)
+
+We can evaluate all of this!
+
+** Bayesian approach
+    * We want to know where to put the knots
+    * Bayesian approach: find the posterior knot distribution \(p(k, \xi | y)\)
+\begin{align}
+p(k, \xi | y) &= \frac{p(k, \xi, y)}{p(y)}~, \\
+p(k, \xi, y) &= \int\int p(k, \xi, \beta, \sigma, y)\mathrm{d}\beta\mathrm{d}\sigma \\
+&= \int\int p(y|\beta, \sigma)\pi_\sigma(\sigma)\pi_\beta(\beta|\sigma,\xi,k)\pi_\xi(\xi|k)\pi_k(k)\mathrm{d}\sigma\mathrm{d}\beta
+\end{align}
+
+** Bayesian approach
+  Putting it together, we get
+
+\begin{align}
+p(k, \xi | y) &= \frac{\int\int p(y|\beta, \sigma)\pi_\sigma(\sigma)\pi_\beta(\beta|\sigma,\xi,k)\pi_\xi(\xi|k)\pi_k(k)\mathrm{d}\sigma\mathrm{d}\beta}{p(y)} \\
+&= \frac{\int\int p(y|\beta, \sigma)\pi_\sigma(\sigma)\pi_\beta(\beta|\sigma,\xi,k)\pi_\xi(\xi|k)\pi_k(k)\mathrm{d}\sigma\mathrm{d}\beta}{\sum_k \int\int\int p(k, \xi, \beta, \sigma, y)\mathrm{d}\xi\mathrm{d}\beta\mathrm{d}\sigma}
+\end{align}
+
+...which is analytically intractable
+
+** MCMC sampling
+    * Bayesian inference gives posteriors of form
+
+\[
+\mathrm{posterior} = \frac{\mathrm{likelihood} \times \mathrm{prior}}{\mathrm{Normalising ~constant}}
+\]
+
+    * The normalising constant is regularly analytically intractable
+    * Markov-chain Monte carlo methods allow us to sample from the posterior distribution anyway
+      
+** MCMC
+MCMC sets up a Markov chain whose stationary distribution is equal to the posterior distribution:
+#+ATTR_LATEX: :overlay [<+->]
+    * Generate a random state from a proposal distribution
+    * Accept it with some probability
+    * Reject it with some probability
+    * On acceptance, change the current state to the accepted state; else, remain at current state
+    * Acceptance and rejection probabilities are chosen such that the distribution of accepted states matches that of the prior
+    * Doesn't require us to calculate the normalising constant!
+
+** Reversible-jump MCMC
+   * States are the model configuration \((k, \xi)\)
+   * These are of many different dimensions
+   * To sample from a posterior with varying dimension, we use reversible-jump MCMC
+     * Jump up and down in dimension, probabilistically
+     * Do so in such a way that the posterior is accurate both within and across dimensions
+       
+* Step 3
+** Model inference
+    * Using RJMCMC, we can sample from the posterior \(p(k, \xi | y)\), even though the dimensionality of \(\xi\) is not fixed
+    * We can use samples \(k, \xi | y\) to condition on new data \((x^*, y^*)\)
+      * \(p(y^* | x^*) = p(y^*|k, \xi, x)p(k, \xi|y)\)
+\vfill
+    * We predict new points without ever actually setting up a splines model
+      * Find a probability distribution over candidate splines models
+      * Weight each spline model's output according to its probability
+      
+
+* Results
+** My results
+   * Three different MCMC actions can be taken
+     * Add a new knot
+     * Relocate a knot
+     * Delete a knot
+
+   * Each action has a proposal probability (how likely are we to take this action?)
+   * Each step has an acceptance probability (how likely are we to accept this action?)
+   * The BARS paper does a rather bad job of explaining these!
+
+ In my implementation, probabilities are sometimes coming back negative, making it crash
+
+** Results
+    * Results can't be trusted!
+
+[[./burnin.pdf]]
+
+* BARS GPR
+** BARS and GPR
+   * BARS maintains a distribution over splines
+   * GPR maintains a distribution over arbitrarily many functions
+   * Both methods refine the distribution with Bayesian methods
+     
+\vfill
+   
+   * BARS probabilistically finds the most informative knot point configuration
+     * Finds set of spline-points that tell us the most about the data
+     * Sparse GPR probabilistically finds the most informative inducing points distribution
+   * Tenuous link to optimal experiment design?
+
+
+* Next steps
+** Next steps
+   1. Redraft paper
+   2. Get BARS to work
+      * Useful as it's the most promising method for a conference abstract
+      * Either get my implementation working, or adapt C code to my needs
+   3. Fix MSPEs
+      * /Should/ be quick and easy
+   4. (Re)validate all the models I'm playing with
+   5. Put results into a conference abstract
