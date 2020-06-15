@@ -42,9 +42,7 @@ Identified as being a good method for modelling neuron data
 
 ** How it works
     1. Assume a spline model fits the data
-\vfill
     2. Find a distribution over spline models, given the data
-\vfill
     3. Condition on this distribution with new data, to get posterior estimates
 
 * Step 1

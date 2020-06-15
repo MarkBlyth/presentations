@@ -1,4 +1,4 @@
-% Created 2020-06-12 Fri 16:06
+% Created 2020-06-15 Mon 09:50
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:org023561b}
-\begin{frame}[label={sec:org3d0bd76}]{Week's goals}
+\label{sec:org09b02c2}
+\begin{frame}[label={sec:org148630c}]{Week's goals}
 \begin{itemize}
 \item \alert{Make changes to continuations paper}
 \begin{itemize}
@@ -57,8 +57,8 @@
 \end{frame}
 
 \section{Splines overview}
-\label{sec:org5d0bbdb}
-\begin{frame}[plain,label={sec:orge9e21f3}]{Bayesian free-knot splines}
+\label{sec:orgdc883d8}
+\begin{frame}[plain,label={sec:orga006766}]{Bayesian free-knot splines}
 Identified as being a good method for modelling neuron data
 
 \begin{columns}
@@ -77,23 +77,17 @@ Identified as being a good method for modelling neuron data
 \end{frame}
 
 
-\begin{frame}[label={sec:org33a77fc}]{How it works}
+\begin{frame}[label={sec:org4febaad}]{How it works}
 \begin{enumerate}
 \item Assume a spline model fits the data
-\end{enumerate}
-\vfill
-\begin{enumerate}
 \item Find a distribution over spline models, given the data
-\end{enumerate}
-\vfill
-\begin{enumerate}
 \item Condition on this distribution with new data, to get posterior estimates
 \end{enumerate}
 \end{frame}
 
 \section{Step 1}
-\label{sec:orge722b6b}
-\begin{frame}[label={sec:orgb575baf}]{Step 0: problem setup}
+\label{sec:org5de6c2a}
+\begin{frame}[label={sec:orgb61b9e9}]{Step 0: problem setup}
 \begin{itemize}
 \item Take some data \(Y_i = g(x_i) + \varepsilon\)
 \begin{itemize}
@@ -112,7 +106,7 @@ Identified as being a good method for modelling neuron data
 This is a very standard problem formulation so far\ldots{}
 \end{frame}
 
-\begin{frame}[label={sec:org868b9bf}]{Step 1: spline model}
+\begin{frame}[label={sec:org5205e06}]{Step 1: spline model}
 \begin{itemize}
 \item Model latent function \(g\) as being some piecewise-polynomial function \(f\)
 \item Tie polynomials together at knot-points \(\xi_i\)
@@ -136,7 +130,7 @@ f(x) =
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org43c0e83}]{Spline bases}
+\begin{frame}[label={sec:orge0d0daa}]{Spline bases}
 \begin{itemize}[<+->]
 \item Calculating the coefficients for each \(f_i\) is inconvenient
 \item Nicer approach:
@@ -158,7 +152,7 @@ f(x) =
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3875c87}]{Easy approach}
+\begin{frame}[label={sec:orgbc08767}]{Easy approach}
 \begin{itemize}[<+->]
 \item Choose a nice number of knots \(k\)
 \item Choose a uniformly spaced knot-set \(\xi\)
@@ -178,9 +172,9 @@ Downside: bad choices for any of these parameters will give bad results:
 \end{frame}
 
 \section{Step 2}
-\label{sec:orgb38d58b}
+\label{sec:org8524485}
 
-\begin{frame}[label={sec:org58f434f}]{Step 2: find a distribution over models}
+\begin{frame}[label={sec:org8884c3a}]{Step 2: find a distribution over models}
 \begin{itemize}[<+->]
 \item Specify a prior belief \(\pi_k(k)\) for the numer of knots we have
 \begin{itemize}
@@ -199,7 +193,7 @@ Joint probability: \(p(k,\xi,\beta,\sigma,y) = p(y|\beta, \sigma)\pi_\sigma(\sig
 We can evaluate all of this!
 \end{frame}
 
-\begin{frame}[label={sec:org06872a4}]{Bayesian approach}
+\begin{frame}[label={sec:orgc112149}]{Bayesian approach}
 \begin{itemize}
 \item We want to know where to put the knots
 \item Bayesian approach: find the posterior knot distribution \(p(k, \xi | y)\)
@@ -211,7 +205,7 @@ p(k, \xi, y) &= \int\int p(k, \xi, \beta, \sigma, y)\mathrm{d}\beta\mathrm{d}\si
 \end{align}
 \end{frame}
 
-\begin{frame}[label={sec:orge0e1e0c}]{Bayesian approach}
+\begin{frame}[label={sec:orge60a3c9}]{Bayesian approach}
 Putting it together, we get
 
 \begin{align}
@@ -222,7 +216,7 @@ p(k, \xi | y) &= \frac{\int\int p(y|\beta, \sigma)\pi_\sigma(\sigma)\pi_\beta(\b
 \ldots{}which is analytically intractable
 \end{frame}
 
-\begin{frame}[label={sec:orgf9cb955}]{MCMC sampling}
+\begin{frame}[label={sec:orgbfe8838}]{MCMC sampling}
 \begin{itemize}
 \item Bayesian inference gives posteriors of form
 \end{itemize}
@@ -237,7 +231,7 @@ p(k, \xi | y) &= \frac{\int\int p(y|\beta, \sigma)\pi_\sigma(\sigma)\pi_\beta(\b
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgc146642}]{MCMC}
+\begin{frame}[label={sec:org234cbb4}]{MCMC}
 MCMC sets up a Markov chain whose stationary distribution is equal to the posterior distribution:
 \begin{itemize}[<+->]
 \item Generate a random state from a proposal distribution
@@ -249,7 +243,7 @@ MCMC sets up a Markov chain whose stationary distribution is equal to the poster
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orga5c19a3}]{Reversible-jump MCMC}
+\begin{frame}[label={sec:org90a5207}]{Reversible-jump MCMC}
 \begin{itemize}
 \item States are the model configuration \((k, \xi)\)
 \item These are of many different dimensions
@@ -262,8 +256,8 @@ MCMC sets up a Markov chain whose stationary distribution is equal to the poster
 \end{frame}
 
 \section{Step 3}
-\label{sec:orgd8f1d61}
-\begin{frame}[label={sec:org7371f94}]{Model inference}
+\label{sec:orgfe92276}
+\begin{frame}[label={sec:orge098484}]{Model inference}
 \begin{itemize}
 \item Using RJMCMC, we can sample from the posterior \(p(k, \xi | y)\), even though the dimensionality of \(\xi\) is not fixed
 \item We can use samples \(k, \xi | y\) to condition on new data \((x^*, y^*)\)
@@ -283,8 +277,8 @@ MCMC sets up a Markov chain whose stationary distribution is equal to the poster
 
 
 \section{Results}
-\label{sec:org2f36e91}
-\begin{frame}[label={sec:org5a10bd4}]{My results}
+\label{sec:orgbc1a900}
+\begin{frame}[label={sec:org4993623}]{My results}
 \begin{itemize}
 \item Three different MCMC actions can be taken
 \begin{itemize}
@@ -301,7 +295,7 @@ MCMC sets up a Markov chain whose stationary distribution is equal to the poster
 In my implementation, probabilities are sometimes coming back negative, making it crash
 \end{frame}
 
-\begin{frame}[label={sec:orgdca34d6}]{Results}
+\begin{frame}[label={sec:org7bf3d4e}]{Results}
 \begin{itemize}
 \item Results can't be trusted!
 \end{itemize}
@@ -312,8 +306,8 @@ In my implementation, probabilities are sometimes coming back negative, making i
 \end{frame}
 
 \section{BARS GPR}
-\label{sec:org8c97e33}
-\begin{frame}[label={sec:org899d93c}]{BARS and GPR}
+\label{sec:org7e62553}
+\begin{frame}[label={sec:org52af2c7}]{BARS and GPR}
 \begin{itemize}
 \item BARS maintains a distribution over splines
 \item GPR maintains a distribution over arbitrarily many functions
@@ -334,8 +328,8 @@ In my implementation, probabilities are sometimes coming back negative, making i
 
 
 \section{Next steps}
-\label{sec:org03a960c}
-\begin{frame}[label={sec:org0ecb813}]{Next steps}
+\label{sec:org47e5a8e}
+\begin{frame}[label={sec:orgcdffe0f}]{Next steps}
 \begin{enumerate}
 \item Redraft paper
 \item Get BARS to work
