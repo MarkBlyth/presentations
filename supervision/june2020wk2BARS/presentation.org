@@ -68,7 +68,7 @@ f(x) =
         f_1(x)~, \quad x\in[a,\xi_0)\\
 	f_2(x)~, \quad x\in[\xi_0, \xi_1)\\
 	\dots \\
-	f_{k+2}~,\quad x\in[\xi_k, b]
+	f_{k+2}(x)~,\quad x\in[\xi_k, b]
     \end{cases}
 \end{equation}
     
