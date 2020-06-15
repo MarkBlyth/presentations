@@ -104,6 +104,7 @@ Downside: bad choices for any of these parameters will give bad results:
     * Too few knots = underparameterised = can't capture shape of data
     * Too many knots = overparameterised = overfit data and capture noise
     * Bad knot positioning = function can't adapt to changing rates
+    * How can we infer these from the data?
 
 * Step 2
 
@@ -170,7 +171,7 @@ MCMC sets up a Markov chain whose stationary distribution is equal to the poster
 ** Model inference
     * Using RJMCMC, we can sample from the posterior \(p(k, \xi | y)\), even though the dimensionality of \(\xi\) is not fixed
     * We can use samples \(k, \xi | y\) to condition on new data \((x^*, y^*)\)
-      * \(p(y^* | x^*) = p(y^*|k, \xi, x)p(k, \xi|y)\)
+      * \(p(y^* | x^*, x, y) = p(y^*|k, \xi, x^*)p(k, \xi|y)\)
 \vfill
     * We predict new points without ever actually setting up a splines model
       * Find a probability distribution over candidate splines models
