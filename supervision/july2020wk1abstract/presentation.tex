@@ -1,0 +1,77 @@
+% Created 2020-07-06 Mon 10:52
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\author{Mark Blyth}
+\date{}
+\title{Work plan July -- September}
+\hypersetup{
+ pdfauthor={Mark Blyth},
+ pdftitle={Work plan July -- September},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.1.9)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\begin{frame}[label={sec:orgef771ca}]{Plan}
+Short presentation this time!
+\begin{itemize}
+\item Ideas a september conference paper should cover
+\item Work that needs to be done for that to happen
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org85fe5ac}]{Conference paper goal}
+\begin{itemize}[<+->]
+\item Highlight issues with Fourier discretisation
+\begin{itemize}
+\item Noise, dimensionality
+\end{itemize}
+\item Show how surrogate modelling fixes noise
+\item Show how surrogate model can be discretised with standard techniques, for lower dimensionality than Fourier
+\begin{itemize}
+\item Ideally, surrogate model will discretise data, but there's still value in having separate surrogate and discretisation steps
+\end{itemize}
+\item Other CBC arguments
+\begin{itemize}
+\item More accurate signal reconstruction from discretisation?
+\item Faster control-target evaluation?
+\item Discretisation-free prediction step?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgf14c489}]{Missing things}
+\begin{itemize}[<+->]
+\item Discretise the cleaned surrogate-modelled signal
+\begin{itemize}
+\item Conduct a mini-survey of available discretisation methods
+\item Use a discretisation that encodes periodicity, ideally a hybrid surrogate and discretisation
+\end{itemize}
+\item Rigorous validation of models
+\begin{itemize}
+\item Start writing paper at this point!
+\end{itemize}
+\item \emph{Comparison of BARS / GPR to other popular time series models}
+\item \emph{Run simple transformations (logs, sigmoids) for GPR on non-stationary signals}
+\item \uline{Warping GPRs for automatically transforming nonstationary signals}
+\item \uline{Testing discretisation results on in-silico CBC}
+\end{itemize}
+\end{frame}
+\end{document}

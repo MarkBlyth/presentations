@@ -1,0 +1,36 @@
+#+OPTIONS: toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Work plan July -- September
+#+DATE:
+
+* Plan
+Short presentation this time!
+  * Ideas a september conference paper should cover
+  * Work that needs to be done for that to happen
+
+* Conference paper goal
+#+ATTR_LATEX: :overlay [<+->]
+  * Highlight issues with Fourier discretisation
+    * Noise, dimensionality
+  * Show how surrogate modelling fixes noise
+  * Show how surrogate model can be discretised with standard techniques, for lower dimensionality than Fourier
+      * Ideally, surrogate model will discretise data, but there's still value in having separate surrogate and discretisation steps
+  * Other CBC arguments
+    * More accurate signal reconstruction from discretisation?
+    * Faster control-target evaluation?
+    * Discretisation-free prediction step?
+
+* Missing things
+#+ATTR_LATEX: :overlay [<+->]
+    * Discretise the cleaned surrogate-modelled signal
+      * Conduct a mini-survey of available discretisation methods
+      * Use a discretisation that encodes periodicity, ideally a hybrid surrogate and discretisation
+    * Rigorous validation of models
+      * Start writing paper at this point!
+    * /Comparison of BARS / GPR to other popular time series models/
+    * /Run simple transformations (logs, sigmoids) for GPR on non-stationary signals/
+    * _Warping GPRs for automatically transforming nonstationary signals_
+    * _Testing discretisation results on in-silico CBC_
