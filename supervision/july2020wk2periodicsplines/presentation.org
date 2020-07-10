@@ -1,0 +1,181 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Periodic splines discretisation
+#+DATE: [2020-07-13 Mon]
+
+* Background
+** Week's activities
+   * Finish manuscripts
+     - Paper in progress
+       * Proposed edits completed
+       * Word-count down to 6050+400
+     - Abstract done
+   * Read about numerical continuation discretisation
+   * Read up on non-Bayesian splines
+   * Started periodic splines discretisation
+
+* The new work plan
+** Conference paper goals
+Two separate-but-related goals:
+\vfill
+#+ATTR_LATEX: :overlay [<+->]
+   1) Demonstrate the use of surrogate modelling
+      - Fancy /[adaptive]/ filtering; removes noise but not signal
+      - Useful for applying Fourier /[wavelets?]/ to noisy signals
+      - Can produce a statistically optimal noise removal, which traditional filtering does not
+   2) Discretise multiple-timescale signals
+      - Fourier gives overly-high-dimensional discretisations on spiking signals
+      - Demonstrate an alternative /[lower-dimensional]/ method
+      - Use simple standard methods to do so
+       
+** Surrogate modelling
+This part is done, doesn't require much work
+\vfill
+   * Previous work on GPR, BARS
+   * Shows how to reconstruct a signal from noisy observations
+     * Alternative to low-pass filter, that works on spiking signals
+   * Useful for applying Fourier to noisy signals
+     
+
+** New discretisation
+Part (1) let us use Fourier on noisy signals, but discretisation will be high-dimensional
+#+ATTR_LATEX: :overlay [<+->]
+   * Collocation requires an ODE model; inapplicable, even on surrogates
+     * Tracks a point on an orbit; point on orbit + ODE model = full orbit
+     * We need more -- need to track the full orbit /without/ a model
+   * Discretisation is just some lower-dimensional representation of a signal
+     * Eg. parameters of a regression model that reconstructs the signal
+     * Complex method: coefficients of Bayesian periodic splines, or inducing points of sparse periodic GPR /[previous work]/
+     * Simple method: coefficients of /[non-Bayesian]/ periodic splines /[new work]/
+   * NODYCON discretisation method: /[non-Bayesian]/ periodic splines
+
+* COMMENT Using GPR etc
+** Side note: the role of previous work
+Not one for NODYCON, but still has value
+#+ATTR_LATEX: :overlay [<+->]
+   * BARS, GPR give powerful Fourier surrogates, by adaptively filtering off noise
+   * BARS: knots, BSpline coefficients discretise a signal
+     * Periodic BARS would be more useful for periodic orbit continuation
+   * GPR: inducing points of sparse GPR give the minimal set of data to represent the signal
+     * Inducing points are a discretisation
+     * Can easily make a periodic discretisation by using a periodic kernel
+   * Bayesian methods usually give better results than non-Bayesian methods
+\vfill
+
+* Periodic splines
+** Periodic splines
+Simple non-parametric method
+\vfill
+#+ATTR_LATEX: :overlay [<+->]
+  1) Find the period
+     * Autocorrelation or nonlinear least squares \(F_0\) estimation
+     * Fourier?
+  2) `Stack' periods
+     * Re-label data \(t_i\)s to phase \(\phi_i = \frac{t_i}{T} \mod 1\) or \(\phi_i = t_i \mod T\)
+  3) Build splines model
+     * Discretisation = BSpline coefficients
+       
+** Period stacking
+   
+Uses ACF to estimate frequency, then NLS to refine estimate
+
+[[./period_stack.pdf]]
+
+** Period stacking
+   
+Uses ACF to estimate frequency, then NLS to refine estimate; removes period from continuation scheme
+
+[[./period_stack2.pdf]]
+
+** Fit a splines model
+#+ATTR_LATEX: :overlay [<+->]
+   * Challenge: determine knot points
+     * Given a target `smoothness' \(\lambda\), we can find a knotset and LSQ BSpline curve
+     * Standard method; optimizes loss \(+~\lambda~\times\) total curvature
+   * Knot selection is still an unanswered problem
+     * Smoothing splines approach 1: put a knot at every datapoint
+     * Smoothing splines approach 2: start off with few knots, keep adding more until we get target smoothness
+     * Overparameterises -- neither of these give low-dimensional discretisation!
+   * Well-chosen knot points are needed for a low-dimensional discretisation
+     * Hard to choose good knots /a priori/; method 2 is automated trial and error
+     * Standard methods don't give a minimal knotset
+     * Hard to optimise knotsets due to lots of local minima
+   * *Turns out we can make a naive method, that works very well...*
+     
+** Knot fitting
+#+ATTR_LATEX: :overlay [<+->]
+   1. Choose the desired number of knots
+      * A mixture of intuition and experimentation
+      * Heuristic: put a knot either side of the signal `turning points'
+      * Fitzhugh-Nagumo: 4 turning points, so try 8 knots
+   2. Choose knots at random
+   3. Numerically optimize the knot vector
+   4. Repeat steps 2,3 lots, and choose the best result
+      * Helps overcome the local minima issue
+
+** Knot fitting
+This works surprisingly well:
+   * Few knots = model quick to fit, easier to optimise
+   * Nice result would be to analytically derive a LSQ fitting procedure
+\vfill
+For comparison...
+#+ATTR_LATEX: :overlay [<+->]
+   * Bayesian automatically selects required number of knots
+     * No trial and error
+     * Takes human out the loop
+   * Bayesian automatically finds the best knots
+   * Bayesian could overcome the period estimation problem /[see later]/
+   * This method gets good results much more simply
+
+** Smoothness fit
+   [[./fit1.pdf]]
+Smoothness = 10; 38-dimensional discretisation.
+
+** Smoothness fit
+   [[./fit2.pdf]]
+Smoothness = 5; 58-dimensional discretisation.
+
+** Optimizer fit
+   [[./fit3.pdf]]
+8 interior knots
+
+** Optimizer fit
+   [[./HRFit.pdf]]
+Also works on more neuron-like data
+
+** Optimizer fit
+   [[./HHFit.pdf]]
+Too few datapoints across the spikes
+
+** Optimizer fit
+  [[./HHFit2.pdf]]
+Much better!
+
+
+** Issue
+   * Inaccuracies in the period will add up to a big phase shift over time
+   * Bad period estimate can have disastrous results!
+       
+** The period-estimation problem
+   
+[[./brokenF0.pdf]]
+
+** The period-estimation problem
+
+   * Increasing the timescale separation `squares up' the signal, but breaks F0 period estimation
+   * NLS F0 estimation also uses Fourier harmonics, so breaks on the same signals Fourier discretisation would break on /[only tried one test-case!]/
+   * Playing with the F0 estimation parameters / methods helps with this, but adds more mysterious hyperparameters
+     * Bayesian methods also offer a way around this
+
+* Next steps
+** Next steps
+    * Keep working on paper
+    * Compare reconstruction error for a given number of knots, for Fourier and splines
+    * Use discretisation in CBC
+      * Treat knot positions as a fixed hyperparameter
+      * BSpline coefficients become a signal discretisation
+    * Mini-review knot selection methods
+      * Worth discussing the alternative methods in a paper
