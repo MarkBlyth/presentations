@@ -1,4 +1,4 @@
-% Created 2020-07-10 Fri 16:10
+% Created 2020-07-13 Mon 10:34
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:orgb4f90c2}
-\begin{frame}[label={sec:orgec15545}]{Week's activities}
+\label{sec:org9672594}
+\begin{frame}[label={sec:org0d0e1db}]{Week's activities}
 \begin{itemize}
 \item Finish manuscripts
 \begin{itemize}
@@ -49,8 +49,8 @@
 \end{frame}
 
 \section{The new work plan}
-\label{sec:org003b327}
-\begin{frame}[label={sec:org16542f0}]{Conference paper goals}
+\label{sec:orgbb37f26}
+\begin{frame}[label={sec:orge86ca2c}]{Conference paper goals}
 Two separate-but-related goals:
 \vfill
 \begin{enumerate}[<+->]
@@ -69,7 +69,7 @@ Two separate-but-related goals:
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgcbb7095}]{Surrogate modelling}
+\begin{frame}[label={sec:org1156a9f}]{Surrogate modelling}
 This part is done, doesn't require much work
 \vfill
 \begin{itemize}
@@ -79,16 +79,21 @@ This part is done, doesn't require much work
 \item Alternative to low-pass filter, that works on spiking signals
 \end{itemize}
 \item Useful for applying Fourier to noisy signals
+\begin{itemize}
+\item Removes noise
+\item \alert{No Nyquist cap}
+\end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}[label={sec:org11a6f53}]{New discretisation}
+\begin{frame}[label={sec:org2bc490a}]{New discretisation}
 Part (1) let us use Fourier on noisy signals, but discretisation will be high-dimensional
 \begin{itemize}[<+->]
-\item Collocation requires an ODE model; inapplicable, even on surrogates
+\item Collocation etc. requires an ODE model; inapplicable, even on surrogates
 \begin{itemize}
-\item Tracks a point on an orbit; point on orbit + ODE model = full orbit
+\item Find polynomials that solve ODEs at points on orbit
+\item Track a point on an orbit; point on orbit + ODE model = full orbit
 \item We need more -- need to track the full orbit \emph{without} a model
 \end{itemize}
 \item Discretisation is just some lower-dimensional representation of a signal
@@ -102,9 +107,9 @@ Part (1) let us use Fourier on noisy signals, but discretisation will be high-di
 \end{frame}
 
 \section{Periodic splines}
-\label{sec:orgb277688}
-\begin{frame}[label={sec:orgc51d184}]{Periodic splines}
-Simple non-parametric method
+\label{sec:org0b6d992}
+\begin{frame}[label={sec:orgebfd0bd}]{Periodic splines}
+Simple non-parametric method for periodic signals
 \vfill
 \begin{enumerate}[<+->]
 \item Find the period
@@ -123,7 +128,7 @@ Simple non-parametric method
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org6c770d6}]{Period stacking}
+\begin{frame}[label={sec:orgd3ebd17}]{Period stacking}
 Uses ACF to estimate frequency, then NLS to refine estimate
 
 \begin{center}
@@ -131,7 +136,7 @@ Uses ACF to estimate frequency, then NLS to refine estimate
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org2660fde}]{Period stacking}
+\begin{frame}[label={sec:orge347f9e}]{Period stacking}
 Uses ACF to estimate frequency, then NLS to refine estimate; removes period from continuation scheme
 
 \begin{center}
@@ -139,7 +144,7 @@ Uses ACF to estimate frequency, then NLS to refine estimate; removes period from
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org927f53d}]{Fit a splines model}
+\begin{frame}[label={sec:org39cd4d4}]{Fit a splines model}
 \begin{itemize}[<+->]
 \item Challenge: determine knot points
 \begin{itemize}
@@ -162,7 +167,7 @@ Uses ACF to estimate frequency, then NLS to refine estimate; removes period from
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd75b9ba}]{Knot fitting}
+\begin{frame}[label={sec:org49a670f}]{Knot fitting}
 \begin{enumerate}[<+->]
 \item Choose the desired number of knots
 \begin{itemize}
@@ -179,7 +184,7 @@ Uses ACF to estimate frequency, then NLS to refine estimate; removes period from
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgf49375c}]{Knot fitting}
+\begin{frame}[label={sec:orgffc5b4d}]{Knot fitting}
 This works surprisingly well:
 \begin{itemize}
 \item Few knots = model quick to fit, easier to optimise
@@ -199,42 +204,42 @@ For comparison\ldots{}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgebe0b67}]{Smoothness fit}
+\begin{frame}[label={sec:orgdc37deb}]{Smoothness fit}
    \begin{center}
 \includegraphics[width=.9\linewidth]{./fit1.pdf}
 \end{center}
 Smoothness = 10; 38-dimensional discretisation.
 \end{frame}
 
-\begin{frame}[label={sec:org1cda50c}]{Smoothness fit}
+\begin{frame}[label={sec:org53ba107}]{Smoothness fit}
    \begin{center}
 \includegraphics[width=.9\linewidth]{./fit2.pdf}
 \end{center}
 Smoothness = 5; 58-dimensional discretisation.
 \end{frame}
 
-\begin{frame}[label={sec:orge871fcd}]{Optimizer fit}
+\begin{frame}[label={sec:org22748d4}]{Optimizer fit}
    \begin{center}
 \includegraphics[width=.9\linewidth]{./fit3.pdf}
 \end{center}
 8 interior knots
 \end{frame}
 
-\begin{frame}[label={sec:org829da8f}]{Optimizer fit}
+\begin{frame}[label={sec:orgcdb35c6}]{Optimizer fit}
    \begin{center}
 \includegraphics[width=.9\linewidth]{./HRFit.pdf}
 \end{center}
 Also works on more neuron-like data
 \end{frame}
 
-\begin{frame}[label={sec:org4abbdd6}]{Optimizer fit}
+\begin{frame}[label={sec:org51f9f19}]{Optimizer fit}
    \begin{center}
 \includegraphics[width=.9\linewidth]{./HHFit.pdf}
 \end{center}
 Too few datapoints across the spikes
 \end{frame}
 
-\begin{frame}[label={sec:org1195fcc}]{Optimizer fit}
+\begin{frame}[label={sec:org91d14c4}]{Optimizer fit}
   \begin{center}
 \includegraphics[width=.9\linewidth]{./HHFit2.pdf}
 \end{center}
@@ -242,20 +247,20 @@ Much better!
 \end{frame}
 
 
-\begin{frame}[label={sec:orgc32779a}]{Issue}
+\begin{frame}[label={sec:org54d8611}]{Issue}
 \begin{itemize}
 \item Inaccuracies in the period will add up to a big phase shift over time
 \item Bad period estimate can have disastrous results!
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org58b1c1c}]{The period-estimation problem}
+\begin{frame}[label={sec:orgd838fee}]{The period-estimation problem}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./brokenF0.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgaf032a0}]{The period-estimation problem}
+\begin{frame}[label={sec:orgbf6bec0}]{The period-estimation problem}
 \begin{itemize}
 \item Increasing the timescale separation `squares up' the signal, but breaks F0 period estimation
 \item NLS F0 estimation also uses Fourier harmonics, so breaks on the same signals Fourier discretisation would break on \emph{[only tried one test-case!]}
@@ -267,8 +272,8 @@ Much better!
 \end{frame}
 
 \section{Next steps}
-\label{sec:orga9e07c2}
-\begin{frame}[label={sec:org6138647}]{Next steps}
+\label{sec:org1f6417a}
+\begin{frame}[label={sec:orge966924}]{Next steps}
 \begin{itemize}
 \item Keep working on paper
 \item Compare reconstruction error for a given number of knots, for Fourier and splines

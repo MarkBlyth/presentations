@@ -38,13 +38,16 @@ This part is done, doesn't require much work
    * Shows how to reconstruct a signal from noisy observations
      * Alternative to low-pass filter, that works on spiking signals
    * Useful for applying Fourier to noisy signals
+     * Removes noise
+     * *No Nyquist cap*
      
 
 ** New discretisation
 Part (1) let us use Fourier on noisy signals, but discretisation will be high-dimensional
 #+ATTR_LATEX: :overlay [<+->]
-   * Collocation requires an ODE model; inapplicable, even on surrogates
-     * Tracks a point on an orbit; point on orbit + ODE model = full orbit
+   * Collocation etc. requires an ODE model; inapplicable, even on surrogates
+     * Find polynomials that solve ODEs at points on orbit
+     * Track a point on an orbit; point on orbit + ODE model = full orbit
      * We need more -- need to track the full orbit /without/ a model
    * Discretisation is just some lower-dimensional representation of a signal
      * Eg. parameters of a regression model that reconstructs the signal
@@ -67,7 +70,7 @@ Not one for NODYCON, but still has value
 
 * Periodic splines
 ** Periodic splines
-Simple non-parametric method
+Simple non-parametric method for periodic signals
 \vfill
 #+ATTR_LATEX: :overlay [<+->]
   1) Find the period
