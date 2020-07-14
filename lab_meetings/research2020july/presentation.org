@@ -1,0 +1,404 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Bayesian methods for the control-based continuation of multiple-timescale systems
+#+DATE: [2020-07-15 Wed]
+
+* COMMENT TODO
+Add more detail outside of the tutorial!
+    * /Why/ does GPR break?
+      * Modelling nonstationary functions with stationary models
+    * Images of GPR breaking
+    * How could we fix GPR?
+      * Use nonstationary kernels
+      * Issues with nonstationary kernels
+    * What are the periodic splines equations?
+    * Why are they more sensible than Fourier?
+    * How am I fitting knots?
+      * Why am I formulating the problem the way I am?
+
+* Intro
+** Plan de jour
+   * CBC maths
+   * Surrogate modelling
+   * Novel discretisations
+** Plan de jour
+   * *CBC maths*
+   * Surrogate modelling
+   * Novel discretisations
+* CBC background
+** What is CBC?
+   Dynamics are `what something does'
+
+   [[./HH.pdf]]
+   
+** What is CBC?
+   #+BEGIN_CENTER
+   A bifurcation is a change in dynamics
+   #+END_CENTER
+*** Excitable :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+#+ATTR_LATEX: :height .8\textheight
+[[./excitable.pdf]]
+
+*** Spiking :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+#+ATTR_LATEX: :height .8\textheight
+[[./spiking.pdf]]
+
+** What is CBC?
+Bifurcation analysis:
+#+ATTR_LATEX: :overlay [<+->]
+   1. Find a feature
+      * Eg. a rest-state or sustained oscillation
+   2. Change a parameter slightly
+      * Eg. inject more current in a neuron
+   3. Find where the feature moved to
+      * Eg. increase in rest-state membrane potential
+   4. Bifurcations occur when features change, appear, or disappear
+	
+** What is CBC?
+   * Numerical continuation:
+     * Features \(x\) defined given by \(f(x, \lambda)=0\)
+     * Change \(\lambda\), see how \(x\) changes
+
+\vfill
+
+*** George Box
+All models are wrong, but some are useful
+
+** What is CBC?
+Control-based continuation; model-free bifurcation analysis:
+#+ATTR_LATEX: :overlay [<+->]
+    1. Build a system controller
+       * Put in target \(u^*(t)\)
+       * Controller makes system follow \(u^*(t)\)
+    2. Find noninvasive \(u^*(t)\)
+       * Noninvasiveness = no control action applied
+       * No control action = system behaves naturally
+    3. Change a parameter
+    4. Find how noninvasive \(u^*(t)\) changed
+       * Tracks system features, bifurcations without ever needing a model
+** CBC
+*** Control-based continuation :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+    A model-free bifurcation analysis method. Uses a controller to stabilise a system, and continuation to track features.
+    
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+    
+\vfill
+My project: use CBC to analyse the bifurcations that make neurons fire
+
+* Discretisation
+** What is discretisation?
+#+ATTR_LATEX: :overlay [<+->]
+   * Periodic orbits are functions satisfying \(f(t) = f(t+T)\)
+   * Tracking these means solving the functional equation \(I\left[u^*\right] = \int_0^T\left[u(u^*, t)\right]^2\mathrm{d}t = 0\) for function \(u^*(t)\)
+     * This is hard!
+     * /[interesting aside: optimal control developed some nice approaches for solving variational equations]/
+   * Discretisation lets us solve the problem by solving a finite set of equations
+
+** What is discretisation?
+Goal: solve \(I\left[u^*\right] = 0\)
+   1. Translate problem to system of vector-valued equations
+   2. Solve system numerically
+   3. Translate solution back to a continuous function
+      
+\vfill
+Translation between continuous and vector-valued systems is discretisation
+
+** What is discretisation?
+*** Discretisation                                             :B_definition:
+    :PROPERTIES:
+    :BEAMER_env: definition
+    :END:
+
+The act of representing a continuous signal by a discrete counterpart
+
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+    
+\vfill
+We want a discretisation that
+    * Has minimal discretisation error
+    * Is low-dimensional
+
+** How do we discretise?
+#+ATTR_LATEX: :overlay [<+->]
+   * Let \(\mathbf{u^*}\) be some vector `representing' the signal \(u^*(t)\)
+     * Eg. Fourier: let our periodic target be \(u^*(t) = a_0 + \sum a_i \cos i\omega t + \sum b_i \sin i\omega t\)
+   * We can represent the signal by its Fourier harmonics \(\mathbf{u^*}=\{a_0, a_i, b_i\}\)
+   * \(u^*(t)\) can be represented by \(\mathbf{u}^*\) with minimal error
+     * \(\mathbf{u^*}\) is a discretisation
+     * Represents a continuous function as finite-dimensional vector, with minimal error
+   * The functional problem can be rewritten as \(I\left(\mathbf{u}^*\right)=0\)
+     * Finite-vector equation, solvable!
+       
+** Issues with discretisation
+   * Solving the discretised system takes a long time when it is high-dimensional
+     \vfill
+   * Neuron signals require lots of Fourier harmonics to discretise
+     \vfill
+   * Higher-order harmonics are harder to get /[Nyquist cap]/ and less accurate /[SNR]/
+       
+** Plan de jour
+   * CBC maths
+   * *Surrogate modelling*
+   * Novel discretisations
+* The need for surrogates
+** The need for surrogates
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+  * Recent work: local surrogate models for experimental data
+     
+\vfill
+
+*** Surrogate models :B_definition:
+    :PROPERTIES:
+    :BEAMER_env: definition
+    :END:
+    
+A local model for data, that can be used in place of experimental recordings
+
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+\vfill
+
+    * Record experimental data
+    * Fit a surrogate model
+    * Perform analysis, eg. discretisation, on model instead of data
+      
+** Why surrogates?
+Real data are noisy
+[[./noisy.pdf]]
+
+#+BEGIN_CENTER
+/[Thanks to LR for the data]/
+#+END_CENTER
+
+** Why surrogates?
+Real data are `fast'
+[[./fast.pdf]]
+
+#+BEGIN_CENTER
+/[Thanks to KTA for the data]/
+#+END_CENTER
+
+** Why surrogates?
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   * We want to get rid of noise to get the best possible discretisation
+     * Fourier should encode only signal, not signal + noise
+\vfill
+   * Fast signals mean lots of high-frequency energy
+     * High signal-to-noise ratio on the harmonics that give sharp spikes
+     * Simple low-pass filters would remove both noise /and/ signal
+\vfill
+   * A good surrogate lets us remove noise in a statistically optimal way
+     * Less noise = better discretisation
+
+* Bayes
+** COMMENT A primer on Bayes
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Bayesian methods allow us to reason about beliefs in statistically optimal ways
+
+      * We can quantify degree of belief \(b\) of proposition \(x\)
+      * \(b(x)=0\): \(x\) cannot possibly be true
+	* Eg. \(x=\)`it will snow tomorrow'
+      * \(b(x)=1\): \(x\) absolutely must be true
+	* Eg. \(x=\)`it will get light tomorrow'
+      * \(b(x|y)\): belief in \(x\) given knowledge \(y\)
+	* Eg. `I believe tomorrow will be good weather, since it was good weather today'
+      * Bayes allows us to specify beliefs \(b(x)\), and update them after evidence \(y\)
+	  
+** COMMENT A primer on Bayes
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+*** Cox's axioms :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+   * Strength of belief is encoded by real numbers
+   * Beliefs follow common sense (eg. nothing is both certainly true /and/ certainly false)
+   * Beliefs are consistent (cannot derive contradicting answers)
+     
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+\vfill
+   * Axioms: quantify beliefs, act sensibly
+   * Consequence: beliefs will satisfy the rules of probability
+
+*** Dutch Book Theorem :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+    
+Loosely stated: if your beliefs are consistent with the rules of probability, you'll always do better than if they're not
+
+** A primer on Bayes
+The laws of probability, applied to beliefs instead of proportions-of-outcomes
+\vfill
+   * /[Frequentist]/ probability:
+     * How likely is something to happen?
+     * An event is known to happen some proportion of the time; how can I reason about its outcomes?
+\vfill
+   * /[Bayesian]/ beliefs:
+     * Encoding uncertain beliefs; reasoning in the face of ignorance
+     * I have some beliefs about an event; how can I update my beliefs after seeing some evidence?
+     * Let's us combine beliefs and evidence to make better decisions
+       
+** COMMENT Bayesian vs frequentist
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Bayesian approach to weather forecasting:
+    * A weather model says there's a 20% chance of rain today
+      * It either will or won't -- doesn't make sense to say it rains on one-in-five todays
+    * We add a weather station -- more information means less ignorance
+    * Given new weather data, the model says there's 0% chance of rain today
+      * We haven't changed the weather, only updated our beliefs
+	
+\vfill
+Frequentist approach:
+    * It rains one day in five in July, so 20% chance of rain
+    * 0% chance of rain would mean changing the weather to never rain in July
+
+** Bayesian surrogates
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * We have a `true' signal \(f(t)\), but we can only see noise-corrupted samples \(y_i = f(t_i) + \varepsilon\)
+      * \(f(t)\) is unknown, but we can reason about it with Bayes
+    * Prior: assume \(\varepsilon\sim\mathcal{N}(0, \sigma^2)\)
+      * Single observation: \(y_i \sim \mathcal{N}(f(t_i), \sigma_n^2)\)
+      * All observations: \(\mathbf{y} \sim \mathcal{N}(f(\mathbf{t}), \Sigma_n^2)\)
+    * Let's estimate \(y^*=f(t^*)\) at unseen data \(t^*\)
+      * Joint distribution: \(p(f(t^*),t^*,y,t) \sim \mathcal{N}(\mu, \Sigma_k^2)\)
+      * Conditional distribution: \(p(f(t^*)|t^*, y, t)\)
+    * This is Gaussian process regression!
+      
+** Gaussian process regression surrogates
+Build a statistically optimal regression model from noisy observations
+
+[[./matern.pdf]]
+
+** GPR results
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * GPR is Bayesian
+      * Covariance function specifies our initial belief about the data
+      * Conditioning step updates this belief after seeing data
+    * Covariance functions generally assume stationarity
+      * Assume smooth, nice signals
+      * Neuron data are highly non-stationary
+    * Stationary covariance = poorly encoded beliefs = low belief in posterior
+      * Bayes with bad priors = bad results!
+	
+** GPR results
+[[./badfit.pdf]]
+
+** GPR results
+[[./badfit2.pdf]]
+
+** GPR results
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   * Stationary GPR, non-stationary data = overly flexible models
+     * Needs to change rapidly to accomodate spikes
+     * Stationary = equally flexible everywhere, even away from spikes
+     * Overfit noise, instead of averaging it out
+   * Non-stationary would fix this
+     * Flexible near spikes
+     * Inflexible away from them
+     * Smooths out noise, while also modelling spikes
+   * Non-stationary GPR is hard!
+* Splines
+** Splines
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   * Less flexible alternative: splines
+   * Choose some representative points
+   * Place a piece of cubic polynomial between each point
+   * Choose polynomials so that the function is smooth
+   * Finite, low degree-of-freedom, forcibly averages out noise
+** Bayesian splines
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   * Choosing representative points is hard
+   * Alternative: don't!
+     * Let \(\xi\) be a vector of representative points
+     * Find \(p(\xi|x,y)\)
+     * Use that to estimate \(p(f | \xi, x, y)\)
+   * This is Bayesian free-knot splines
+** Splines as a surrogate
+Result 1: splines outperform stationary GPR as neuronal data surrogate
+
+[[./bars.pdf]]
+
+* Discretisation
+** Plan de jour
+   * CBC maths
+   * Surrogate modelling
+   * *Novel discretisations*
+** The issue with surrogates
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+My current work...
+   * Bayesian free-knot splines gives a good noise-free surrogate model
+     * Can apply Fourier discretisation on the surrogate
+     * Can get arbitrarily many mostly-accurate Fourier coefficients
+   * Issue: too many coefficients are needed to discretise the signal
+     * Too many = slow, inaccurate CBC
+     * /Question: how many do we actually need?/
+   * We can reconstruct signal from splines models
+     * Is this a discretisation?
+
+** Splines as a discretisation
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   * Splines models are of form \(\hat{f}(x) = \sum \beta_i b_i(x)\)
+     * \(b_i(x)\) form a set of basis functions over splines models
+   * For a basis set \(b_i\), can the associated \(\beta_i\) discretise a signal?
+     * Result 2: probably...
+     * This is my current work
+       
+** Spline discretisation
+   8-dimensional discretisation; but does it work with continuation?
+[[./HHdisc.pdf]]
+* Outro
+** Where next?
+   * Compare Fourier vs splines discretisation
+     * What error for what discretisation-size?
+   * See if the discretisation breaks down with stochastic models
+     * It probably will
+   * Test the discretisation with continuation
+     
