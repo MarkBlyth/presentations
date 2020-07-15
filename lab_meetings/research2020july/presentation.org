@@ -56,11 +56,8 @@ Add more detail outside of the tutorial!
 Bifurcation analysis:
 #+ATTR_LATEX: :overlay [<+->]
    1. Find a feature
-      * Eg. a rest-state or sustained oscillation
    2. Change a parameter slightly
-      * Eg. inject more current in a neuron
    3. Find where the feature moved to
-      * Eg. increase in rest-state membrane potential
    4. Bifurcations occur when features change, appear, or disappear
 	
 ** What is CBC?
@@ -80,7 +77,7 @@ Control-based continuation; model-free bifurcation analysis:
        * Put in target \(u^*(t)\)
        * Controller makes system follow \(u^*(t)\)
     2. Find noninvasive \(u^*(t)\)
-       * Noninvasiveness = no control action applied
+       * Noninvasiveness := no control action applied
        * No control action = system behaves naturally
     3. Change a parameter
     4. Find how noninvasive \(u^*(t)\) changed
@@ -102,12 +99,15 @@ My project: use CBC to analyse the bifurcations that make neurons fire
 
 * Discretisation
 ** What is discretisation?
-#+ATTR_LATEX: :overlay [<+->]
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Recent work: improving CBC discretisation
+\vfill
    * Periodic orbits are functions satisfying \(f(t) = f(t+T)\)
    * Tracking these means solving the functional equation \(I\left[u^*\right] = \int_0^T\left[u(u^*, t)\right]^2\mathrm{d}t = 0\) for function \(u^*(t)\)
-     * This is hard!
-     * /[interesting aside: optimal control developed some nice approaches for solving variational equations]/
-   * Discretisation lets us solve the problem by solving a finite set of equations
+     * Basically, trying to solve for a function
+   * Discretisation lets us approximately solve the problem by solving a finite set of equations
 
 ** What is discretisation?
 Goal: solve \(I\left[u^*\right] = 0\)
@@ -142,10 +142,9 @@ We want a discretisation that
      * Eg. Fourier: let our periodic target be \(u^*(t) = a_0 + \sum a_i \cos i\omega t + \sum b_i \sin i\omega t\)
    * We can represent the signal by its Fourier harmonics \(\mathbf{u^*}=\{a_0, a_i, b_i\}\)
    * \(u^*(t)\) can be represented by \(\mathbf{u}^*\) with minimal error
-     * \(\mathbf{u^*}\) is a discretisation
-     * Represents a continuous function as finite-dimensional vector, with minimal error
    * The functional problem can be rewritten as \(I\left(\mathbf{u}^*\right)=0\)
      * Finite-vector equation, solvable!
+   * This is how we track dynamical features
        
 ** Issues with discretisation
    * Solving the discretised system takes a long time when it is high-dimensional
@@ -183,7 +182,7 @@ A local model for data, that can be used in place of experimental recordings
 
     * Record experimental data
     * Fit a surrogate model
-    * Perform analysis, eg. discretisation, on model instead of data
+    * Perform analysis on model
       
 ** Why surrogates?
 Real data are noisy
@@ -258,7 +257,7 @@ Bayesian methods allow us to reason about beliefs in statistically optimal ways
     
 Loosely stated: if your beliefs are consistent with the rules of probability, you'll always do better than if they're not
 
-** A primer on Bayes
+** COMMENT A primer on Bayes
 The laws of probability, applied to beliefs instead of proportions-of-outcomes
 \vfill
    * /[Frequentist]/ probability:
@@ -292,9 +291,7 @@ Frequentist approach:
    :END:
     * We have a `true' signal \(f(t)\), but we can only see noise-corrupted samples \(y_i = f(t_i) + \varepsilon\)
       * \(f(t)\) is unknown, but we can reason about it with Bayes
-    * Prior: assume \(\varepsilon\sim\mathcal{N}(0, \sigma^2)\)
-      * Single observation: \(y_i \sim \mathcal{N}(f(t_i), \sigma_n^2)\)
-      * All observations: \(\mathbf{y} \sim \mathcal{N}(f(\mathbf{t}), \Sigma_n^2)\)
+      * Assume \(\varepsilon\sim\mathcal{N}(0, \sigma^2)\)
     * Let's estimate \(y^*=f(t^*)\) at unseen data \(t^*\)
       * Joint distribution: \(p(f(t^*),t^*,y,t) \sim \mathcal{N}(\mu, \Sigma_k^2)\)
       * Conditional distribution: \(p(f(t^*)|t^*, y, t)\)
@@ -311,10 +308,8 @@ Build a statistically optimal regression model from noisy observations
    :END:
     * GPR is Bayesian
       * Covariance function specifies our initial belief about the data
-      * Conditioning step updates this belief after seeing data
     * Covariance functions generally assume stationarity
       * Assume smooth, nice signals
-      * Neuron data are highly non-stationary
     * Stationary covariance = poorly encoded beliefs = low belief in posterior
       * Bayes with bad priors = bad results!
 	
@@ -325,17 +320,10 @@ Build a statistically optimal regression model from noisy observations
 [[./badfit2.pdf]]
 
 ** GPR results
-   :PROPERTIES:
-   :BEAMER_act: [<+->]
-   :END:
    * Stationary GPR, non-stationary data = overly flexible models
-     * Needs to change rapidly to accomodate spikes
-     * Stationary = equally flexible everywhere, even away from spikes
-     * Overfit noise, instead of averaging it out
+     \vfill
    * Non-stationary would fix this
-     * Flexible near spikes
-     * Inflexible away from them
-     * Smooths out noise, while also modelling spikes
+     \vfill
    * Non-stationary GPR is hard!
 * Splines
 ** Splines
@@ -373,11 +361,11 @@ Result 1: splines outperform stationary GPR as neuronal data surrogate
    :END:
 My current work...
    * Bayesian free-knot splines gives a good noise-free surrogate model
-     * Can apply Fourier discretisation on the surrogate
-     * Can get arbitrarily many mostly-accurate Fourier coefficients
+     * More accurate discretisations
+\vfill
    * Issue: too many coefficients are needed to discretise the signal
-     * Too many = slow, inaccurate CBC
-     * /Question: how many do we actually need?/
+     * Too many = too slow
+\vfill
    * We can reconstruct signal from splines models
      * Is this a discretisation?
 
@@ -387,18 +375,36 @@ My current work...
    :END:
    * Splines models are of form \(\hat{f}(x) = \sum \beta_i b_i(x)\)
      * \(b_i(x)\) form a set of basis functions over splines models
+\vfill
    * For a basis set \(b_i\), can the associated \(\beta_i\) discretise a signal?
      * Result 2: probably...
-     * This is my current work
        
 ** Spline discretisation
    8-dimensional discretisation; but does it work with continuation?
 [[./HHdisc.pdf]]
+** Splines vs Fourier
+   Hodgkin-Huxley neuron; error decays /significantly/ faster with splines
+[[./HHerror2.pdf]]
+
+#+BEGIN_COMMENT
+./error_comparison.py -d HodgkinHuxley -m "splines fourier" -l 1 -u 30 -p 2000 -i 100
+#+END_COMMENT
+
+** Splines vs Fourier
+   Hodgkin-Huxley neuron; error decays /significantly/ faster with splines
+[[./HHerror.pdf]]
+
+#+BEGIN_COMMENT
+./error_comparison.py -d HodgkinHuxley -m "splines fourier" -l 1 -u 30 -p 2000 -i 100
+#+END_COMMENT
+
 * Outro
 ** Where next?
-   * Compare Fourier vs splines discretisation
-     * What error for what discretisation-size?
+   * Test the robustness
    * See if the discretisation breaks down with stochastic models
      * It probably will
    * Test the discretisation with continuation
-     
+     * Splines discretisation is still only a local model
+     * Need to ensure it can predict signals at other parameter values
+**      
+[[./end.png]]

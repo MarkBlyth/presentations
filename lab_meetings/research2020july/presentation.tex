@@ -1,4 +1,4 @@
-% Created 2020-07-14 Tue 11:42
+% Created 2020-07-15 Wed 14:32
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,15 +30,15 @@
 \maketitle
 
 \section{Intro}
-\label{sec:orgfd158cb}
-\begin{frame}[label={sec:org4db2d50}]{Plan de jour}
+\label{sec:orgacc00e5}
+\begin{frame}[label={sec:orgb9a5310}]{Plan de jour}
 \begin{itemize}
 \item CBC maths
 \item Surrogate modelling
 \item Novel discretisations
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:orga1cbe38}]{Plan de jour}
+\begin{frame}[label={sec:orge66598b}]{Plan de jour}
 \begin{itemize}
 \item \alert{CBC maths}
 \item Surrogate modelling
@@ -46,8 +46,8 @@
 \end{itemize}
 \end{frame}
 \section{CBC background}
-\label{sec:org0af6836}
-\begin{frame}[label={sec:org33938b2}]{What is CBC?}
+\label{sec:orgea38238}
+\begin{frame}[label={sec:org5a2e3ee}]{What is CBC?}
 Dynamics are `what something does'
 
 \begin{center}
@@ -55,7 +55,7 @@ Dynamics are `what something does'
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org273aa8e}]{What is CBC?}
+\begin{frame}[label={sec:orgec05972}]{What is CBC?}
 \begin{center}
 A bifurcation is a change in dynamics
 \end{center}
@@ -74,26 +74,17 @@ A bifurcation is a change in dynamics
 \end{columns}
 \end{frame}
 
-\begin{frame}[label={sec:org7746c9d}]{What is CBC?}
+\begin{frame}[label={sec:org49b8dfa}]{What is CBC?}
 Bifurcation analysis:
 \begin{enumerate}[<+->]
 \item Find a feature
-\begin{itemize}
-\item Eg. a rest-state or sustained oscillation
-\end{itemize}
 \item Change a parameter slightly
-\begin{itemize}
-\item Eg. inject more current in a neuron
-\end{itemize}
 \item Find where the feature moved to
-\begin{itemize}
-\item Eg. increase in rest-state membrane potential
-\end{itemize}
 \item Bifurcations occur when features change, appear, or disappear
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:org0cdda59}]{What is CBC?}
+\begin{frame}[label={sec:orga8fcaab}]{What is CBC?}
 \begin{itemize}
 \item Numerical continuation:
 \begin{itemize}
@@ -109,7 +100,7 @@ All models are wrong, but some are useful
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org8772d36}]{What is CBC?}
+\begin{frame}[label={sec:orge36d34d}]{What is CBC?}
 Control-based continuation; model-free bifurcation analysis:
 \begin{enumerate}[<+->]
 \item Build a system controller
@@ -119,7 +110,7 @@ Control-based continuation; model-free bifurcation analysis:
 \end{itemize}
 \item Find noninvasive \(u^*(t)\)
 \begin{itemize}
-\item Noninvasiveness = no control action applied
+\item Noninvasiveness := no control action applied
 \item No control action = system behaves naturally
 \end{itemize}
 \item Change a parameter
@@ -129,7 +120,7 @@ Control-based continuation; model-free bifurcation analysis:
 \end{itemize}
 \end{enumerate}
 \end{frame}
-\begin{frame}[label={sec:orgfc8154a}]{CBC}
+\begin{frame}[label={sec:org131c5fc}]{CBC}
 \begin{block}{Control-based continuation}
 A model-free bifurcation analysis method. Uses a controller to stabilise a system, and continuation to track features.
 \end{block}
@@ -139,20 +130,21 @@ My project: use CBC to analyse the bifurcations that make neurons fire
 \end{frame}
 
 \section{Discretisation}
-\label{sec:org3734515}
-\begin{frame}[label={sec:orgcadc1ae}]{What is discretisation?}
-\begin{itemize}[<+->]
+\label{sec:org8bb808e}
+\begin{frame}[<+->][label={sec:org6ac1f63}]{What is discretisation?}
+Recent work: improving CBC discretisation
+\vfill
+\begin{itemize}
 \item Periodic orbits are functions satisfying \(f(t) = f(t+T)\)
 \item Tracking these means solving the functional equation \(I\left[u^*\right] = \int_0^T\left[u(u^*, t)\right]^2\mathrm{d}t = 0\) for function \(u^*(t)\)
 \begin{itemize}
-\item This is hard!
-\item \emph{[interesting aside: optimal control developed some nice approaches for solving variational equations]}
+\item Basically, trying to solve for a function
 \end{itemize}
-\item Discretisation lets us solve the problem by solving a finite set of equations
+\item Discretisation lets us approximately solve the problem by solving a finite set of equations
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgec67196}]{What is discretisation?}
+\begin{frame}[label={sec:orgb708f64}]{What is discretisation?}
 Goal: solve \(I\left[u^*\right] = 0\)
 \begin{enumerate}
 \item Translate problem to system of vector-valued equations
@@ -164,7 +156,7 @@ Goal: solve \(I\left[u^*\right] = 0\)
 Translation between continuous and vector-valued systems is discretisation
 \end{frame}
 
-\begin{frame}[label={sec:orgce31744}]{What is discretisation?}
+\begin{frame}[label={sec:org7bb0619}]{What is discretisation?}
 \begin{definition}[Discretisation]
 The act of representing a continuous signal by a discrete counterpart
 \end{definition}
@@ -177,7 +169,7 @@ We want a discretisation that
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org07ddedd}]{How do we discretise?}
+\begin{frame}[label={sec:orgfa89b96}]{How do we discretise?}
 \begin{itemize}[<+->]
 \item Let \(\mathbf{u^*}\) be some vector `representing' the signal \(u^*(t)\)
 \begin{itemize}
@@ -185,18 +177,15 @@ We want a discretisation that
 \end{itemize}
 \item We can represent the signal by its Fourier harmonics \(\mathbf{u^*}=\{a_0, a_i, b_i\}\)
 \item \(u^*(t)\) can be represented by \(\mathbf{u}^*\) with minimal error
-\begin{itemize}
-\item \(\mathbf{u^*}\) is a discretisation
-\item Represents a continuous function as finite-dimensional vector, with minimal error
-\end{itemize}
 \item The functional problem can be rewritten as \(I\left(\mathbf{u}^*\right)=0\)
 \begin{itemize}
 \item Finite-vector equation, solvable!
 \end{itemize}
+\item This is how we track dynamical features
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org49b70ba}]{Issues with discretisation}
+\begin{frame}[label={sec:org11c2542}]{Issues with discretisation}
 \begin{itemize}
 \item Solving the discretised system takes a long time when it is high-dimensional
 \vfill
@@ -206,7 +195,7 @@ We want a discretisation that
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgeab5ee7}]{Plan de jour}
+\begin{frame}[label={sec:org2c4eb2a}]{Plan de jour}
 \begin{itemize}
 \item CBC maths
 \item \alert{Surrogate modelling}
@@ -214,8 +203,8 @@ We want a discretisation that
 \end{itemize}
 \end{frame}
 \section{The need for surrogates}
-\label{sec:org5d1755d}
-\begin{frame}[<+->][label={sec:orgc59d2a6}]{The need for surrogates}
+\label{sec:org2385fc5}
+\begin{frame}[<+->][label={sec:orgb89ebc6}]{The need for surrogates}
 \begin{itemize}
 \item Recent work: local surrogate models for experimental data
 \end{itemize}
@@ -231,11 +220,11 @@ A local model for data, that can be used in place of experimental recordings
 \begin{itemize}
 \item Record experimental data
 \item Fit a surrogate model
-\item Perform analysis, eg. discretisation, on model instead of data
+\item Perform analysis on model
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org23fc629}]{Why surrogates?}
+\begin{frame}[label={sec:orga58377a}]{Why surrogates?}
 Real data are noisy
 \begin{center}
 \includegraphics[width=.9\linewidth]{./noisy.pdf}
@@ -246,7 +235,7 @@ Real data are noisy
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgc50c0c5}]{Why surrogates?}
+\begin{frame}[label={sec:org5fc270e}]{Why surrogates?}
 Real data are `fast'
 \begin{center}
 \includegraphics[width=.9\linewidth]{./fast.pdf}
@@ -257,7 +246,7 @@ Real data are `fast'
 \end{center}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org4ef586f}]{Why surrogates?}
+\begin{frame}[<+->][label={sec:orga3c086c}]{Why surrogates?}
 \begin{itemize}
 \item We want to get rid of noise to get the best possible discretisation
 \begin{itemize}
@@ -282,38 +271,13 @@ Real data are `fast'
 \end{frame}
 
 \section{Bayes}
-\label{sec:org261c9cf}
-\begin{frame}[label={sec:org60a294a}]{A primer on Bayes}
-The laws of probability, applied to beliefs instead of proportions-of-outcomes
-\vfill
-\begin{itemize}
-\item \emph{[Frequentist]} probability:
-\begin{itemize}
-\item How likely is something to happen?
-\item An event is known to happen some proportion of the time; how can I reason about its outcomes?
-\end{itemize}
-\end{itemize}
-\vfill
-\begin{itemize}
-\item \emph{[Bayesian]} beliefs:
-\begin{itemize}
-\item Encoding uncertain beliefs; reasoning in the face of ignorance
-\item I have some beliefs about an event; how can I update my beliefs after seeing some evidence?
-\item Let's us combine beliefs and evidence to make better decisions
-\end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}[<+->][label={sec:orgf423900}]{Bayesian surrogates}
+\label{sec:org8933b03}
+\begin{frame}[<+->][label={sec:org78c0c26}]{Bayesian surrogates}
 \begin{itemize}
 \item We have a `true' signal \(f(t)\), but we can only see noise-corrupted samples \(y_i = f(t_i) + \varepsilon\)
 \begin{itemize}
 \item \(f(t)\) is unknown, but we can reason about it with Bayes
-\end{itemize}
-\item Prior: assume \(\varepsilon\sim\mathcal{N}(0, \sigma^2)\)
-\begin{itemize}
-\item Single observation: \(y_i \sim \mathcal{N}(f(t_i), \sigma_n^2)\)
-\item All observations: \(\mathbf{y} \sim \mathcal{N}(f(\mathbf{t}), \Sigma_n^2)\)
+\item Assume \(\varepsilon\sim\mathcal{N}(0, \sigma^2)\)
 \end{itemize}
 \item Let's estimate \(y^*=f(t^*)\) at unseen data \(t^*\)
 \begin{itemize}
@@ -324,7 +288,7 @@ The laws of probability, applied to beliefs instead of proportions-of-outcomes
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org28f4d36}]{Gaussian process regression surrogates}
+\begin{frame}[label={sec:org8998974}]{Gaussian process regression surrogates}
 Build a statistically optimal regression model from noisy observations
 
 \begin{center}
@@ -332,17 +296,15 @@ Build a statistically optimal regression model from noisy observations
 \end{center}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org9950fb4}]{GPR results}
+\begin{frame}[<+->][label={sec:orgd080198}]{GPR results}
 \begin{itemize}
 \item GPR is Bayesian
 \begin{itemize}
 \item Covariance function specifies our initial belief about the data
-\item Conditioning step updates this belief after seeing data
 \end{itemize}
 \item Covariance functions generally assume stationarity
 \begin{itemize}
 \item Assume smooth, nice signals
-\item Neuron data are highly non-stationary
 \end{itemize}
 \item Stationary covariance = poorly encoded beliefs = low belief in posterior
 \begin{itemize}
@@ -351,38 +313,30 @@ Build a statistically optimal regression model from noisy observations
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org6c1e45c}]{GPR results}
+\begin{frame}[label={sec:org667e530}]{GPR results}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./badfit.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org555f6e7}]{GPR results}
+\begin{frame}[label={sec:orgecc9fab}]{GPR results}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./badfit2.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org97e1898}]{GPR results}
+\begin{frame}[label={sec:org96064fc}]{GPR results}
 \begin{itemize}
 \item Stationary GPR, non-stationary data = overly flexible models
-\begin{itemize}
-\item Needs to change rapidly to accomodate spikes
-\item Stationary = equally flexible everywhere, even away from spikes
-\item Overfit noise, instead of averaging it out
-\end{itemize}
+\vfill
 \item Non-stationary would fix this
-\begin{itemize}
-\item Flexible near spikes
-\item Inflexible away from them
-\item Smooths out noise, while also modelling spikes
-\end{itemize}
+\vfill
 \item Non-stationary GPR is hard!
 \end{itemize}
 \end{frame}
 \section{Splines}
-\label{sec:orgd0a1eef}
-\begin{frame}[<+->][label={sec:org3dd9004}]{Splines}
+\label{sec:orge0d744f}
+\begin{frame}[<+->][label={sec:org5e9bf71}]{Splines}
 \begin{itemize}
 \item Less flexible alternative: splines
 \item Choose some representative points
@@ -391,7 +345,7 @@ Build a statistically optimal regression model from noisy observations
 \item Finite, low degree-of-freedom, forcibly averages out noise
 \end{itemize}
 \end{frame}
-\begin{frame}[<+->][label={sec:orgfdcbf8e}]{Bayesian splines}
+\begin{frame}[<+->][label={sec:orgbd93a6f}]{Bayesian splines}
 \begin{itemize}
 \item Choosing representative points is hard
 \item Alternative: don't!
@@ -403,7 +357,7 @@ Build a statistically optimal regression model from noisy observations
 \item This is Bayesian free-knot splines
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org57131c4}]{Splines as a surrogate}
+\begin{frame}[label={sec:org4614494}]{Splines as a surrogate}
 Result 1: splines outperform stationary GPR as neuronal data surrogate
 
 \begin{center}
@@ -412,27 +366,31 @@ Result 1: splines outperform stationary GPR as neuronal data surrogate
 \end{frame}
 
 \section{Discretisation}
-\label{sec:orgf5a35dd}
-\begin{frame}[label={sec:org19637e9}]{Plan de jour}
+\label{sec:org1b42638}
+\begin{frame}[label={sec:org0683934}]{Plan de jour}
 \begin{itemize}
 \item CBC maths
 \item Surrogate modelling
 \item \alert{Novel discretisations}
 \end{itemize}
 \end{frame}
-\begin{frame}[<+->][label={sec:orgb7b6318}]{The issue with surrogates}
+\begin{frame}[<+->][label={sec:org790a665}]{The issue with surrogates}
 My current work\ldots{}
 \begin{itemize}
 \item Bayesian free-knot splines gives a good noise-free surrogate model
 \begin{itemize}
-\item Can apply Fourier discretisation on the surrogate
-\item Can get arbitrarily many mostly-accurate Fourier coefficients
+\item More accurate discretisations
 \end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
 \item Issue: too many coefficients are needed to discretise the signal
 \begin{itemize}
-\item Too many = slow, inaccurate CBC
-\item \emph{Question: how many do we actually need?}
+\item Too many = too slow
 \end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
 \item We can reconstruct signal from splines models
 \begin{itemize}
 \item Is this a discretisation?
@@ -440,39 +398,61 @@ My current work\ldots{}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org3f0c9d7}]{Splines as a discretisation}
+\begin{frame}[<+->][label={sec:org5e79332}]{Splines as a discretisation}
 \begin{itemize}
 \item Splines models are of form \(\hat{f}(x) = \sum \beta_i b_i(x)\)
 \begin{itemize}
 \item \(b_i(x)\) form a set of basis functions over splines models
 \end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
 \item For a basis set \(b_i\), can the associated \(\beta_i\) discretise a signal?
 \begin{itemize}
 \item Result 2: probably\ldots{}
-\item This is my current work
 \end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgdb53b41}]{Spline discretisation}
+\begin{frame}[label={sec:org39751f1}]{Spline discretisation}
 8-dimensional discretisation; but does it work with continuation?
 \begin{center}
 \includegraphics[width=.9\linewidth]{./HHdisc.pdf}
 \end{center}
 \end{frame}
+\begin{frame}[label={sec:org4b4970f}]{Splines vs Fourier}
+Hodgkin-Huxley neuron; error decays \emph{significantly} faster with splines
+\begin{center}
+\includegraphics[width=.9\linewidth]{./HHerror2.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org16ec93f}]{Splines vs Fourier}
+Hodgkin-Huxley neuron; error decays \emph{significantly} faster with splines
+\begin{center}
+\includegraphics[width=.9\linewidth]{./HHerror.pdf}
+\end{center}
+\end{frame}
+
 \section{Outro}
-\label{sec:orgfdebd32}
-\begin{frame}[label={sec:orgfcc8af7}]{Where next?}
+\label{sec:org50a2f9a}
+\begin{frame}[label={sec:orgf2700af}]{Where next?}
 \begin{itemize}
-\item Compare Fourier vs splines discretisation
-\begin{itemize}
-\item What error for what discretisation-size?
-\end{itemize}
+\item Test the robustness
 \item See if the discretisation breaks down with stochastic models
 \begin{itemize}
 \item It probably will
 \end{itemize}
 \item Test the discretisation with continuation
+\begin{itemize}
+\item Splines discretisation is still only a local model
+\item Need to ensure it can predict signals at other parameter values
 \end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:org4876568}]{}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./end.png}
+\end{center}
 \end{frame}
 \end{document}
