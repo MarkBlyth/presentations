@@ -1,0 +1,362 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: 
+#+DATE:
+
+* Background
+** Last week's work
+   * Implemented Fourier discretisation
+   * Compared it against splines
+   * Some ideas about surrogates and CBC
+   * Manuscript editing *[c. 5400 words]*
+     
+* Discretisation
+** Discretisation
+From last time...
+\vfill
+Fitting periodic splines:
+#+ATTR_LATEX: :overlay [<+->]
+  1) Find the period
+     * Autocorrelation or nonlinear least squares \(F_0\) estimation
+     * Fourier?
+  2) `Stack' periods
+     * Re-label data \(t_i\)s to phase \(\phi_i = \frac{t_i}{T} \mod 1\) or \(\phi_i = t_i \mod T\)
+  3) Build splines model
+     * Discretisation = BSpline coefficients
+       
+** Discretisation
+From last time...
+\vfill
+Choosing knots is hard; since we're wanting a minimal knot set...
+#+ATTR_LATEX: :overlay [<+->]
+   1. Choose the desired number of knots
+   2. Choose knots at random
+   3. Numerically optimize the knot vector
+      * Minimise training error of a splines model fitted with these knots
+   4. Repeat steps 2,3 lots, and choose the best result
+      * Helps overcome the local minima issue
+	
+** Discretisation
+From last time...
+
+[[./fit3.pdf]]
+
+** Discretisation
+From last time...
+
+[[./HHFit2.pdf]]
+
+** Discretisation
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+We can quantify goodness-of-fit:
+  * Let \(\mathrm{reconstruction}(t)\) be the fitted splines model
+  * Let \(\mathrm{signal}(t)\) be the signal we wish to discretise
+  * Let \(\mathrm{error}(t) = \mathrm{signal}(t) - \mathrm{reconstruction}(t)\)
+  * Goodness-of-fit = \(\int_0^T\left[\mathrm{error}(t)\right]^2\mathrm{d}t\)
+  * This gives a metric for comparing splines, Fourier, etc.
+
+** Splines vs Fourier
+   Hodgkin-Huxley neuron; error decays /significantly/ faster with splines
+[[./HHerror2.pdf]]
+
+#+BEGIN_COMMENT
+./error_comparison.py -d HodgkinHuxley -m "splines fourier" -l 1 -u 30 -p 2000 -i 100
+#+END_COMMENT
+
+** Splines vs Fourier
+   Hodgkin-Huxley neuron; error decays /significantly/ faster with splines
+[[./HHerror.pdf]]
+
+#+BEGIN_COMMENT
+./error_comparison.py -d HodgkinHuxley -m "splines fourier" -l 1 -u 30 -p 2000 -i 100
+#+END_COMMENT
+
+** Open problems
+   * Robustness
+     * Does it break down on stochastic systems? Eg. if data aren't fully periodic
+     * Do we need a human in the loop, to manually adjust anything?
+\vfill
+   * Locality
+     * Knots are fitted / work well for \(\lambda_0\); can the same knots model \(\lambda_1\), \(\lambda_2\), \dots, \(\lambda_i\)?
+     * (They need to for predicting the next PO in an iteration)
+     
+* CBC
+** COMMENT Points to make
+   * Two ways of CBC'ing:
+     1. Find u* that minimises invasiveness functional
+     2. Find fixed-point of the IO map [explain what this is!]
+   * IO map issue:
+     * IO map maps the control target to the system output
+     * With integral control, there's no proportional-error, so system output == control target
+     * If system output == control target, /every/ u* is a fixed point of the IO map, so we don't have a system we can solve
+     * ...therefore IO map method only works for P, PD control
+   * Minimiser issue:
+     * Vector-input-scalar-output, so would be numerical minimisation, rather than system solution
+     * If we start off near the solution, we could probably do a Broyden gradient descent, which would be basically the same as a Newton iteration
+     * This method allows us to use /any/ controller
+     * Downside: no literature precedent
+
+** CBC approach
+Question: there's several ways of performing CBC; which is best for this?
+
+** Methods for PO CBC
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   Method 1. `Easy' approach for harmonically forced systems
+\vfill
+      * Set the response amplitude
+      * Find the input forcing amplitude that gives that response
+      * Lumps the bifurcation parameter together with the control action
+	* Fast and efficient iteration scheme
+	* Similar approach exists for continuing equilibria
+
+** Method 1 issues
+#+BEGIN_CENTER
+   We don't have a harmonically forced system
+#+END_CENTER
+
+** Methods for PO CBC
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   Method 2. Harder, fully general approach /[Sieber Krauskopf]/
+\vfill
+      * Define the `IO map' from control-target to system output
+	* Says what the system output is, for any given control target
+      * Map fixed point means control-target = system output
+      * /[Claim:]/ map fixed point occurs only when there's non-invasive control
+      * Use Newton iterations to solve for fixed point of discretised map
+      * Solution is the noninvasive control target
+	
+** Method 2 issues
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+I think this is wrong...
+   * Integral control \(\implies\) no proportional error
+     * Possibly true for other control strategies too
+     * (Irene won't have this issue when using MPC, since she can lump the control action in with the bifurcation parameter and avoid the IO map method)
+   * No proportional error \(\implies\) system output == control target
+     * System output exactly tracks control target
+   * System output == control target \(\implies\) every control target is a fixed point of the IO map
+     * Control target and system output are identical for all targets
+   * Every point is a fixed point \(\implies\) can't find noninvasive control by solving the map
+   * Feels like a big claim to say the paper's wrong, but I haven't found any way to resolve this...
+
+** Method 2 solutions
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Approach 1. Only use P, PD control
+   * No integral controller \(\implies\exists\) proportional error
+   * Proportional error = 0 \(\iff\) control action is zero (noninvasiveness)
+     * System output = control target \(\iff\) control is noninvasive
+   * Can then use Newton iterations to solve for noninvasiveness
+     * Let \(\mathbf{u}^*=\) control target discretisation
+     * Let \(\mathbf{x}=\) system output discretisation
+     * Equality \(\implies\) no proportional error \(\implies\) zero control action, noninvasiveness, etc.
+     * \(\mathbf{u}^*\) = \(\mathbf{x}\) can therefore be solved for noninvasive \(\mathbf{u}^*\)
+   * This is exactly the method proposed in Sieber Krauskopf
+   * Downside: locked into a single control method
+
+** Method 2 solutions
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Approach 2. Reformulate the zero problem
+\vfill
+   * Explicitly solve for noninvasive control
+   * Total control action = \(\int u(\mathbf{u^*}, t)^2\mathrm{d}t\)
+   * Solve for \(\mathbf{u}^*\) that sets total control action to zero
+     * Underdetermined -- \(n\) inputs, one output; minimisation problem
+     * Eg. gradient descent on \(\mathbf{u}^*\) with Broyden Jacobian update
+     * This is similar to standard Newton iterations
+   * Downsides: minimisation might be slower; no literature precedent
+
+** Optimal design of gradient-descent method
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Maybe we don't need to find \(\mathbf{u}^*\) that sets control action to zero...
+    * Much like tracking bifurcations optimally -- don't need to see the actual bifurcation point, as long as we're confident it's there
+    * Find a local surrogate model of total invasiveness \(I(\mathbf{u}^*) = \int u(\mathbf{u}^*,t)^2 \mathrm{d}t\) 
+      * Maps a discretisation \(\mathbf{u}^*\) to total control action required to stabilise it
+      * Quantifies invasiveness of target \(\mathbf{u}^*\)
+      * \(I(\mathbf{u}^*)=0\) \(\implies\) \(u^*\) is noninvasive, so natural system behaviour
+    * Fit local model on `maximally informative' datapoints
+      * Choose datapoints that maximise our certainty of the minima location
+    * Solve for \(I(\mathrm{u}^*)=0\) on the local surrogate model
+      * No need for experimental Newton iterations, gradient descent, Jacobians, finite differences \(\implies\) fast!
+    * Experimentally test \(\mathbf{u}^*_i\) that solves \(I(\mathbf{u}^*)=0\), to ensure that's the noninvasive solution
+     
+** Proposed route
+Initially, use PD control, IO map with Newton iterations
+      * Standard method, so don't have to develop anything new
+      * Need to use PD control, but that also means no need to develop any fancy controller
+      * Gets results quickly!
+\vfill
+/If PD doesn't work well/, develop the surrogate gradient descent method
+      * Makes it truly control-strategy independent
+      * Extends CBC to systems that are harder to control with PD
+
+* Control-free continuation
+** An extravagant aside
+Interesting aside: control-free continuation
+\vfill
+    * Some systems are hard to control
+    * Can we run CBC /without needing a controller/?
+      
+** Control-free continuation
+   We can deduce the existence of an unstable equilibrium
+   
+[[./bistable.png]]
+
+** Control-free continuation
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * Stable features are easy to spot -- the system converges to them
+    * We can often deduce the existence of unstable features
+    * Easy method: fit a local surrogate, find unstable features from that
+      * Eg. fit a neural ODE / neural GP to the previous bistable system
+      * Simple root-finding for locating equilibria
+      * More optimal-experimental-design opportunities, for increasing confidence at equilibrium locations
+
+** Control-free continuation
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+General method:
+      1. Collect some data
+	 * Set the system running
+	 * Every time instabilities drive it away from the region of interest, restart with the system where we want it
+      2. Reconstruct state space from recorded time series
+      3. Fit a neural / GP ODE model to reconstructed state space
+      4. Run standard analyses on the models
+	 * If we keep the system near some feature of interest, the models will be locally accurate there
+	 * Can use standard methods to locate unstable POs from the models
+	 * Could use standard continuation on the models, or...
+	 * ...Could find POs, UPOs at lots of parameter values, to track them without control or continuation
+    * Nice example of what surrogates could do
+      
+** 
+#+BEGIN_CENTER
+Back on topic...
+#+END_CENTER
+
+* Surrogates
+** COMMENT Points to make
+   * Slow signals:
+     * Fourier works fine, no need for novel discretisation
+     * LP filtering works fine, no need for surrogates
+   * Fast signals:
+     * Fourier doesn't work, so use a novel discretisation
+     * Since we're using a novel discretisation, that acts as the surrogate; no need for separate surrogates
+
+Are surrogates useless, then?
+
+No! Two methods for CBC'ing:
+    * Fourier iterations
+      * Set response amplitude
+      * Find forcing amplitude that gives that response amplitude
+      * Inverse of the usual problem setup, to regularise the response curve
+      * Works by iteratively updating Fourier coefficients -- fast!
+    * Newton iterations
+      * Solve for control target discretisation that gives non-invasive control
+      * Solve using Newton iterations
+      * Slow!
+    * Fourier is fast, so use it when we can
+    * Newton iterations are slow, so use them when we can't
+    * Medium-speed signals (eg. FitzhughNagumo [demonstrate with error decay plot]):
+      * Can be more efficiently discretised with splines than Fourier
+      * Speedup benefit of using Fourier iterations method means it's still better to use Fourier iterations method when its applicable
+      * Medium-speed so surrogates are preferable to LP filtering as we still need higher-order harmonics
+     
+Tl;dr there's cases where we might still want to use Fourier series on signals that require lots of Fourier components, as if we can use the Barton Fourier regularisation method for harmonically forced systems, then it's still faster than a novel discretisation.
+In these cases, we need a surrogate, since the signal is too HF-y to just filter the noise off.
+
+Tl;rd;tl;dr:
+    * Use novel discretisations on non-harmonically forced, fast signals
+    * Use Fourier discretisation on non-harmonically forced, slow signals
+    * Use surrogates, Fourier iterations on harmonically forced, fast signals
+    * Use LP filtering, Fourier iterations on harmonically forced, slow signals
+      
+** When are surrogates useful?
+   * Conference abstract discusses surrogates
+   * Paper needs to make their usage cases clear
+
+** When are surrogates useful?
+Slow signals:
+
+\vfill
+   * No high harmonics \(\implies\) Fourier discretisation works fine
+   * Fourier works fine \(\implies\) no need for a novel discretisation
+   * No high harmonics \(\implies\) low-pass filtering works fine
+   * Low-pass fitering \(\implies \) no need for a surrogate
+
+\vfill
+No need for surrogates
+** When are surrogates useful?
+Fast signals:
+\vfill
+   * Lots of high harmonics \(\implies\) Fourier discretisation doesn't work
+   * Fourier doesn't work \(\implies\) need a novel discretisation
+   * Novel discretisation \(\implies\) no need for a surrogate as well
+     
+\vfill
+No need for surrogates
+
+** When are surrogates useful?
+Medium-speed signals:
+\vfill
+      * Can be more efficiently discretised with splines than Fourier
+      * However, for harmonically forced systems, it's faster to use Fourier iterations than Newton iterations
+      * Enough HF harmonics that we wouldn't want to use LP filtering \(\implies\) we need a surrogate
+
+\vfill
+This is surrogates usage case
+     
+** When are surrogates useful?
+    * Better to use Fourier iterations than Newton iterations on harmonically forced systems
+    * Surrogates are useful for Fourier iteration on faster signals
+
+\vfill      
+
+      | Type        | Harmonically forced          | Unforced                              |
+      |-------------+------------------------------+---------------------------------------|
+      | Slow signal | Fourier iter's, LP filters   | Newton iter's, LP filters             |
+      | Fast signal | *Fourier iter's, surrogates* | _Newton iter's, novel discretisation_ |
+      
+\vfill
+The two new methods complement each other; one for Newton iter's, one for Fourier iter's; paper should make this clear
+
+* Next steps
+** Summary
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * CBC implementation should use Newton iterations, spline discretisation, PD control
+    * Conference paper needs to be clear / explicit about when surrogates, new discretisations are useful
+    * Interesting aside 1: we need a different approach to use non-PD control with the most general CBC method
+      * Less general methods (where parameter and control action can be lumped together) don't require this
+      * Lots of room for interesting optimal experimental design
+    * Interesting aside 2: might be possible to run CBC without a controller?
+
+** Next steps
+   1. Test splines generalisation ability
+      * Fit knots for signal at \(\lambda = \lambda_0\)
+      * See if those knots still work for \(\lambda = \lambda_i\), \(i>0\)
+      * If they do, splines will be able to predict new PO locations, and work for CBC
+   2. Write up results so far
+   3. Demonstrate splines with CBC
+
+** Key dates
+    * Bath maths ML conference, week of Aug.3rd - 7th
+    * Goal: conference paper writing, week of Aug. 10th - 14th
+    * Conference paper submission, September 11th
