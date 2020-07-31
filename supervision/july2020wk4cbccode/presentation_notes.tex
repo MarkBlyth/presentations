@@ -1,0 +1,402 @@
+% Created 2020-07-31 Fri 13:23
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\author{Mark Blyth}
+\date{\textit{[2020-08-03 Mon]}}
+\title{PRESENTATION NOTES, DON'T DISPLAY THESE!}
+\hypersetup{
+ pdfauthor={Mark Blyth},
+ pdftitle={PRESENTATION NOTES, DON'T DISPLAY THESE!},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.1.9)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Last time}
+\label{sec:org3f06930}
+\begin{frame}[plain,label={sec:orgaa9fe4c}]{Last meeting}
+Last time: 
+
+\begin{itemize}
+\item The challenges of working with spiking signals
+\begin{itemize}
+\item Lots of high-frequency energy
+\item Typically noisy, both from stochastics and from measurement errors
+\item Lots of high-frequency components mean a LP filter will remove the signal, as well as noise, so we can't naively clean up the signal
+\item Also means using a truncated Fourier discretisation will be infeasible, since it'll have far too many components to effectively discretise
+\end{itemize}
+
+\item Surrogate methods to overcome these:
+\begin{itemize}
+\item Use a regression model in place of the real data
+\item Perform desired analysis on this instead
+\item `Desired analysis' will be explained more later, in a CBC context
+\item A well-chosen surrogate will filter out all the noise, without losing any signal
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:orga19232b}]{Surrogates point 1}
+\begin{itemize}
+\item Given \(y_i = f(x_i) + \varepsilon\), estimate \(f(x)\)
+\begin{itemize}
+\item We assume there's a `true' underlying signal f(x)
+\item This true signal is what the neuron is actually doing, eg. what the membrane potential actually is at the patch clamp location
+\item We don't have access to f(x); instead, we get a time-series y\(_{\text{i}}\), of noise-corrupted samples
+\item These noise-corrupted samples contain both the actual signal at the given sample time, plus some nuissance variable \(\varepsilon\) from errors in measurement
+\item We wish to recover f(x) from these samples, as that's the noise-free, true signal that we're interested in
+\begin{itemize}
+\item Simply LP filtering would only remove the HF components of f(x) and \(\varepsilon\); instead, we wish to separate the two out into noise and signal
+\end{itemize}
+\item We can use statistical methods to infer f(x) and \(\varepsilon\)
+\item This gives us a clean, noise-free surrogate to perform all the analysis on
+\item Surrogate: we use f(x) in place of the real data
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:org4b2e45f}]{Surrogates point 2}
+\begin{itemize}
+\item Splines and Gaussian processes are good methods for estimation
+\begin{itemize}
+\item GPR: mathematically elegant, rigorous method
+\begin{itemize}
+\item Assume normally distributed \(\varepsilon\)
+\item Point estimate: y \textasciitilde{} N(f(x), \(\varepsilon\))
+\item Whole function estimate: f(x) \textasciitilde{} GP(mu, Sigma)
+\item Whole function estimate is actually a Gaussian distribution over functions
+\item The whole function estimate is just a generalisation of the point estimate
+\item For a sensible prior, we can then use Bayes to estimate the posterior distribution on f(x)
+\item Statistically optimal estimator
+\item Downside: for finite data, results are only as good as the priors we use; coming up with good priors is hard
+\end{itemize}
+
+\item Splines: simple, effective, less elegant
+\begin{itemize}
+\item Split f(x) into intervals, and asume f(x) is locally polynomial on any given interval
+\item Enforce C\(^{\text{2}}\) smoothness over polynomial sections
+\item Polynomials then join up at the edges of each interval; these joinings are called knot points
+\item Remaining free parameters are chosen to maximise goodness-of-fit
+\item No need to define priors, so it's easier to use on data where choice of priors becomes difficult
+\item Knot points are difficult to choose; use Bayesian inference to form a posterior distribution over knots
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Novel discretisations}
+\label{sec:org34ac465}
+\begin{frame}[plain,label={sec:orgd8a879e}]{Developments since last time}
+IMAGE. 
+\begin{itemize}
+\item Surrogates tested and working
+\begin{itemize}
+\item GPR works on both real and synthetic data, in cases where the data are sufficiently stationary
+\item Free knot splines works always, so use it in cases where the data aren't sufficiently stationary
+\end{itemize}
+
+\item Image taken from recent abstract
+\begin{itemize}
+\item Bayesian free-knot splines
+\item Works well -- we can extract the underlying signal near perfectly, even given very noisy observations
+\item Three changepoints per period: at the start, top, and end of a spike; here, the signal rapidly changes from slow to fast behaviour
+\item These changepoints are the hardest bits to model, and therefore the surrogates are least accurate here (the time between spikes shows a slow, gentle change that's easy to model accurately)
+\item Zooming in on one of the changepoints, we see that the surrogate recreates the latent signal nearly exactly; even at the most difficult-to-fit part of the signal, we still get excellent results
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:orgac8f0c5}]{Developments since last time}
+\begin{itemize}
+\item Novel discretisations
+\begin{itemize}
+\item Surrogates only give us a noise filter
+\item For some CBC implementations, this is sufficient
+\item In CBC cases where we have to do Newton iterations, this isn't useful; we instead need a low-dimensional discretisation
+\item We can apply the surrogates ideas to creating discretisations
+\end{itemize}
+
+\item In-silico CBC
+\begin{itemize}
+\item Best way to demonstrate that these methods work, are valuable
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:orgace675d}]{Discretisations}
+\begin{itemize}
+\item Discretisation takes a function, projects it onto a set of basis functions
+\item Coefficients and basis functions are sufficient to represent the signal
+\item Lots of possible choices for basis functions
+\begin{itemize}
+\item C\(^{\text{infinity}}\) signals can be represented exactly with monomial basis functions (taylor expansion)
+\item Periodic signals can be represented exactly with trig basis functions (Fourier series)
+\item These are bad choices for neuron CBC -- require lots of coefficients to describe the spiking signals
+\end{itemize}
+\item We've already met splines; turns out we can define a set of basis functions for splines
+\begin{itemize}
+\item Can therefore express any spline curve in the above form
+\item This means we can discretise with splines too!
+\item Splines are a good choice: they provide a nice simple, intuitive model, and don't require many basis functions to get a good approximation
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:orgd6955eb}]{Splines discretisation}
+\begin{itemize}
+\item Fit a set of basis functions to initial signal \(f_0(x)\)
+\begin{itemize}
+\item \alert{Choose a set of knots xi, such that the splines basis b\(_{\text{i}}\)(x) that we construct from knots xi is able to fit the initial signal f\(_{\text{0}}\)(x) as accurately as possible, in the least squares sense}
+\item This is actually hard to do -- open research problem
+\item Elegant approach: find a Bayesian posterior over \(\xi | data\). Downside: is slow and complicated; need to do MCMC to approximate intractable integral
+\item Simple approach 1: put a knot at every datapoint then penalise functional of second derivative, to enforce smoothness. Downside: we end up with huge numbers of knots.
+\item Simple approach 2: keep adding knots  until we reach satisfactory results; downside: lower quality fit, no guarantee of low-dimensionality
+\end{itemize}
+\item My approach: choose the number of knots; numerically optimise knot positions; start from random initial knots; avoid local minima by repeating this lots
+\begin{itemize}
+\item Downside: need to repeat lots to find global minimum
+\item Need to choose the number of knots a priori; algo doesn't work it out for us
+\item Upside: quick and easy approach to finding a good set of knots; easiest way to get low-dimensional knot set
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}[plain,label={sec:org36930a4}]{Splines demo}
+\begin{itemize}
+\item Splines discretisation works well
+\item This example uses just 8 knot points
+\begin{itemize}
+\item Higher than an 8d discretisation, as we need to add exterior knots so that the basis splines have support across the range of the data
+\end{itemize}
+\item Reconstructs the latent signal near-perfectly
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:org66af2fa}]{Splines vs Fourier}
+Also shown: Fourier
+
+\begin{itemize}
+\item Visually, splines fits better than Fourier
+\item Fourier is harder to fit
+\item Too few harmonics and the series can't fit the data
+\item Too many harmonics and the series starts fitting the noise as well as the data
+\item Not really any sweet spot; no point where the series fits the signal, but averages out the noise
+\item This is the usage case for surrogates -- when we have noisy data, but still want to use Fourier with it!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:org0d501d7}]{Goodness-of-fit}
+This shows the goodness-of-fit of a splines model with given number of knots, and Fourier series with given number of harmonics
+
+\begin{itemize}
+\item No noise, Fitzhugh Nagumo
+\item Splines error decays more rapidly than Fourier error
+\item Effects become even more dramatic for more neuron-like signals
+\item Note though this is the goodness-of-fit of a splines, fourier model on a single signal; doesn't determine how well the splines model generalises to discretising unseen signals, ie. only shows how well the spline model fits a signal to which its basis functions were fitted; using the same basis functions on a signal from a different parameter value might get different goodness-of-fit. Fourier won't have this issue since it uses trig basis all the time
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:org6e32cd1}]{Method usage cases}
+\begin{itemize}
+\item Harmonically forced:
+\begin{itemize}
+\item When we have a harmonically forced system, we can have a harmonically oscillating control action, and treat the control action as the forcing term
+\item In this setup, we can efficiently iterate on the Fourier harmonics, to drive the higher-order harmonics of the control action to zero
+\item This necessitates a Fourier projection. No need for a novel discretisation, but we could possibly improve the Fourier discretisation by using a surrogate to first filter off the noise
+\end{itemize}
+
+\item Non-harmonically forced:
+\begin{itemize}
+\item If system is unforced, we apply parameter and control action separately, and need the control action to be zero
+\item We can use Newton iterations to solve for the noninvasive control action
+\item Since we're doing Newton iterations, we need to work with a low dimensional system, otherwise it'll be impractically slow
+\item To have a low-dimensional system, we use a novel discretisation, eg. splines
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{CBC approach}
+\label{sec:orgd207c9d}
+\begin{frame}[plain,label={sec:orgaffdccc}]{\emph{In-silico} CBC}
+Current work: implementing an in-silico CBC simulation
+\begin{itemize}
+\item Best way to test if the surrogates, discretisations work with CBC is to try using them with CBC!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:orgad84812}]{CBC method POINTS 1, 2}
+\begin{itemize}
+\item Use PD control
+\begin{itemize}
+\item Easy, model-free control method
+\item Gets good results with a method we could easily use in experiments too
+\item Fit control parameters with brute force
+\item Easy to simulate, minimal effort in controller design
+\end{itemize}
+
+\item As per standard numerical continuation, do a change in variables so that time is in [0,1], and treat period as an extra continuation variable
+\begin{itemize}
+\item Not necessary with Fourier discretisation
+\item Splines knots are like finite-differences or collocation mesh points
+\item Time rescaling is necessary with mesh-based methods, as changing the period would effectively move the mesh points relative to the signal
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:orgb719042}]{CBC method POINTS 3, 4}
+\begin{itemize}
+\item Non-adaptive mesh
+\begin{itemize}
+\item Fit knots at the start, keep them in the same position throughout
+\item Adaptive mesh would mean re-fitting the knots after a prediction-correction step
+\item In terms of code, this is minimal extra effort, but would add a slight fitting overhead
+\item Only using non-adaptive mesh because I'm interested to see how well it works
+\end{itemize}
+
+\item Use Newton iterations to solve for discretised control target = discretised system output
+\begin{itemize}
+\item Nothing fancy, just simple, slow Newton with finite differences; able to do this in-silico, but would need more rigorous treatment for experiments
+\item Sensible to start off with easy root finding, and develop something fancy (Broyden) later
+\item Splines method adds exterior knots, and some of the coefficients are always zero, so they can be removed from the discretisation to speed up the finite-differences Jacobian step; I'm currently being lazy and not doing this
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{Code progress}
+\label{sec:org9cec4fb}
+\begin{frame}[plain,label={sec:org02409ff}]{Discretisors}
+\begin{itemize}
+\item Instantiate desired discretisor type with its relevant parameter
+\begin{itemize}
+\item Fourier: n\(_{\text{harmonics}}\)
+\item Splines: knot locations
+\item Regardless of discretisor type, can then call discretisor discretise, discretisor undiscretise
+\end{itemize}
+
+\item Simple, standard interface to discretisation routines
+\begin{itemize}
+\item Able to swap between Fourier, Splines with zero effort
+\item Allows direct comparison between discretisation methods
+\item Could easily implement any other discretisation (eg. wavelets) using the same interface
+\end{itemize}
+
+\item Lightly tested:
+\begin{itemize}
+\item The code runs and produces sensible outputs
+\item Haven't tested its ability to generalise to new signals
+\item Ie. don't know how well basis funcs fitted to f\(_{\text{0}}\)(x) will work for discretising f\(_{\text{1}}\)(x)
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}[plain,label={sec:org0030b1b}]{Controllers}
+\begin{itemize}
+\item Can design controllers with a standard interface too
+\begin{itemize}
+\item Set the controller type, control target, gains, and the control matrices
+\item The controller object handles the rest
+\end{itemize}
+
+\item Similarly, can design systems with a standard interface
+\begin{itemize}
+\item Specify a function that gives the ODE RHS; a list of ODE parameters; the controller
+\item Can then run the controlled model for any choice of time range, ICs, pars
+\item Subsequent runs optionally start with ICs given by final state of last run, much like a real system
+\end{itemize}
+\end{itemize}
+
+The point of all these standardised interfaces is that it becomes really easy to swap everything out; eg. apply to different models, different control strategies, different discretisors
+
+Can then run a CBC experiment in less than 10 lines of code; easy to apply, reapply, experiment with
+\end{frame}
+
+\begin{frame}[plain,label={sec:org30ead4c}]{Control}
+IMAGE
+
+FH system with sine target; looks very reasonable
+
+\begin{itemize}
+\item Lightly tested: code runs, results look very reasonable
+\begin{itemize}
+\item Seems like a sensible output
+\end{itemize}
+\item Can easily write out the RHS of a PD-controlled FH system w/ sine target; can compare this explicit RHS to the code-generated system, to make sure the code isn't doing anything funny
+\begin{itemize}
+\item Haven't done this yet
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:org0e0455e}]{Continuation}
+\begin{itemize}
+\item Runs a psuedo-arclength secant-predictor Newton-corrector CBC
+\item Code is written now
+\item Requires a `system': this is just a controlled model [from previous code], with its arguments binded
+\item `system' interface will be easy to write, but haven't got round to this yet
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:org0ad523b}]{Simulation summary}
+\begin{itemize}
+\item Results handling is just something to take the set of natural periodic orbits, apply some measure (eg. amplitude), then plot them on a bifurcation diagram.
+\item Should be working and tested within a week
+\end{itemize}
+\end{frame}
+
+
+\section{Next steps}
+\label{sec:orgd47e73c}
+\begin{frame}[plain,label={sec:org562ebbc}]{Open questions}
+\begin{itemize}
+\item Will splines discretisation work?
+\begin{itemize}
+\item If splines can only model the signal to which the knots were fitted, they won't work for CBC
+\item My guess is they will work
+\end{itemize}
+
+\item Stationary or adaptive mesh?
+\begin{itemize}
+\item If splines basis aren't good at generalising, can re-fit knots at each step, much like an adaptive mesh, which would hopefully fix problems
+\end{itemize}
+
+\item Efficient solving methods
+\begin{itemize}
+\item Remove zero-coefficients from discretisation
+\item Broyden Jacobian update?
+\item Newton-Picard iterations? Ludovic's suggestion of Newton-iterating on unstable coefficients, fixed-point iterating on stable coefficients; reduces the size of the Jacobian / finite differences step
+\end{itemize}
+
+\item Can we interface the code with Simulink?
+\begin{itemize}
+\item Ludovic has a simulink model that would be fun to play with; haven't looked at it yet since I've been testing the CBC codes; would be interesting to try to call the finished code from MATLAB, in which case we might be able to interface the two
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain,label={sec:orga31b052}]{Next steps}
+\begin{itemize}
+\item Continuation tutorial paper
+\begin{itemize}
+\item Haven't touched it recently
+\item Making slower progress since I'm trying to get the stuff for this done before the paper deadline
+\end{itemize}
+
+\item NODYCON abstract for this: submitted, accepted
+
+\item Conference paper for this: will start on that once the CBC simulation is sorted
+\end{itemize}
+\end{frame}
+\end{document}
