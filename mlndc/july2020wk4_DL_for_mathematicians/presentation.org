@@ -1,0 +1,233 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Deep learning: An Introduction for Applied Mathematicians
+#+DATE:[2020-07-27 Mon] 
+
+* TODO Background
+
+
+* Network design
+** Background
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+*** Neural network :B_definition:
+    :PROPERTIES:
+    :BEAMER_env: definition
+    :END:
+    
+A nonlinear model that's general enough to fit most data
+
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+    
+    
+\vfill
+    * Take input vectors \(\mathbf{x}_i\)
+    * Take output vectors \(\mathbf{y}_i\)
+    * Fit some nonlinear model \(\mathbf{y} = f(\mathbf{x})\)
+      
+** Drilling site example
+
+   * Input data: \(\mathbf{x}_i = (u_i, v_i)\), oil well location
+   * Output data: \(y_i\in\{0,1\}\), success or failure
+   * Learn some nonlinear model mapping locations to drill successes
+     
+** Model form
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+How do we create a nice general model?
+\vfill
+   * A neural network is just a convenient representation of `stringed nonlinearities'
+   * Take a simple nonlinearity, eg. sigmoid \(\sigma(x)\)
+   * String a load of them together
+     * \(f(x) = \sigma(\sigma(\dots\sigma(x)\dots)\)
+   * More useful: can shift mean, scale with a linear transform \(\sigma(wx + b)\)
+     * \(f(x) = \sigma(b + w\sigma(b + w\sigma( \dots \sigma(b + w\sigma(x)) \dots )\)
+   * Fit the model
+     * Find appropriate values for each \(w, b\)
+
+** Why `neural network'?
+    * We can represent the equation nicely as a graph
+#+ATTR_LATEX: :height .7\textheight
+\vspace{-.3cm}
+[[./net.png]]      
+\vspace{-.7cm}
+    * Information flows forward through the graph much like it does through the brain
+      
+      
+** Model form
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * Node inputs = weighted sum of previous layer's outputs
+      * Vector form: \(\mathbf{i}_k = W_k \mathbf{o}_{k-1} + \mathbf{b}_k\)
+    * Node output = sigmoid of inputs
+      * \(\mathbf{o}_k = \sigma(\mathbf{i}_k)\)
+    * Inputs can be efficiently computed with some linear algebra
+    * Much neater representation than `stringed nonlinearities'
+
+** Why does this work?
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Loosely speaking...
+\vfill
+   * Having lots of \(W_k\), \(b_k\) gives us a very general model
+   * We can fit the data by selecting \(W\), \(b\) to minimise the error \(\sum\| f(\mathbf{x}_i - \mathbf{y}_i \|^2\)
+   * Universal approximator!
+
+
+* Network training
+** Network training
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+We now have a model; how do we fit it?
+     
+*** Gradient descent :B_definition:
+    :PROPERTIES:
+    :BEAMER_env: definition
+    :END:
+Optimisation method that iteratively updates parameters with a most-improving step
+
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+    * Like a massless ball rolling down a hill
+      * Travels in the direction of greatest slope
+      * Reaches a flat bit eventually
+    * Flat bit means cost stops changing
+      * Could be a good fit, could be a saddle or local minimum
+
+** Stochastic gradient descent
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   * Let \(\mathrm{cost}_p = \sum_i \| f_p(\mathbf{x}_i) - \mathbf{y}_i\|^2\)
+   * Iteratively let \(p_{i+1} = p_i - \eta \frac{\partial \mathrm{cost}}{\partial p_i}\)
+     * Alternatively, calculate the cost over some `minibatches' and perform iterations on these
+   * How do we find \(\frac{\partial \mathrm{cost}}{\partial p_i}\)?
+     
+** Backprop
+   
+*** Backpropagation :B_definition:
+    :PROPERTIES:
+    :BEAMER_env: definition
+    :END:
+    
+A method for finding cost-function gradient, given
+    * a cost function
+    * a nonlinearity
+    * a network topology
+
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+    
+\vfill
+Backprop is the core of NN training!
+
+** How does backprop work?
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+For a single input...
+   * How does cost function change with last layer's outputs?
+     * \(\frac{\partial\mathrm{cost}}{\partial \mathrm{output}} = 2\|f(\mathbf{x}_i) - \mathbf{y}_i\|\)
+   * How does \(i\)th layer output change with \(i\)th layer input?
+     * \(\frac{\partial\mathrm{output}}{\partial\mathrm{input}} = \sigma'(\mathrm{input})\)
+   * How does \(i\)th layer input change with \(i\)th layer weights, biases?
+     * \(\frac{\partial \mathrm{input}}{\partial \mathrm{weights}} = (i-1)\mathrm{'th~layer~output}\)
+     * \(\frac{\partial \mathrm{input}}{\partial \mathrm{biases}} = 1\)
+   * Can find cost function gradient by chain-ruling these all together
+   * Can sum the resulting gradient across the full minibatch
+
+     
+** Backprop results
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+Backprop gives us an easy way to compute \(\frac{\partial \mathrm{cost}}{\partial \mathrm{weights}}\) and \(\frac{\partial \mathrm{cost}}{\partial \mathrm{biases}}\)
+\vfill
+  * Forward pass: find each node's inputs and outputs
+  * Backward pass:
+    * Relate last layer's output to cost function gradient
+    * Relate each previous layer's outputs, weights, biases to next layer's error
+    * Relate next layer's error to cost function gradient
+  * Propagates errors backward through the network
+
+* ConvNets
+** Convolutional neural networks
+   * Visual cortex has a `receptive field'
+   * CNN mirror this with local kernel transforms
+   * Convolutional layers automatically extract features
+   * Allows NNs to efficiently manipulate high-dimensional data
+
+* Practical aspects
+** Practical aspects
+*** Overfitting :B_definition:
+    :PROPERTIES:
+    :BEAMER_env: definition
+    :END:
+    
+Representing the training data too closely, and losing the ability to generalise
+
+** Costs and activations
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * We don't have to use sigmoids
+      * ReLU: linear activation with positive support
+      * Alternative: small gradient for negative numbers, large gradient for positive numbers
+    * We don't have to use residuals
+      * Softmax-log-loss
+
+* Next paper
+* Discussion
+** The essence of ML
+   * Machine learning sounds flashy and cool; it's just big statistics
+   * Large-scale model definitions and cost-function-fitting
+
+** Section 8 discussion points
+   * Why use NNs?
+     * When do other methods generalise better?
+** Section 8 discussion points
+   * How robust are the results?
+     * Do small input changes matter much? Should they?
+** Section 8 discussion points
+   * What's a sensible nonlinearity?
+     * Is there any reason to choose ReLU over sigmoids?
+** Section 8 discussion points
+   * What topology do we need?
+     * How many hidden layers? How big?
+** Section 8 discussion points
+   * Can we regularise?
+     * Reduce overfitting by penalising model complexity
+** Section 8 discussion points
+   * Explainability
+     * /Why/ should NNs give good results? Why do they give the results they do?
+
+** Discussion
+   * Why use NNs vs. another method?
+   * What topology do we need?
+   * What's a sensible nonlinearity?
+   * How robust are the results, and how much do we care?
+   * Can we regularise?
+   * Explainability -- how much do we trust the results?
+   * How much can we actually learn from a black box?
+   * How much data is enough data?
+   * What are the applications to nonlinear dynamics?
+
+** Next paper
+Someone to lead?
+\vfill
+Suggestion: Heinonen, Markus, et al. "Learning unknown ODE models with Gaussian processes." arXiv preprint arXiv:1803.04303 (2018).
