@@ -1,4 +1,4 @@
-% Created 2020-07-17 Fri 15:27
+% Created 2020-07-27 Mon 10:44
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -29,8 +29,12 @@
 
 
 \section{Background}
-\label{sec:org53eef45}
-\begin{frame}[label={sec:orgbc26367}]{Last week's work}
+\label{sec:org49754ec}
+\begin{frame}[label={sec:org44496ef}]{NODYCON}
+Abstract review is back!
+\end{frame}
+
+\begin{frame}[label={sec:orgc7c01ac}]{Last week's work}
 \begin{itemize}
 \item Implemented Fourier discretisation
 \item Compared it against splines
@@ -40,8 +44,8 @@
 \end{frame}
 
 \section{Discretisation}
-\label{sec:org722f476}
-\begin{frame}[label={sec:orgd1c1bc1}]{Discretisation}
+\label{sec:org2d98ff9}
+\begin{frame}[label={sec:org4a0ea12}]{Discretisation}
 From last time\ldots{}
 \vfill
 Fitting periodic splines:
@@ -62,7 +66,7 @@ Fitting periodic splines:
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orgc0d0104}]{Discretisation}
+\begin{frame}[label={sec:org848c8b2}]{Discretisation}
 From last time\ldots{}
 \vfill
 Choosing knots is hard; since we're wanting a minimal knot set\ldots{}
@@ -80,7 +84,7 @@ Choosing knots is hard; since we're wanting a minimal knot set\ldots{}
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[label={sec:orged23246}]{Discretisation}
+\begin{frame}[label={sec:org953b5f1}]{Discretisation}
 From last time\ldots{}
 
 \begin{center}
@@ -88,7 +92,7 @@ From last time\ldots{}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orga4aada1}]{Discretisation}
+\begin{frame}[label={sec:org29144c8}]{Discretisation}
 From last time\ldots{}
 
 \begin{center}
@@ -96,8 +100,9 @@ From last time\ldots{}
 \end{center}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org178a1cb}]{Discretisation}
+\begin{frame}[<+->][label={sec:orgbf84cea}]{Discretisation}
 We can quantify goodness-of-fit:
+\vfill
 \begin{itemize}
 \item Let \(\mathrm{reconstruction}(t)\) be the fitted splines model
 \item Let \(\mathrm{signal}(t)\) be the signal we wish to discretise
@@ -107,21 +112,21 @@ We can quantify goodness-of-fit:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org859e380}]{Splines vs Fourier}
+\begin{frame}[label={sec:orga629114}]{Splines vs Fourier}
 Hodgkin-Huxley neuron; error decays \emph{significantly} faster with splines
 \begin{center}
 \includegraphics[width=.9\linewidth]{./HHerror2.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org710ddd9}]{Splines vs Fourier}
+\begin{frame}[label={sec:org4400509}]{Splines vs Fourier}
 Hodgkin-Huxley neuron; error decays \emph{significantly} faster with splines
 \begin{center}
 \includegraphics[width=.9\linewidth]{./HHerror.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgfd59124}]{Open problems}
+\begin{frame}[label={sec:org96a41ea}]{Open problems}
 \begin{itemize}
 \item Robustness
 \begin{itemize}
@@ -140,12 +145,12 @@ Hodgkin-Huxley neuron; error decays \emph{significantly} faster with splines
 \end{frame}
 
 \section{CBC}
-\label{sec:orgd6d21f7}
-\begin{frame}[label={sec:orgc9f8e25}]{CBC approach}
+\label{sec:orgf6304a2}
+\begin{frame}[label={sec:org281ac50}]{CBC approach}
 Question: there's several ways of performing CBC; which is best for this?
 \end{frame}
 
-\begin{frame}[<+->][label={sec:orgfd661ae}]{Methods for PO CBC}
+\begin{frame}[<+->][label={sec:org138bb97}]{Methods for PO CBC}
 Method 1. `Easy' approach for harmonically forced systems
 \vfill
 \begin{itemize}
@@ -159,13 +164,13 @@ Method 1. `Easy' approach for harmonically forced systems
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgdeeb5da}]{Method 1 issues}
+\begin{frame}[label={sec:org04ebd72}]{Method 1 issues}
 \begin{center}
 We don't have a harmonically forced system
 \end{center}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org478d7f7}]{Methods for PO CBC}
+\begin{frame}[<+->][label={sec:org607e53f}]{Methods for PO CBC}
 Method 2. Harder, fully general approach \emph{[Sieber Krauskopf]}
 \vfill
 \begin{itemize}
@@ -180,14 +185,10 @@ Method 2. Harder, fully general approach \emph{[Sieber Krauskopf]}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org5e234af}]{Method 2 issues}
+\begin{frame}[<+->][label={sec:orgf7c1125}]{Method 2 issues}
 I think this is wrong\ldots{}
 \begin{itemize}
 \item Integral control \(\implies\) no proportional error
-\begin{itemize}
-\item Possibly true for other control strategies too
-\item (Irene won't have this issue when using MPC, since she can lump the control action in with the bifurcation parameter and avoid the IO map method)
-\end{itemize}
 \item No proportional error \(\implies\) system output == control target
 \begin{itemize}
 \item System output exactly tracks control target
@@ -197,17 +198,19 @@ I think this is wrong\ldots{}
 \item Control target and system output are identical for all targets
 \end{itemize}
 \item Every point is a fixed point \(\implies\) can't find noninvasive control by solving the map
+\item My claim: IO-map fixed point is a necessary but not sufficient condition for noninvasiveness
 \item Feels like a big claim to say the paper's wrong, but I haven't found any way to resolve this\ldots{}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org0c73add}]{Method 2 solutions}
+\begin{frame}[<+->][label={sec:org217e6fe}]{Method 2 solutions}
 Approach 1. Only use P, PD control
 \begin{itemize}
 \item No integral controller \(\implies\exists\) proportional error
 \item Proportional error = 0 \(\iff\) control action is zero (noninvasiveness)
 \begin{itemize}
 \item System output = control target \(\iff\) control is noninvasive
+\item IO map fixed point \(\iff\) control is noninvasive
 \end{itemize}
 \item Can then use Newton iterations to solve for noninvasiveness
 \begin{itemize}
@@ -221,7 +224,7 @@ Approach 1. Only use P, PD control
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:orga27eca3}]{Method 2 solutions}
+\begin{frame}[<+->][label={sec:orgc7878d1}]{Method 2 solutions}
 Approach 2. Reformulate the zero problem
 \vfill
 \begin{itemize}
@@ -237,8 +240,11 @@ Approach 2. Reformulate the zero problem
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:orgaa6765f}]{Optimal design of gradient-descent method}
+\begin{frame}[label={sec:orgdf4899d}]{Optimal design of gradient-descent method}
 Maybe we don't need to find \(\mathbf{u}^*\) that sets control action to zero\ldots{}
+\end{frame}
+
+\begin{frame}[<+->][label={sec:org14652ca}]{Optimal design of gradient-descent method}
 \begin{itemize}
 \item Much like tracking bifurcations optimally -- don't need to see the actual bifurcation point, as long as we're confident it's there
 \item Find a local surrogate model of total invasiveness \(I(\mathbf{u}^*) = \int u(\mathbf{u}^*,t)^2 \mathrm{d}t\) 
@@ -247,19 +253,20 @@ Maybe we don't need to find \(\mathbf{u}^*\) that sets control action to zero\ld
 \item Quantifies invasiveness of target \(\mathbf{u}^*\)
 \item \(I(\mathbf{u}^*)=0\) \(\implies\) \(u^*\) is noninvasive, so natural system behaviour
 \end{itemize}
+\item Solve for \(I(\mathrm{u}^*)=0\) on the local surrogate model
+\begin{itemize}
+\item Moves calculations out of experiment and onto computer, where they can be performed much faster
+\item No need for experimental Newton iterations, gradient descent, Jacobians, finite differences
+\end{itemize}
 \item Fit local model on `maximally informative' datapoints
 \begin{itemize}
 \item Choose datapoints that maximise our certainty of the minima location
-\end{itemize}
-\item Solve for \(I(\mathrm{u}^*)=0\) on the local surrogate model
-\begin{itemize}
-\item No need for experimental Newton iterations, gradient descent, Jacobians, finite differences \(\implies\) fast!
 \end{itemize}
 \item Experimentally test \(\mathbf{u}^*_i\) that solves \(I(\mathbf{u}^*)=0\), to ensure that's the noninvasive solution
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd1ac9cb}]{Proposed route}
+\begin{frame}[label={sec:org7b5feb6}]{Proposed route}
 Initially, use PD control, IO map with Newton iterations
 \begin{itemize}
 \item Standard method, so don't have to develop anything new
@@ -270,13 +277,13 @@ Initially, use PD control, IO map with Newton iterations
 \emph{If PD doesn't work well}, develop the surrogate gradient descent method
 \begin{itemize}
 \item Makes it truly control-strategy independent
-\item Extends CBC to systems that are harder to control with PD
+\item Extends fully-general CBC to systems that are harder to control with PD
 \end{itemize}
 \end{frame}
 
 \section{Control-free continuation}
-\label{sec:org4315617}
-\begin{frame}[label={sec:org6741ee9}]{An extravagant aside}
+\label{sec:org94a0829}
+\begin{frame}[label={sec:org4b74bc0}]{An  aside}
 Interesting aside: control-free continuation
 \vfill
 \begin{itemize}
@@ -285,7 +292,7 @@ Interesting aside: control-free continuation
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgee95c0f}]{Control-free continuation}
+\begin{frame}[label={sec:orgdbfe774}]{Control-free continuation}
 We can deduce the existence of an unstable equilibrium
 
 \begin{center}
@@ -293,7 +300,7 @@ We can deduce the existence of an unstable equilibrium
 \end{center}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org8f8bcb1}]{Control-free continuation}
+\begin{frame}[<+->][label={sec:org965e5ef}]{Control-free continuation}
 \begin{itemize}
 \item Stable features are easy to spot -- the system converges to them
 \item We can often deduce the existence of unstable features
@@ -306,7 +313,7 @@ We can deduce the existence of an unstable equilibrium
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:orgf020b69}]{Control-free continuation}
+\begin{frame}[<+->][label={sec:orgceef2dc}]{Control-free continuation}
 General method:
 \begin{enumerate}
 \item Collect some data
@@ -329,41 +336,38 @@ General method:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd94bd7a}]{}
+\begin{frame}[label={sec:org85eb5d4}]{}
 \begin{center}
 Back on topic\ldots{}
 \end{center}
 \end{frame}
 
 \section{Surrogates}
-\label{sec:org4917d13}
-\begin{frame}[label={sec:org3d62ac8}]{When are surrogates useful?}
+\label{sec:org598591e}
+\begin{frame}[label={sec:orgeb855be}]{When are surrogates useful?}
 \begin{itemize}
 \item Conference abstract discusses surrogates
 \item Paper needs to make their usage cases clear
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb83692c}]{When are surrogates useful?}
+\begin{frame}[label={sec:org25bf1de}]{When are surrogates useful?}
 Slow signals:
 
 \vfill
 \begin{itemize}
-\item No high harmonics \(\implies\) Fourier discretisation works fine
-\item Fourier works fine \(\implies\) no need for a novel discretisation
-\item No high harmonics \(\implies\) low-pass filtering works fine
-\item Low-pass fitering \(\implies\) no need for a surrogate
+\item No high harmonics \(\implies\) Fourier discretisation works fine \(\implies\) no need for a novel discretisation
+\item No high harmonics \(\implies\) low-pass filtering works fine \(\implies\) no need for a surrogate
 \end{itemize}
 
 \vfill
 No need for surrogates
 \end{frame}
-\begin{frame}[label={sec:org3e6f789}]{When are surrogates useful?}
+\begin{frame}[label={sec:org303d9eb}]{When are surrogates useful?}
 Fast signals:
 \vfill
 \begin{itemize}
-\item Lots of high harmonics \(\implies\) Fourier discretisation doesn't work
-\item Fourier doesn't work \(\implies\) need a novel discretisation
+\item Lots of high harmonics \(\implies\) Fourier discretisation doesn't work \(\implies\) need a novel discretisation
 \item Novel discretisation \(\implies\) no need for a surrogate as well
 \end{itemize}
 
@@ -371,12 +375,15 @@ Fast signals:
 No need for surrogates
 \end{frame}
 
-\begin{frame}[label={sec:org9f93d54}]{When are surrogates useful?}
+\begin{frame}[label={sec:orge41b66c}]{When are surrogates useful?}
 Medium-speed signals:
 \vfill
 \begin{itemize}
 \item Can be more efficiently discretised with splines than Fourier
-\item However, for harmonically forced systems, it's faster to use Fourier iterations than Newton iterations
+\item Harmonically forced systems: faster to use Fourier iterations than Newton
+\begin{itemize}
+\item Splines discretise more efficiently, but we still use Fourier
+\end{itemize}
 \item Enough HF harmonics that we wouldn't want to use LP filtering \(\implies\) we need a surrogate
 \end{itemize}
 
@@ -384,14 +391,15 @@ Medium-speed signals:
 This is surrogates usage case
 \end{frame}
 
-\begin{frame}[label={sec:org6d7aaaa}]{When are surrogates useful?}
+\begin{frame}[label={sec:org8336478}]{When are surrogates useful?}
 \begin{itemize}
 \item Better to use Fourier iterations than Newton iterations on harmonically forced systems
 \item Surrogates are useful for Fourier iteration on faster signals
+\item Example usage: cleaning noise from a highly nonlinear forced Duffing
 \end{itemize}
+\end{frame}
 
-\vfill      
-
+\begin{frame}[label={sec:orgdded98d}]{When are surrogates useful?}
 \begin{center}
 \begin{tabular}{lll}
 Type & Harmonically forced & Unforced\\
@@ -405,10 +413,9 @@ Fast signal & \alert{Fourier iter's, surrogates} & \uline{Newton iter's, novel d
 The two new methods complement each other; one for Newton iter's, one for Fourier iter's; paper should make this clear
 \end{frame}
 
-
 \section{Next steps}
-\label{sec:org1885959}
-\begin{frame}[<+->][label={sec:org5614cad}]{Summary}
+\label{sec:orgcedb432}
+\begin{frame}[<+->][label={sec:orgd56c5c2}]{Summary}
 \begin{itemize}
 \item CBC implementation should use Newton iterations, spline discretisation, PD control
 \item Conference paper needs to be clear / explicit about when surrogates, new discretisations are useful
@@ -421,24 +428,40 @@ The two new methods complement each other; one for Newton iter's, one for Fourie
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org58a10eb}]{Next steps}
+\begin{frame}[label={sec:org85e20cf}]{Next steps}
 \begin{enumerate}
-\item Test splines generalisation ability
-\begin{itemize}
-\item Fit knots for signal at \(\lambda = \lambda_0\)
-\item See if those knots still work for \(\lambda = \lambda_i\), \(i>0\)
-\item If they do, splines will be able to predict new PO locations, and work for CBC
-\end{itemize}
-\item Write up results so far
+\item Test splines generalisation, robustness
+\item Write up results so far into a paper
 \item Demonstrate splines with CBC
 \end{enumerate}
+
+\vfill
+Alternative: skip step 1 altogether and jump in with CBC simulation
 \end{frame}
 
-\begin{frame}[label={sec:orgadcda61}]{Key dates}
+\begin{frame}[label={sec:org1e950a4}]{Generalisation and robustness [again]}
+\begin{itemize}
+\item Generalisation
+\begin{itemize}
+\item Knots are fitted / work well for \(\lambda_0\); can the same knots model \(\lambda_1\), \(\lambda_2\), \dots{}, \(\lambda_i\)?
+\item (They need to for predicting the next PO in an iteration)
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Robustness
+\begin{itemize}
+\item Does it break down on stochastic systems? Eg. if data aren't fully periodic
+\item Do we need a human in the loop, to manually adjust anything?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org72cde9b}]{Key dates}
 \begin{itemize}
 \item Bath maths ML conference, week of Aug.3rd - 7th
-\item Goal: conference paper writing, week of Aug. 10th - 14th
-\item Conference paper submission, September 11th
+\item Conference paper submission, September \sout{11th} 25th
+\item Goal: start conference paper writing mid-August
 \end{itemize}
 \end{frame}
 \end{document}

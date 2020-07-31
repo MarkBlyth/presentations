@@ -7,6 +7,9 @@
 #+DATE:
 
 * Background
+** NODYCON
+Abstract review is back!
+
 ** Last week's work
    * Implemented Fourier discretisation
    * Compared it against splines
@@ -54,6 +57,7 @@ From last time...
    :BEAMER_act: [<+->]
    :END:
 We can quantify goodness-of-fit:
+\vfill
   * Let \(\mathrm{reconstruction}(t)\) be the fitted splines model
   * Let \(\mathrm{signal}(t)\) be the signal we wish to discretise
   * Let \(\mathrm{error}(t) = \mathrm{signal}(t) - \mathrm{reconstruction}(t)\)
@@ -140,13 +144,12 @@ Question: there's several ways of performing CBC; which is best for this?
    :END:
 I think this is wrong...
    * Integral control \(\implies\) no proportional error
-     * Possibly true for other control strategies too
-     * (Irene won't have this issue when using MPC, since she can lump the control action in with the bifurcation parameter and avoid the IO map method)
    * No proportional error \(\implies\) system output == control target
      * System output exactly tracks control target
    * System output == control target \(\implies\) every control target is a fixed point of the IO map
      * Control target and system output are identical for all targets
    * Every point is a fixed point \(\implies\) can't find noninvasive control by solving the map
+   * My claim: IO-map fixed point is a necessary but not sufficient condition for noninvasiveness
    * Feels like a big claim to say the paper's wrong, but I haven't found any way to resolve this...
 
 ** Method 2 solutions
@@ -157,6 +160,7 @@ Approach 1. Only use P, PD control
    * No integral controller \(\implies\exists\) proportional error
    * Proportional error = 0 \(\iff\) control action is zero (noninvasiveness)
      * System output = control target \(\iff\) control is noninvasive
+     * IO map fixed point \(\iff\) control is noninvasive
    * Can then use Newton iterations to solve for noninvasiveness
      * Let \(\mathbf{u}^*=\) control target discretisation
      * Let \(\mathbf{x}=\) system output discretisation
@@ -180,19 +184,22 @@ Approach 2. Reformulate the zero problem
    * Downsides: minimisation might be slower; no literature precedent
 
 ** Optimal design of gradient-descent method
+Maybe we don't need to find \(\mathbf{u}^*\) that sets control action to zero...
+     
+** Optimal design of gradient-descent method
    :PROPERTIES:
    :BEAMER_act: [<+->]
    :END:
-Maybe we don't need to find \(\mathbf{u}^*\) that sets control action to zero...
     * Much like tracking bifurcations optimally -- don't need to see the actual bifurcation point, as long as we're confident it's there
     * Find a local surrogate model of total invasiveness \(I(\mathbf{u}^*) = \int u(\mathbf{u}^*,t)^2 \mathrm{d}t\) 
       * Maps a discretisation \(\mathbf{u}^*\) to total control action required to stabilise it
       * Quantifies invasiveness of target \(\mathbf{u}^*\)
       * \(I(\mathbf{u}^*)=0\) \(\implies\) \(u^*\) is noninvasive, so natural system behaviour
+    * Solve for \(I(\mathrm{u}^*)=0\) on the local surrogate model
+      * Moves calculations out of experiment and onto computer, where they can be performed much faster
+      * No need for experimental Newton iterations, gradient descent, Jacobians, finite differences
     * Fit local model on `maximally informative' datapoints
       * Choose datapoints that maximise our certainty of the minima location
-    * Solve for \(I(\mathrm{u}^*)=0\) on the local surrogate model
-      * No need for experimental Newton iterations, gradient descent, Jacobians, finite differences \(\implies\) fast!
     * Experimentally test \(\mathbf{u}^*_i\) that solves \(I(\mathbf{u}^*)=0\), to ensure that's the noninvasive solution
      
 ** Proposed route
@@ -203,10 +210,10 @@ Initially, use PD control, IO map with Newton iterations
 \vfill
 /If PD doesn't work well/, develop the surrogate gradient descent method
       * Makes it truly control-strategy independent
-      * Extends CBC to systems that are harder to control with PD
+      * Extends fully-general CBC to systems that are harder to control with PD
 
 * Control-free continuation
-** An extravagant aside
+** An  aside
 Interesting aside: control-free continuation
 \vfill
     * Some systems are hard to control
@@ -295,18 +302,15 @@ Tl;rd;tl;dr:
 Slow signals:
 
 \vfill
-   * No high harmonics \(\implies\) Fourier discretisation works fine
-   * Fourier works fine \(\implies\) no need for a novel discretisation
-   * No high harmonics \(\implies\) low-pass filtering works fine
-   * Low-pass fitering \(\implies \) no need for a surrogate
+   * No high harmonics \(\implies\) Fourier discretisation works fine \(\implies\) no need for a novel discretisation
+   * No high harmonics \(\implies\) low-pass filtering works fine \(\implies \) no need for a surrogate
 
 \vfill
 No need for surrogates
 ** When are surrogates useful?
 Fast signals:
 \vfill
-   * Lots of high harmonics \(\implies\) Fourier discretisation doesn't work
-   * Fourier doesn't work \(\implies\) need a novel discretisation
+   * Lots of high harmonics \(\implies\) Fourier discretisation doesn't work \(\implies\) need a novel discretisation
    * Novel discretisation \(\implies\) no need for a surrogate as well
      
 \vfill
@@ -316,7 +320,8 @@ No need for surrogates
 Medium-speed signals:
 \vfill
       * Can be more efficiently discretised with splines than Fourier
-      * However, for harmonically forced systems, it's faster to use Fourier iterations than Newton iterations
+      * Harmonically forced systems: faster to use Fourier iterations than Newton
+	* Splines discretise more efficiently, but we still use Fourier
       * Enough HF harmonics that we wouldn't want to use LP filtering \(\implies\) we need a surrogate
 
 \vfill
@@ -325,8 +330,9 @@ This is surrogates usage case
 ** When are surrogates useful?
     * Better to use Fourier iterations than Newton iterations on harmonically forced systems
     * Surrogates are useful for Fourier iteration on faster signals
+    * Example usage: cleaning noise from a highly nonlinear forced Duffing
 
-\vfill      
+** When are surrogates useful?
 
       | Type        | Harmonically forced          | Unforced                              |
       |-------------+------------------------------+---------------------------------------|
@@ -349,14 +355,23 @@ The two new methods complement each other; one for Newton iter's, one for Fourie
     * Interesting aside 2: might be possible to run CBC without a controller?
 
 ** Next steps
-   1. Test splines generalisation ability
-      * Fit knots for signal at \(\lambda = \lambda_0\)
-      * See if those knots still work for \(\lambda = \lambda_i\), \(i>0\)
-      * If they do, splines will be able to predict new PO locations, and work for CBC
-   2. Write up results so far
+   1. Test splines generalisation, robustness
+   2. Write up results so far into a paper
    3. Demonstrate splines with CBC
 
+\vfill
+Alternative: skip step 1 altogether and jump in with CBC simulation
+
+** Generalisation and robustness [again]
+   * Generalisation
+     * Knots are fitted / work well for \(\lambda_0\); can the same knots model \(\lambda_1\), \(\lambda_2\), \dots, \(\lambda_i\)?
+     * (They need to for predicting the next PO in an iteration)
+\vfill
+   * Robustness
+     * Does it break down on stochastic systems? Eg. if data aren't fully periodic
+     * Do we need a human in the loop, to manually adjust anything?
+     
 ** Key dates
     * Bath maths ML conference, week of Aug.3rd - 7th
-    * Goal: conference paper writing, week of Aug. 10th - 14th
-    * Conference paper submission, September 11th
+    * Conference paper submission, September +11th+ 25th
+    * Goal: start conference paper writing mid-August
