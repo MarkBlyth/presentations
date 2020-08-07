@@ -1,0 +1,49 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Broken codes
+#+DATE: [2020-08-10 Mon]
+
+* Background
+** Week's work
+   * Redraft continuation review
+   * Run in-silico CBC with Fourier, splines
+     * Doesn't work
+     * Simplest case (Fourier, Duffing) doesn't work either
+* Pictures of code not working
+** No controller, no orthogonality constraint
+Code fits a discretisation to the uncontrolled system output; useful to test Newton convergence
+
+[[./nonorthogonal-controlfree.pdf]]
+
+** No controller, orthogonality constraint
+Code fits a discretisation to the uncontrolled system output, with psuedo-arclength regularisation; fails in the expected way
+
+[[./controlfree_continuation.pdf]]
+
+** Full control-based continuation
+   
+[[./failed_duffing.pdf]]
+
+** System inputs and outputs match properly
+
+[[./trial.pdf]]
+
+** Fitzhugh Nagumo control-based continuation
+
+[[./FH_CBC.pdf]]
+
+** Tests
+  * Reduced it to simplest possible code / maths
+  * Checked continuation system against the literature
+  * Checked controlled systems work properly
+  * Checked discretisations match signals properly
+  * Tried different RHS's (Duffing, Fitzhugh Nagumo, `weak' Fitzhugh Nagumo)
+  * Played with hyperparameters (control gains, step size)
+
+** Next steps
+   * House moving
+   * Start writing conference paper
+     * Figure out best coding approach based on that
