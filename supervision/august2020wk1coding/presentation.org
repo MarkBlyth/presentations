@@ -27,13 +27,25 @@ Code fits a discretisation to the uncontrolled system output, with psuedo-arclen
    
 [[./failed_duffing.pdf]]
 
+PD control. \(k_p=5,~k_d=1\)
+
+** Full control-based continuation
+   
+[[./p-only-failed_CBC.pdf]]
+
+P control. \(k_p=5,~k_d=0\)
+
 ** System inputs and outputs match properly
 
 [[./trial.pdf]]
 
-** Fitzhugh Nagumo control-based continuation
-
-[[./FH_CBC.pdf]]
+** Control setup
+   \[\begin{cases}
+      \dot{x} &= y \\
+      \dot{y} &= f(x,y) + u(t)
+     \end{cases}\]
+\vfill
+   \[u(t) = k_p(u^*(t) - x) + k_d(u'^{\ast}(t) - y)\]
 
 ** Tests
   * Reduced it to simplest possible code / maths
@@ -44,6 +56,6 @@ Code fits a discretisation to the uncontrolled system output, with psuedo-arclen
   * Played with hyperparameters (control gains, step size)
 
 ** Next steps
-   * House moving
    * Start writing conference paper
      * Figure out best coding approach based on that
+   * House moving

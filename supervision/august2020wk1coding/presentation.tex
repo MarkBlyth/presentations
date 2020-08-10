@@ -1,4 +1,4 @@
-% Created 2020-08-07 Fri 14:24
+% Created 2020-08-10 Mon 11:02
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:org1da686e}
-\begin{frame}[label={sec:org376d3dc}]{Week's work}
+\label{sec:orgf735b68}
+\begin{frame}[label={sec:orgda53278}]{Week's work}
 \begin{itemize}
 \item Redraft continuation review
 \item Run in-silico CBC with Fourier, splines
@@ -42,8 +42,8 @@
 \end{itemize}
 \end{frame}
 \section{Pictures of code not working}
-\label{sec:org6df7608}
-\begin{frame}[label={sec:org59dcc17}]{No controller, no orthogonality constraint}
+\label{sec:orge958f2c}
+\begin{frame}[label={sec:org9345845}]{No controller, no orthogonality constraint}
 Code fits a discretisation to the uncontrolled system output; useful to test Newton convergence
 
 \begin{center}
@@ -51,7 +51,7 @@ Code fits a discretisation to the uncontrolled system output; useful to test New
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgda4cf77}]{No controller, orthogonality constraint}
+\begin{frame}[label={sec:org3c171e0}]{No controller, orthogonality constraint}
 Code fits a discretisation to the uncontrolled system output, with psuedo-arclength regularisation; fails in the expected way
 
 \begin{center}
@@ -59,25 +59,38 @@ Code fits a discretisation to the uncontrolled system output, with psuedo-arclen
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgf24aef9}]{Full control-based continuation}
+\begin{frame}[label={sec:orgcd7a4e0}]{Full control-based continuation}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./failed_duffing.pdf}
 \end{center}
+
+PD control. \(k_p=5,~k_d=1\)
 \end{frame}
 
-\begin{frame}[label={sec:org13035e4}]{System inputs and outputs match properly}
+\begin{frame}[label={sec:org8feab02}]{Full control-based continuation}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./p-only-failed_CBC.pdf}
+\end{center}
+
+P control. \(k_p=5,~k_d=0\)
+\end{frame}
+
+\begin{frame}[label={sec:org02806d8}]{System inputs and outputs match properly}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./trial.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org6f81666}]{Fitzhugh Nagumo control-based continuation}
-\begin{center}
-\includegraphics[width=.9\linewidth]{./FH_CBC.pdf}
-\end{center}
+\begin{frame}[label={sec:orgb2f175c}]{Control setup}
+\[\begin{cases}
+      \dot{x} &= y \\
+      \dot{y} &= f(x,y) + u(t)
+     \end{cases}\]
+\vfill
+\[u(t) = k_p(u^*(t) - x) + k_d(u'^{\ast}(t) - y)\]
 \end{frame}
 
-\begin{frame}[label={sec:org0d15fef}]{Tests}
+\begin{frame}[label={sec:orgceb85a9}]{Tests}
 \begin{itemize}
 \item Reduced it to simplest possible code / maths
 \item Checked continuation system against the literature
@@ -88,13 +101,13 @@ Code fits a discretisation to the uncontrolled system output, with psuedo-arclen
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org50e72e9}]{Next steps}
+\begin{frame}[label={sec:org6f9a341}]{Next steps}
 \begin{itemize}
-\item House moving
 \item Start writing conference paper
 \begin{itemize}
 \item Figure out best coding approach based on that
 \end{itemize}
+\item House moving
 \end{itemize}
 \end{frame}
 \end{document}
