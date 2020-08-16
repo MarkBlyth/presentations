@@ -1,0 +1,124 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Paper + some CBC results
+#+DATE:
+
+* Background
+** Week's goal
+   * Play with in-silico CBC
+   * Write conference paper
+* CBC
+** Fourier, Duffing
+
+[[./success.png]]
+
+** XPP Fitzhugh-Nagumo
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+[[./fh_bifurcation.png]]
+
+** Modified Fitzhugh-Nagumo model
+*** Original                                                          :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+     
+**** Original :B_block:
+     :PROPERTIES:
+     :BEAMER_env: block
+     :END:
+\begin{align}
+\dot{v} &= v - v^3/3 - w + I\\
+\dot{w} &= 0.08(v + 0.7 - 0.8w)
+\end{align}
+    
+*** New                                                               :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+**** New :B_block:
+     :PROPERTIES:
+     :BEAMER_env: block
+     :END:
+\begin{align}
+\dot{v} &= v - v^3/3 - w + I\\
+\dot{w} &= 0.8(v + 0.7 - 0.8w)
+\end{align}
+
+*** ENDBLOCK :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+    
+\vfill
+    
+    * Changed timescale separation
+    * `Widens out' Canard explosion
+    * Makes signal less nonlinear, more readily described with Fourier
+
+** XPP modified
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./modified_FH_bifurcation.png]]
+
+** Modified Fitzhugh-Nagumo CBC
+
+[[./simplified_FH_CBC_2.pdf]]
+
+
+** Modified Fitzhugh-Nagumo CBC
+
+[[./simplified_FH_CBC_zoom.pdf]]
+
+** CBC progress
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+DONE:
+  * IO-map method for (harmonically forced) Duffing, Fourier discretisation
+    * No phase constraint; signal period taken from forcing parameter
+  * IO-map method for modified Fitzhugh-Nagumo model, Fourier discretisation
+    * Phase constraint; signal period treated as continuation parameter
+
+\vfill
+TODOs:
+  * CBC with splines discretisation
+  * CBC using the `other' (non-IO-map) method
+  * CBC on the equilibrium
+
+* Paper
+** Conference paper
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+Currently drafted:
+    * Intro
+    * Maths behind CBC, plus motivation of discretisation
+    * Novel discretisation methods
+\vfill
+TODOs:
+    * Surrogate models as adaptive filters for cleaner Fourier discretisation
+    * Usage cases of surrogates, novel discretisors
+      * Might merge with conclusion or intro
+    * Conclusion
+    * Figures
+    * Proof-reading / editing / re-drafting
+* Next steps
+** Next steps
+   1. Write paper
+      * Goal: finish text by Friday
+   2. Generate figs for paper
+      * Splines vs. Fourier: goodness-of-fit vs. dimensionality of discretisation
+      * Splines vs. Fourier: noise-robustness
+      * Plus any figs for the surrogates section
+   3. Proof read, re-draft, edit paper
+   4. Implement a splines-based CBC
+      * Not essential, but paper would benefit from saying we've done it
+      * Best to get a completed paper first, then start on this
