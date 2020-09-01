@@ -1,0 +1,206 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Stuff going wrong
+#+DATE:[2020-08-31 Mon]
+
+#+BEGIN_COMMENT
+  * Plots seem to suggest that splines fails because of the solver going haywire
+  * Could probably fix that by doing a surrogate solver; fit some model to map input to output, and find solution from the model
+  * Hard to debug the splines failures, since they're implemented in FITPACK and the resulting error messages are meaningless
+#+END_COMMENT
+
+
+* Background
+** Week's work
+   * Finished draft of conference paper
+     * Too long
+\vfill
+   * Worked on splines in CBC
+     * Doesn't work
+\vfill
+   * Started re-writing conference paper
+     * No splines discretisation
+     * Struggling to motivate why the work is valuable
+       
+* Paper
+** Paper
+    * Abstract focuses on cleaning noise from signals with surrogate modelling
+    * Paper draft 1 covers surrogate filtering, and splines discretisation
+\vfill      
+Issues:
+    * Paper is too long
+      * 17 pages, instead of 10
+      * Could trim it, but can't trim 7 pages out without removing key content
+    * Splines doesn't work
+      * I don't want to publish about splines until I know they do what I claim
+    * Don't have enough time to both trim paper, and fix splines
+      
+** Proposed plan
+    * Remove discretisation from paper
+      * Make paper all about cleaning signals up with surrogates, as discussed in abstract
+      * Most realistic goal for getting paper done by deadline
+      * Issue: I'm not convinced surrogates are very useful
+
+\vfill
+    * Try to get splines to work
+      * Write separate conference paper on splines discretisation?
+      * Will have the time to demonstrate the method working
+
+* Splines
+** Splines in CBC
+    * Took working Fourier/Duffing, substituted Fourier for splines
+      * Doesn't work
+\vfill
+    * IO-Map method
+      * IO-map maps control-target to system output
+      * Fixed-point of IO-map means control target = system output
+      * Proportional control means fixed-points are noninvasive
+\vfill
+    * Continuation procedure solves for input = output
+	
+** Step 1
+   
+[[./step1.pdf]]
+** Step 2
+[[./step2.pdf]]
+** Step 3
+[[./step3.pdf]]
+** Step 4
+[[./step4.pdf]]
+** Step 5
+[[./step5.pdf]]
+** Step 6
+[[./step6.pdf]]
+** Step 7
+[[./step7.pdf]]
+** Step 8
+[[./step8.pdf]]
+** Step 9
+[[./step9.pdf]]
+** Step 10
+[[./step10.pdf]]
+
+** Setup
+   * \(K_p=1\)
+     * Worked for Fourier/Duffing
+     * Increasing causes CBC to fail faster
+   * Solver = Levenberg-Marquardt algo
+     * Most numerically stable; others fail within one or two steps
+   * Evenly-spaced knots
+     * Optimized knots fail even faster
+   * 10 knots
+     * No change using more / fewer knots
+   * Default solver tolerance
+     * Lower = faster failure
+       
+No idea why things aren't working
+
+* Surrogates
+** Surrogates paper
+    * Using few Fourier harmonics doesn't fit `difficult' signals
+\vfill
+    * Using many Fourier harmonics doesn't average out noise
+\vfill
+    * Surrogates can be used to filter out noise, for better discretisation
+      * No phase shift or signal distortion
+
+** COMMENT Surrogates motivation
+    * The Barton2013Systematic CBC method is easier than the IO-map, for forced systems
+      * Iterates on the Fourier discretisation
+\vfill
+    * Use surrogates and Fourier for noisy signals, where we want to use the simpler CBC method
+\vfill
+    * Surrogate modelling (adaptive filtering) allows us to combine the noise-robustness of splines, and simplicity of Fourier methods
+
+** Surrogates
+Direct Fourier; too few harmonics to fully fit the signal
+
+[[./needs_more.pdf]]
+
+** Surrogates
+Direct Fourier; enough harmonics to fit the signal, but also noise
+
+#+begin_comment
+./model_tester.py -e 1600 -d vdP -m fourier  -t 100 -r 1e-9 -a 1e-9 -F 10 -n 0.1 -P 11.6 -T 1600
+#+end_comment
+
+[[./fits_noise.pdf]]
+
+#+begin_comment
+./model_tester.py -e 1600 -d vdP -m fourier  -t 100 -r 1e-9 -a 1e-9 -F 100 -n 0.1 -P 11.6 -T 1600
+#+end_comment
+
+** Surrogates
+Splines surrogate model; noise is removed, so Fourier can be fitted accurately
+
+[[./barsd.pdf]]
+** Choosing number of harmonics
+Idea: quantify model noisiness by a curvature measure
+\vfill
+
+  * \(c_i = h^{-2}(x_{i-1} - 2x_i + x_{i+1})\)
+    * Finite differences pointwise-curvature approximation
+\vfill
+  * Majority of curvatures /should/ be small
+    * Median pointwise-curvature is a good statistic for model noisiness
+\vfill
+  * How do curvature, error change with number of harmonics?
+    * Low curvature, high MSPE = too few harmonics
+    * High curvature, low MSPE = too many harmonics
+    * Optimal harmonics = low curvature, low MSPE
+    
+** Finding the sweetspot
+
+[[./sweetspot1.pdf]]
+
+** Good enough?
+[[./fourier_sweetspot.pdf]]
+
+** COMMENT Interpretation
+  * More harmonics = more noise in the model
+    * Model becomes more `flexible', can overfit to noise
+\vfill
+  * More harmonics = better fit initially, then worse after
+    * Trade-off between goodness-of-fit, and flexibility for modelling noise
+\vfill
+  * How good is the fit at the sweetspot?
+    
+** Issues
+
+  * Surrogates do clean up the signal, but is the improvement really enough to be worthwhile?
+    * *According to MSPE, surrogates and Fourier perform equally well*
+\vfill
+  * Is anyone really going to harmonically force a multiple-timescale system?
+    * Fourier filters effectively when there's few harmonics, so surrogate filtering becomes unnecessary
+    * Surrogate filtering appears to be useful when we have many harmonics, but in these cases we'd use a more efficient discretisation
+    * The splines discretisors are noise-robust, so surrogates become unnecessary
+      
+** Are surrogates worth publishing?
+
+   * Fixes a problem that doesn't really exist
+     * Not useful for few-harmonics-signals, as Fourier filters noise out
+     * Not useful for many-harmonics-signals, as we would do better using a novel discretisation
+\vfill
+   * Even when surrogates do work, the resulting improvement is minimal
+\vfill
+   * Hard to write about surrogates being useful when prediction errors are worse than raw Fourier
+     * Hard to quantitatively demonstrate that surrogates do anything
+      
+#+begin_comment
+MENTION THAT WHILE IT COULD BE PUBLISHED, I THINK IT WOULD BE UNSCIENTIFIC AS IT WOULD NEED HUGELY OVER-HYPING.
+TIME WOULD BE BETTER-SPENT WORKING ON DISCRETISATION.
+REAAAALLY DON'T THINK I COULD GIVE A 20 MINUTE PRESENTATION ON IT AT THE CONFERENCE WITHOUT JUST LOOKING STUPID.
+#+end_comment
+
+* Next steps
+** Next steps
+   * Keep (re)writing conference paper?
+     * My opinion: cancel it, spend the time on discretisation
+\vfill
+   * Keep working on splines, once paper is done
+     * Try to understand and fix their lack of numerical stability
+     * Demonstrate on /in silico/ CBC
+       * IO map method and `other' method
