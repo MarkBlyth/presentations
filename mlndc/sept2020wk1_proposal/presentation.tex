@@ -1,0 +1,177 @@
+% Created 2020-09-07 Mon 15:36
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\date{\textit{[2020-09-07 Mon]}}
+\title{Proposal on machine learning via DS}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={Proposal on machine learning via DS},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Intro}
+\label{sec:org85e9ae1}
+\begin{frame}[label={sec:org46b4937}]{What and why?}
+\begin{itemize}
+\item ML is `fancy' model fitting
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item ODE solutions could be a rich source of models to fit
+\end{itemize}
+\end{frame}
+
+\section{Formulation}
+\label{sec:org0773ed5}
+\begin{frame}[<+->][label={sec:org37c23ae}]{Section 1: formulation}
+\begin{itemize}
+\item Let \(z(T,x)\) be a solution to an ODE, evaluated at time \(T\), initial condition \(x\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item \(\frac{\mathrm{d}z}{\mathrm{d}t} = f(A(t), z),~~z(0)=x\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item \(u(x) = \mathbf{a}\cdot \mathbf{z} + b\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item \(\mathrm{argmin}_{\mathbf{a},b,A} \sum(y_i - u(x_i))^2\)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org43bb638}]{Finding a controller}
+\begin{itemize}
+\item \(\mathrm{performance} = \int \mathrm{error}^2 \mathrm{d}\mu(x)\)
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item \(\frac{\mathrm{d~performance}}{\mathrm{d}A} = \int \frac{\mathrm{d~error}^2}{\mathrm{d}A} \mathrm{d}\mu(x)\)
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item \(\frac{\mathrm{d~perturbation}}{\mathrm{d}\tau} = J_z \mathrm{perturbation}\)
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item \(\frac{\mathrm{d~output}}{\mathrm{d}A} = \mathrm{perturbation}(T)\)
+\end{itemize}
+\end{frame}
+
+\section{DNN Connection}
+\label{sec:org7298f63}
+\begin{frame}[label={sec:orgb86db5e}]{Connection to deep NNs}
+\begin{itemize}
+\item Deep NNs are a dynamical system that can change dimension
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Continuous NNs cannot change dimensions
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Continuous NNs can overcome issues with training deep NNs
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgb21df23}]{Connection to deep resnets}
+\begin{itemize}
+\item Residual neural networks overcome vanishing gradients by selectively omitting layers
+\end{itemize}
+\vfill
+\begin{itemize}
+\item The dynamical systems viewpoint explains why this should help training
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Resnets learn an Euler-discretisation of an ODE
+\end{itemize}
+\end{frame}
+\section{Representability and controllability}
+\label{sec:orgc89a5d0}
+\begin{frame}[label={sec:org9b3d5bf}]{Representability and controllability}
+\begin{itemize}
+\item We need to be sure that the flow map can process data as desired
+\end{itemize}
+\vfill
+\begin{itemize}
+\item This is a problem of controllability
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Idealised problem: can the flow-map model arbitrary mappings on the data?
+\end{itemize}
+\end{frame}
+
+\section{Extensions}
+\label{sec:orgac5e824}
+\begin{frame}[label={sec:orgf79dd24}]{Continuum in space}
+\begin{itemize}
+\item PDE models are useful when we have spatially structured data
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Using a convolutional kernel gives CNN-like behaviours
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[label={sec:orgce2b76e}]{Constraints, structure, and regularisation}
+\begin{itemize}
+\item We could add constraints to the system
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We could add structure to the ODEs
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We could add regularisation terms
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[label={sec:orgdcfaac9}]{Clustering and density estimation}
+\begin{itemize}
+\item A clustering model is presented
+\begin{itemize}
+\item Not quite sure how it relates to the rest of the paper?
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Density estimation can also be performed with the flow-map framework
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgbb47720}]{Paper suggestion}
+Raissi, Maziar, Paris Perdikaris, and George E. Karniadakis. "Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations." Journal of Computational Physics 378 (2019): 686-707.
+\vfill
+
+Any volunteers?
+\end{frame}
+\end{document}

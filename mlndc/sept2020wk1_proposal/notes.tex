@@ -1,0 +1,226 @@
+% Created 2020-09-07 Mon 14:08
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\author{Mark Blyth}
+\date{\textit{[2020-09-07 Mon]}}
+\title{NOTES, DON'T PRESENT THESE!}
+\hypersetup{
+ pdfauthor={Mark Blyth},
+ pdftitle={NOTES, DON'T PRESENT THESE!},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Intro}
+\label{sec:org9b8dde5}
+\begin{frame}[label={sec:org03b74d9},plain]{What and why?}
+\begin{itemize}
+\item ML is `fancy' model fitting
+\begin{itemize}
+\item We seek some model that we can use to assign meaningful output values
+\item Goal is to create functions that are general enough to fit to any data
+\end{itemize}
+
+\item ODE solutions could be a rich source of models to fit
+\begin{itemize}
+\item Timesteps in the ODE solution are like layers in an NN
+\item Adaptive ODE solvers would allow us to propagate info through the NN, while guarding error
+\item Lots of research on ODEs already, so we have a good basis for existence, uniqueness, etc.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Formulation}
+\label{sec:orgaaa8066}
+\begin{frame}[label={sec:orgf31cd99},plain]{Section 1: forumation}
+\begin{itemize}
+\item Let \(z(T,x)\) be a solution to an ODE, evaluated at time \(T\), initial condition \(x\)
+\begin{itemize}
+\item Can be found easily, by numerically integrating the chosen ODE
+\item Even simple nonlinear ODEs can have very complex solutions
+\item Typically, can't be expressed in terms of elementary basis functions
+\item Derivative operator can therefore be thought of as an easy way to get `richness' out of simple functions
+\item This richness might be rich enough to let us do ML
+\item \alert{How can we `tune' our ODE so that \(z\) is in some way useful?}
+\end{itemize}
+\item \(\frac{\mathrm{d}z}{\mathrm{d}t} = f(A(t), z),~~z(0)=x\)
+\begin{itemize}
+\item Add some controller \(A(t)\) to make the solution do something useful
+\end{itemize}
+\item \(u(x) = \mathbf{a}\cdot\mathbf{z} + b\)
+\begin{itemize}
+\item Define a scalar OBSERVATION from the flow map
+\end{itemize}
+\item \(\mathrm{argmin}_{\mathbf{a},b,A} \sum(y_i - u(x_i))^2\)
+\begin{itemize}
+\item Training is then the observations and controllers that minimise the square-error
+\item This is an optimal control problem!
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org7a5984c},plain]{Finding a controller}
+\begin{itemize}
+\item \(\mathrm{performance} = \int \mathrm{error}^2 \mathrm{d}\mu(x)\)
+\begin{itemize}
+\item Start off with an error metric, given by the integral over all possible errors, weighted by some probability measure
+\end{itemize}
+
+\item \(\frac{\mathrm{d~performance}}{\mathrm{d}A} = \int \frac{\mathrm{d~error}}{\mathrm{d}A} \mathrm{d}\mu(x)\)
+\begin{itemize}
+\item Chain-rule to find the gradient of the performance w.r.t. controller
+\end{itemize}
+
+\item \(\frac{\mathrm{d~perturbation}}{\mathrm{d}\tau} = J_z \mathrm{perturbation}\)
+\begin{itemize}
+\item We linearise about some small (controller-induced) perturbation, to get the linear variational equations for the perturbation dynamics
+\end{itemize}
+
+\item \(\frac{\mathrm{d~output}}{\mathrm{d}A} = \mathrm{perturbation}(T)\)
+\begin{itemize}
+\item Effect of some small controller perturbation is approximated by the leading-order perturbation size at the end of the flow-map time
+\end{itemize}
+
+\item \alert{We can then use gradient descent or something to optimize the controller, so that the flow map is useful to our ML problem}
+\end{itemize}
+\end{frame}
+
+\section{DNN Connection}
+\label{sec:org7a14b58}
+\begin{frame}[label={sec:org021928d},plain]{Connection to DNN}
+\begin{itemize}
+\item Deep NNs are a dynamical system that can change dimension
+\begin{itemize}
+\item Each `layer' (function / neuron output) feeds into the next (function / neuron input)
+\item Input gets linearly transformed, then a component-wise nonlinearity is applied
+\item Dynamical system!
+\item Can change the dimensionality by using non-square linear transforms
+\end{itemize}
+
+\item Continuous NNs cannot change dimensions
+\begin{itemize}
+\item Doesn't make physical sense for the dimension of an ODE flow to change as a function of time
+\item We must either project into a higher-dimensional space at the start of the flow map, at the end, or not at all
+\item At the end doesn't really make sense since we're already projecting down onto feature space; nothing to gain by an additional projection
+\end{itemize}
+
+\item Continuous NNs can overcome issues with training deep NNs
+\begin{itemize}
+\item Training DNN is hard, as gradients can explode or vanish, causing gradient descent to stop working
+\item Imposing structure on the ODEs, such as Hamiltonian structure, could help ensure gradients remain `useful', and overcome these issues
+\item We can use existing numerial methods, like adaptive timestepping solvers, to solve for long time-horizons, necessary when `lots of computation' is needed to separate the inputs
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[label={sec:orgea73078},plain]{Connection to resnets}
+\begin{itemize}
+\item Residual neural networks overcome vanishing gradients by selectively omitting layers
+\begin{itemize}
+\item Neuron values are small, so gradients end up being the product of lots of small numbers, and quickly vanish to zero as we add more layers
+\item Residual neural networks selectively learn to skip layers, which reduces the vanishing gradient problem; this is effectively like the NN adaptively learning its own architecture, and therefore has a lot in common with ODE solvers adaptively choosing step sizes
+\end{itemize}
+
+\item The dynamical systems viewpoint explains why this should help training
+\begin{itemize}
+\item Not particularly interesting from our perspective; basically the NN learns to identity-map some layers, which DS perspective shows would make sense
+\end{itemize}
+
+\item Resnets learn an Euler-discretisation of an ODE
+\begin{itemize}
+\item The learned identity maps mean that output = input + perturbation
+\item This is equivalent to solving an ODE with the forward Euler method
+\item Adaptively choosing the stepsize, as ODE solvers tend to do, is equivalent to adaptively changing the layers to minimise output error
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Representability and controllability}
+\label{sec:org223349d}
+\begin{frame}[label={sec:orgc03b0ea},plain]{Representability and controllability}
+\begin{itemize}
+\item We need to be sure that the flow map can process data as desired
+\begin{itemize}
+\item Need to be sure that, given some flow map and some training data, we are able to find a suitable control strategy that'll let us do something useful (classification, regression) with the data
+\end{itemize}
+
+\item This is a problem of controllability
+\begin{itemize}
+\item Controllability: given some initial condition and some target, can we drive the system to a target neighbourhood in finite time?
+\item ML version: we apply some post-processing step to the flow map output, eg. linear regression. Given this final (supervised) learning model, can we control the flowmap to provide satisfactory accuracy on this learning model?
+\end{itemize}
+
+\item Idealised problem: can the flow-map model arbitrary mappings on the data?
+\begin{itemize}
+\item Defines a multiplicative control (not particularly clear why they would do this), and shows that the control should be state-independent; this hugely limits the predictive power
+\item Slightly contrived, but nicely demonstrates that exact representation is hard. Instead, we should ask how well can we approximate.
+\end{itemize}
+
+\item What happens if we use a kernel method?
+\begin{itemize}
+\item `Boost' dimensionality, so that the system has more DoF
+\item If we can smoothly transform our target map map to the identity map (no longer arbitrary!), then we can find an ODE whose flow-map can model the target map; the system is `controllable'
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Extensions}
+\label{sec:org3ce856d}
+\begin{frame}[label={sec:org15cb75b},plain]{Continuum in space}
+\begin{itemize}
+\item PDE models are useful when we have spatially structured data
+\begin{itemize}
+\item Images have a spatial structure, audio can be translated into a spectrogram for easier processing, which produces a 2d image
+\item We can model this structure with PDEs
+\item Actually though, that's not necessarily a good model; we want non-local dependence, eg. we want to extract information from, say, edges or curves, rather than purely locally
+\end{itemize}
+
+\item Using a convolutional kernel gives CNN-like behaviours
+\begin{itemize}
+\item We can model non-local dependence using the convolutional kernel
+\item In this case the spatial models start to act like convolutional neural networks again
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org15274f6},plain]{Constraints, structure, and regularisation}
+\begin{itemize}
+\item We can add constraints to the system
+\begin{itemize}
+\item Eg. have an orthogonal control matrix
+\item No explanation as to why we would want to or what this would achieve
+\end{itemize}
+
+\item We could add structure
+\begin{itemize}
+\item Already discussed; could use Hamiltonian structure to help prevent vanishing gradients
+\end{itemize}
+
+\item We could add regularisation terms
+\begin{itemize}
+\item Could limit the total control action, or some norm thereof
+\item No explanation as to why this would be useful or interesting
+\item Presumably since it's a numerical system, there's no penalty for having large control energy
+\end{itemize}
+\end{itemize}
+\end{frame}
+\end{document}

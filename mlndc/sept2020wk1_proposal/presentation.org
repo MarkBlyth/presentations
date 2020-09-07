@@ -1,0 +1,90 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR:
+#+TITLE: Proposal on machine learning via DS
+#+DATE: [2020-09-07 Mon]
+
+* Intro
+** What and why?
+   * ML is `fancy' model fitting
+     
+\vfill
+   * ODE solutions could be a rich source of models to fit
+
+* Formulation
+** Section 1: formulation
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   * Let \(z(T,x)\) be a solution to an ODE, evaluated at time \(T\), initial condition \(x\)
+\vfill
+   * \(\frac{\mathrm{d}z}{\mathrm{d}t} = f(A(t), z),~~z(0)=x\)
+\vfill
+   * \(u(x) = \mathbf{a}\cdot \mathbf{z} + b\)
+\vfill
+   * \(\mathrm{argmin}_{\mathbf{a},b,A} \sum(y_i - u(x_i))^2\)
+     
+** Finding a controller
+
+   * \(\mathrm{performance} = \int \mathrm{error}^2 \mathrm{d}\mu(x)\)
+
+\vfill
+   * \(\frac{\mathrm{d~performance}}{\mathrm{d}A} = \int \frac{\mathrm{d~error}^2}{\mathrm{d}A} \mathrm{d}\mu(x)\)
+
+\vfill
+   * \(\frac{\mathrm{d~perturbation}}{\mathrm{d}\tau} = J_z \mathrm{perturbation}\)
+
+\vfill
+   * \(\frac{\mathrm{d~output}}{\mathrm{d}A} = \mathrm{perturbation}(T)\)
+
+* DNN Connection
+** Connection to deep NNs
+
+    * Deep NNs are a dynamical system that can change dimension
+\vfill
+    * Continuous NNs cannot change dimensions
+\vfill
+    * Continuous NNs can overcome issues with training deep NNs
+      
+** Connection to deep resnets
+   * Residual neural networks overcome vanishing gradients by selectively omitting layers
+\vfill
+   * The dynamical systems viewpoint explains why this should help training
+\vfill
+   * Resnets learn an Euler-discretisation of an ODE
+* Representability and controllability
+** Representability and controllability
+   * We need to be sure that the flow map can process data as desired
+\vfill
+   * This is a problem of controllability
+\vfill
+   * Idealised problem: can the flow-map model arbitrary mappings on the data?
+
+* Extensions
+** Continuum in space
+   * PDE models are useful when we have spatially structured data
+\vfill
+   * Using a convolutional kernel gives CNN-like behaviours
+
+     
+** Constraints, structure, and regularisation
+   * We could add constraints to the system
+\vfill
+   * We could add structure to the ODEs
+\vfill
+   * We could add regularisation terms
+
+
+** Clustering and density estimation
+   * A clustering model is presented
+     * Not quite sure how it relates to the rest of the paper?
+\vfill
+   * Density estimation can also be performed with the flow-map framework
+   
+** Paper suggestion
+Raissi, Maziar, Paris Perdikaris, and George E. Karniadakis. "Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations." Journal of Computational Physics 378 (2019): 686-707.
+\vfill
+
+Any volunteers?
