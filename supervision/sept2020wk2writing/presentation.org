@@ -1,0 +1,41 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Writing
+#+DATE: [2020-09-14 Mon]
+
+* Background
+** Week's activities
+   * Built extra figs for conference paper
+   * Started writing up a more in-depth version
+   * Kept working on CBC code
+   * Nodycon abstract back from review
+
+     
+* Work
+** Abstract
+    * Abstract back from review again
+      \vfill
+    * Minor comments on formatting
+      \vfill
+    * Possible to change title?
+      * Add `Bayesian' into it
+	
+** In-depth paper
+    * Started work on an in-depth writeup
+      \vfill
+    * Plan covers most of the last year's work; write up in thesis format?
+      * Proposal: 3 days research, 2 days writing
+
+** Splines discretisor	
+    * Kept working on splines discretisation as an aside
+    * So far so good
+
+* Next steps
+** Next steps
+   1. Edit and resubmit abstract
+   2. Edit conference paper
+   3. Work on new discretisors CBC simulation
+   4. Write in-depth writeup
