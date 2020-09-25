@@ -1,0 +1,108 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Simulations and manuscripts
+#+DATE: [2020-09-25 Fri]
+
+* Background
+** Week's activities
+   * Lead-TAing setup
+\vfill
+   * Digital teaching course
+\vfill
+   * NODYCON paper
+\vfill
+   * Splines experiments
+     
+* Splines
+** Last time...
+   
+[[./perturbation.pdf]]
+	
+** Splines problems
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+
+    * Finite differences doesn't play nicely with splines
+    * Conjecture: smooth changes in the discretisation cause non-smooth changes in the model
+      * Non-smooth map from perturbation to model somehow causes problems
+\vfill
+    * Spline model somehow ceases to be valid
+      * Probable cause: data exists where knots don't, or knots exist where data don't
+      * Can't understand why either would happen
+      * Code errors aren't helpful
+	
+** Fixing splines
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * Possible solution: fiddle with finite differences step size
+      * Still doesn't work
+      * Spline model error occurs within the first Newton iteration
+\vfill
+    * Another idea: use evenly-spaced knots, instead of an optimized knot set
+      * Choice of exterior knots becomes difficult
+      * More chance to cover entire data range with knots, to avoid invalid spline models
+      * Some success
+	
+** Evenly spaced knots, small finite-differences
+
+[[./spline_fail.pdf]]
+
+Looks bad, but no issues from invalid splines models
+
+** Evenly spaced knots, larger finite-differences
+
+[[./spline_fail_larger_finite_differences.pdf]]
+
+Looks bad, but no issues from invalid splines models
+
+** Hyperparameter choice
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+I don't really understand what's going wrong in those plots
+\vfill
+    * Played with...
+      * Number of knots
+      * Evenly spaced vs. optimized knot positions
+      * Newton iteration convergence tolerance
+      * Pseudo-arclength stepsize
+      * Finite differences perturbation size
+\vfill
+    * Never managed anything better than those plots
+\vfill
+    * No understanding of why any given intervention has the effect it does
+\vfill
+    * Finicky hyperparameters make the method impractical even if it did work
+      
+** Saving the splines approach
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+    * Try interpolating splines instead of basis splines
+      * Choose a set of points
+      * Connect those points with polynomials
+      * Choose polynomial coeff's for smoothness, periodicity
+\vfill
+    * Discretisation becomes knot point \((x,y)\) values
+      * Or, set the \(x\) values of the knots, and let discretisation be the \(y\) values
+      * Interesting aside: polynomial coeff's would also be a discretisation, but an inefficient one due to lots of redundancy; can we choose a discretisation to minimise redundant information? IO map unit eigenfunction?
+\vfill
+    * Result: smooth changes in the knot points cause smooth changes in the model
+      * Should make finite differences more robust
+      * Also easier to understand, more explainable: no mysterious choice of exterior knots; more intuition about how discretisation changes the model
+
+* Next steps
+** Next steps
+   * Try interpolating splines discretisation
+     * Start with simplest-possible (ie. non-Bayesian) approach, see what happens
+\vfill
+   * Edit continuation paper
+\vfill
+   * Write up extended conference paper
+\vfill
+   * Choose paper and make slides for lab group meeting
