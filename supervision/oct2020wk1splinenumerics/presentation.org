@@ -1,0 +1,231 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Investigating spline numerics
+#+DATE: [2020-10-12 Mon]
+
+* Background
+** Week's goals
+   * Fix splines CBC code
+     * Done for the non-adaptive case
+\vfill
+   * Investigate whether the code now works
+     * It doesn't
+\vfill
+   * Writing (continuation paper, extended conference paper)
+     * Happening slowly
+       
+* CBC code
+** CBC code issues
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+   1. Results displayed incorrectly
+      * Duffing output amplitude was being calculated incorrectly
+      * Fixed now!
+   2. Exterior knot computation was hacky
+      * Exterior knots are necessary to fit data at endpoints; I was letting SciPy recalculate them each time
+      * Implemented my own exterior knot calculation method
+      * Issue: SciPy gives different results when used in different ways; most robust method seems to combine my exterior knots and SciPy exterior knots
+   3. Adaptive knots might not be used correctly
+      * Definitely were correct in the original script
+      * Might not be in the rewrite
+      * Haven't checked this; avoiding the adaptive knots method for now
+	
+* Plots
+** Fixed plotting
+
+   [[./stepsize0d1_dsize3_fdss0d2_fixed_plotting.pdf]]
+
+Stepsize 0.1; 3 interior knots; FDSS 0.2
+
+** Fixed plotting: zoomed in
+
+   [[./stepsize0d1_dsize3_fdss0d2_fixed_plotting_ZOOM.pdf]]
+
+Bigger stepsize?
+
+** Fixed plotting, bigger steps
+
+   [[./stepsize1_dsize3_fdss_0d2_fixed_plotting.pdf]]
+   
+Stepsize 1; 3 interior knots; FDSS 0.2; better, but solution jumps; let's change exterior knots
+
+** New exterior knots
+
+   [[./stepsize1_dsize3_fdss_0d5_fixed_plotting_new_exterior_knots.pdf]]
+
+Stepsize 1; 3 interior knots; FDSS 0.5; fixed exterior knots; *converged vectors are often not actually solutions*
+
+** New convergence criteria
+
+   [[./stepsize1_dsize3_fdss_0d5_fixed_plotting_new_exterior_knots_5e-2solution_norm.pdf]]
+   
+Same hyperparameters as before; convergence declared when continuation equation output has a norm below 5e-2
+
+
+** New convergence criteria
+
+   [[./stepsize1_dsize3_fdss_0d5_fixed_plotting_new_exterior_knots_5e-2solution_norm_ZOOM.pdf]]
+
+Zoom in to before the jump; more knots might make the results better
+
+** Old convergence criteria, but more knots
+   
+[[./stepsize1_dsize8_fdss0d5_fixed_plotting_new_exterior_knots.pdf]]
+
+Stepsize 1; 8 interior knots; FDSS 0.5; solution still jumps!
+
+** Best I could get
+
+[[./stepsize1_dsize3_fdss_0d2_fixed_plotting_new_exterior_knots.pdf]]
+
+`Simple' convergence criteria; stepsize 1; 3 interior knots; FDSS 0.2
+
+* Issues
+** Issues
+   * Hyperparameters are very hard to select
+     * Lots of trial and error to get even remotely close to the real results
+\vfill
+   * Solution usually jumps near the second fold
+     * Pseudo-arclength condition is met, so the equations are fine
+     * Solution is often not actually a solution!
+     * Either the solver is broken, or the full system is misbehaving
+       
+** Non-solutions
+   * We're solving for \(F(x_\omega) = 0\)
+     * Newton iterations: declare convergence when \(\|x^i_\omega - x^{i-1}_\omega\| < tol\)
+     * Issue: converged \(x_\omega\) typically does not solve \(F(x_\omega)=0\)
+     * Alternative: converge when \(\|F(x_\omega)\| < tol\)
+     * Even for \(tol\in\mathcal{O}(10^{-3})\), we never converge
+     * Solution vector components jump around, rather than converging; unexpected for Newton solvers
+\vfill
+   * Either solver is problematic, or equations are
+     * Using a Newton solver; simple code, tried and tested in the Fourier case
+     * Finite differences are meaningful: \(\mathcal{O}(0.1)\) perturbations to \(\mathcal{O}(1)\) coefficients
+     * If the solver and equations are correct, perhaps the equations are simply unsuitable?
+
+** Existence and uniqueness
+
+Does a solution to \(F(x_\omega)=0\) actually exist?
+   * Continuous case:
+     * A natural periodic orbit of the system exists
+     * This natural periodic orbit necessarily gives noninvasive control
+     * Noninvasive control means \(F(x_\omega) = 0\), so solutions must exist
+   * Discretised case:
+     * We can exactly represent the continuous problem as an infinite-dimensional Fourier problem
+     * As the continuous solution exists, so too must the infinite-dimensional discretised problem
+     * Due to how the Fourier errors decay, we can be sure that finite-dimensional Fourier discretisation produces a solvable continuation system
+     * *We don't get this guarantee with splines*
+       
+** Approximate solutions
+
+Does a splines solution exist? When? Thought experiment:
+   * Run the system uncontrolled
+   * Discretise the output
+   * Use the discretised output as a control target
+\vfill
+Imperfect discretisation: control target \(\neq\) `natural' oscillations
+   * Control becomes invasive
+   * Control target is not a solution to the continuation equations 
+     * Even though it was obtained from an exact solution, it is not actually a solution; discretisation error stops the natural system behaviour from being a solution
+\vfill
+*Discretisation error must be negligable for the standard CBC zero problem to become solvable*
+
+** Key result
+    * If we have no discretisation error, solution exists to continuation equations
+\vfill
+    * If we have discretisation error, solution might not exist
+\vfill
+    * This explains why Fourier works, splines don't
+      * No discretisation error for infinite Fourier
+      * Can achieve negligable discretisation error for truncated Fourier
+      * Harder to remove spline discretisation error
+\vfill
+How accurate are splines?
+
+** Spline discretisation error
+
+[[./good_solution.pdf]]   
+
+Splines is often very accurate
+
+** Spline discretisation error
+   
+[[./bad_solution.pdf]]
+
+But sometimes not
+
+
+** Minimization reformulation
+   * A solution is not guaranteed to exist when the spline fit isn't exact
+\vfill
+   * We can fix this with new, more general continuation equations
+\vfill
+    * Solve for least invasive control target, instead of noninvasive control
+     * Solution will be noninvasive (same solution as for standard continuation equations) when discretisation is exact
+     * Solution is still guaranteed to exist when discretisation is inexact
+     * Solution is noise-robust
+
+
+** Minimization reformulation
+     * Let \(\beta\) be the discretisation
+\vfill
+     * Let \(\mathrm{invasiveness}(\beta) = \int \left[ \mathrm{signal}(t)-\mathrm{target}(\beta, t)\right]^2\mathrm{d}t\)
+       * Valid for proportional control
+       * Can be easily adapted for other control strategies
+\vfill
+     * Continuation equations:
+       * \(\frac{\partial \mathrm{invasiveness}}{\partial \beta_i} = 0\)
+       * predictor \(\perp\) corrector
+       * This can be solved using numerical integration and standard Newton iterations; *no need for minimization*: no experimental Hessians needed
+       * Alternatively, solve using EGO minimizers; no experimental Jacobians needed
+
+
+
+** COMMENT Interpolating splines
+Interpolating splines might be more stable than BSpline discretisation
+\vfill
+    * Connect knots with pieces of polynomial, using periodic BCs
+    * Initially, fix the \(x\) locations of the knots (fixed-mesh)
+    * Choose the \(y\) locations /(discretisation)/ to give a least-squares data fit
+    * Smooth changes in discretisation give smooth changes in model, so finite-differences should be well-behaved
+    * ISSUE: choosing \(y\) locations (discretising) is a nonlinear least-squares problem
+      * /Should/ have an easy-to-find minimum
+      * Less efficient discretisor than FFT or OLS
+   
+** COMMENT Dynamic mode decomposition
+   * Fourier discretisation has nice error decay properties
+     * Periodic signal has a finite energy
+     * Higher-order Fourier harmonics have more energy than lower-order harmonics
+     * Harmonic coefficients must therefore decay, to produce a finite-energy signal
+     * Each additional harmonic is less important than the last
+\vfill
+   * Much like PCA: Fourier ranks basis functions from most important (lowest-order) to least important (highest order)
+     * Can improve discretisation accuracy simply by adding more components
+     * Simple guarantee: more components = better fit (when there's no noise)
+\vfill
+   * Splines lack this guarantee
+     * Error doesn't necessarily decay with number of knots
+\vfill
+   * DMD is like PCA for temporal data
+     * Extracts dynamic modes, weighted from most to least important
+     * Modes could form a good basis; improve precision by adding more modes
+     * Might be a more accurate discretisor than splines, more efficient discretisor than Fourier?
+     * Might just be equivalent to Fourier
+
+* Next steps
+** Next steps
+   * Write splines without SciPy
+\vfill
+   * Try minimizer approach; possibly slower; will guarantee finding an acceptable solution
+\vfill
+   * Try adaptive-knots BSplines
+     * In general, optimization-based knot choice will minimize the discretisation error
+     * Duffing is simple enough that adaptive knots shouldn't change the results much
+\vfill
+   * Talk to Krasi about approximation and existence of continuation solutions
+\vfill
+Also, writing, annual review
