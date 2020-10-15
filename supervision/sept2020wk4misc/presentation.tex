@@ -1,4 +1,4 @@
-% Created 2020-09-25 Fri 12:07
+% Created 2020-09-28 Mon 10:46
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:org7a86749}
-\begin{frame}[label={sec:orgf59616e}]{Week's activities}
+\label{sec:org2ead4bb}
+\begin{frame}[label={sec:org70c95e1}]{Week's activities}
 \begin{itemize}
 \item Lead-TAing setup
 \end{itemize}
@@ -50,14 +50,14 @@
 \end{frame}
 
 \section{Splines}
-\label{sec:org39f815c}
-\begin{frame}[label={sec:org36406f9}]{Last time\ldots{}}
+\label{sec:org7824778}
+\begin{frame}[label={sec:org09a3da9}]{Last time\ldots{}}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./perturbation.pdf}
 \end{center}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org07faadf}]{Splines problems}
+\begin{frame}[<+->][label={sec:org114c4c6}]{Splines problems}
 \begin{itemize}
 \item Finite differences doesn't play nicely with splines
 \item Conjecture: smooth changes in the discretisation cause non-smooth changes in the model
@@ -76,7 +76,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:orge569ccf}]{Fixing splines}
+\begin{frame}[<+->][label={sec:org33ecb54}]{Fixing splines}
 \begin{itemize}
 \item Possible solution: fiddle with finite differences step size
 \begin{itemize}
@@ -95,7 +95,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org51e44e0}]{Evenly spaced knots, small finite-differences}
+\begin{frame}[label={sec:orge002e32}]{Evenly spaced knots, small finite-differences}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./spline_fail.pdf}
 \end{center}
@@ -103,7 +103,7 @@
 Looks bad, but no issues from invalid splines models
 \end{frame}
 
-\begin{frame}[label={sec:orgfe7fbb1}]{Evenly spaced knots, larger finite-differences}
+\begin{frame}[label={sec:orgf532dac}]{Evenly spaced knots, larger finite-differences}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./spline_fail_larger_finite_differences.pdf}
 \end{center}
@@ -111,7 +111,7 @@ Looks bad, but no issues from invalid splines models
 Looks bad, but no issues from invalid splines models
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org6bdcb3e}]{Hyperparameter choice}
+\begin{frame}[<+->][label={sec:orgb1058d1}]{Hyperparameter choice}
 I don't really understand what's going wrong in those plots
 \vfill
 \begin{itemize}
@@ -130,7 +130,7 @@ I don't really understand what's going wrong in those plots
 \end{itemize}
 \vfill
 \begin{itemize}
-\item No understanding of why any given intervention has the effect it does
+\item No intuition about when and why things break
 \end{itemize}
 \vfill
 \begin{itemize}
@@ -138,13 +138,11 @@ I don't really understand what's going wrong in those plots
 \end{itemize}
 \end{frame}
 
-\begin{frame}[<+->][label={sec:org6084438}]{Saving the splines approach}
+\begin{frame}[<+->][label={sec:org051a3e9}]{Saving the splines approach}
 \begin{itemize}
 \item Try interpolating splines instead of basis splines
 \begin{itemize}
-\item Choose a set of points
-\item Connect those points with polynomials
-\item Choose polynomial coeff's for smoothness, periodicity
+\item Choose a set of points; connect them with polynomials; fit for smoothness, periodicity
 \end{itemize}
 \end{itemize}
 \vfill
@@ -159,15 +157,19 @@ I don't really understand what's going wrong in those plots
 \begin{itemize}
 \item Result: smooth changes in the knot points cause smooth changes in the model
 \begin{itemize}
-\item Should make finite differences more robust
+\item Might make finite differences more robust?
 \item Also easier to understand, more explainable: no mysterious choice of exterior knots; more intuition about how discretisation changes the model
 \end{itemize}
 \end{itemize}
 \end{frame}
 
 \section{Next steps}
-\label{sec:orge5e60dd}
-\begin{frame}[label={sec:org79c935b}]{Next steps}
+\label{sec:orgc41bada}
+\begin{frame}[label={sec:org7bab0ab}]{Next steps}
+\begin{itemize}
+\item Choose paper and make slides for lab group meeting
+\end{itemize}
+\vfill
 \begin{itemize}
 \item Try interpolating splines discretisation
 \begin{itemize}
@@ -183,8 +185,6 @@ I don't really understand what's going wrong in those plots
 \item Write up extended conference paper
 \end{itemize}
 \vfill
-\begin{itemize}
-\item Choose paper and make slides for lab group meeting
-\end{itemize}
+Also, annual leave October 19th - 23rd
 \end{frame}
 \end{document}

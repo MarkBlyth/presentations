@@ -75,7 +75,7 @@ I don't really understand what's going wrong in those plots
 \vfill
     * Never managed anything better than those plots
 \vfill
-    * No understanding of why any given intervention has the effect it does
+    * No intuition about when and why things break
 \vfill
     * Finicky hyperparameters make the method impractical even if it did work
       
@@ -84,20 +84,20 @@ I don't really understand what's going wrong in those plots
    :BEAMER_act: [<+->]
    :END:
     * Try interpolating splines instead of basis splines
-      * Choose a set of points
-      * Connect those points with polynomials
-      * Choose polynomial coeff's for smoothness, periodicity
+      * Choose a set of points; connect them with polynomials; fit for smoothness, periodicity
 \vfill
     * Discretisation becomes knot point \((x,y)\) values
       * Or, set the \(x\) values of the knots, and let discretisation be the \(y\) values
       * Interesting aside: polynomial coeff's would also be a discretisation, but an inefficient one due to lots of redundancy; can we choose a discretisation to minimise redundant information? IO map unit eigenfunction?
 \vfill
     * Result: smooth changes in the knot points cause smooth changes in the model
-      * Should make finite differences more robust
+      * Might make finite differences more robust?
       * Also easier to understand, more explainable: no mysterious choice of exterior knots; more intuition about how discretisation changes the model
 
 * Next steps
 ** Next steps
+   * Choose paper and make slides for lab group meeting
+\vfill
    * Try interpolating splines discretisation
      * Start with simplest-possible (ie. non-Bayesian) approach, see what happens
 \vfill
@@ -105,4 +105,4 @@ I don't really understand what's going wrong in those plots
 \vfill
    * Write up extended conference paper
 \vfill
-   * Choose paper and make slides for lab group meeting
+Also, annual leave October 19th - 23rd
