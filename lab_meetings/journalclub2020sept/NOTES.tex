@@ -1,0 +1,542 @@
+% Created 2020-09-29 Tue 15:16
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\author{mark}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={mark},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+
+
+\section{Background / intro}
+\label{sec:orgf3b5278}
+\begin{frame}[label={sec:org391c4b6},plain]{NOTE}
+\begin{itemize}
+\item Numerical continuation is a useful tool for deterministic systems
+\begin{itemize}
+\item It allows us to see how equilibria and limit cycles change when we change a parameter
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Stochastic dynamics can't be studied with standard continuation
+\begin{itemize}
+\item Standard methods can't track randomness
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item This work tries to change that
+\begin{itemize}
+\item 10s summary of the method:
+\item Compute a covariance matrix around the deterministic equilibria
+\item Use that to define an ellipsoid within which the sample paths probably lie
+\item Track those ellipsoids over parameter changes
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Section 1}
+\label{sec:orgcda69ee}
+\begin{frame}[label={sec:org63ac88a},plain]{NOTES Chapter 1: Intro}
+Deterministic systems
+\begin{itemize}
+\item Determinisim means no noise or randomness; if we know the state now, and the equations, we know it forever more
+\item Equilibrium = time-invariant solution
+\begin{itemize}
+\item Which means that its some state that if the system starts there, it'll stay there
+\item A hanging pendulum, where it lies balanced pointing downwards
+\item The same but unbalanced, pointing upwards; as long as it's not perturbed, it'll balance there forever
+\item Examples include a chemical equilibrium, where forward and backward reactions balance, to give a constant amount of reactant and product
+\end{itemize}
+\item Equilibrium state depends on parameters
+\begin{itemize}
+\item For example, in a chemical system, adding more heat might shift the balance from lots of reactant / little product to lots of product / little reactant
+\end{itemize}
+\item Continuation reveals that dependence
+\begin{itemize}
+\item It shows us where equilibria move to, as parameters change
+\item Lets us compute curves showing where in state space an equilibrium will lie, for some given parameter value
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org2ebac0e},plain]{NOTES From deterministic to stochastic}
+\begin{itemize}
+\item Very little work to extend continuation to SDEs
+\begin{itemize}
+\item Most research is on simulation and integration
+\item Some methods for tracking invariant measures
+\item Moment map method, where statistics of the system (eg. mean state vector, variance) are tracked
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item How does small noise change deterministic results?
+\begin{itemize}
+\item Say we have a deterministic system; it's easy to perform a continuation analysis
+\item This reveals stable, unstable equilibria, limit cycles, etc.
+\item How does the stability of these sets change when we add a small amount of randomness into the system?
+\item Stable equilibria may become `metastable'; solutions tend to remain close to the equilibrium, but noise-induced transitions may occur between the different stable states in the system
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We can extend numerical continuation to track local information about metastable equilibria
+\begin{itemize}
+\item The resulting algo can be applied either during continuation, or as a post-processing tool after a determnistic continuation has been performed
+\item The paper proposes that it can extend further to nonstationary solutions, stochastic PDEs, stochastic DDEs; later papers actually do this [I THINK?]
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Section 2}
+\label{sec:orgc477e3e}
+\begin{frame}[label={sec:orgf723e31},plain]{NOTES Section 2: an analytical example}
+\begin{itemize}
+\item Consider a noise-corrupted pitchfork normal form
+\begin{itemize}
+\item A pitchfork bifurcation is where a single stable equilibrium splits into two stable equilibria; a third, unstable equilibrium then appears between them
+\item Details aren't particularly important, but basically it's one way for a system to transition from monostability to bistability
+\item The system acts like a ball in a double potential well; if the ball is the system state, it'll roll down into one of two potential wells and stay in the bottom, when no noise is present
+\item To noise-corrupt it, we add a little bit of randomness into the vector field; the system is then given by the deterministic component which does most of the work to evolve the system state, plus some random component that'll make the state jump around a little
+\item The resulting bistability is similar to eg. climate dynamics: iceball-earth is a stable state, whereby earth temperature is kept low by ice caps reflecting radiation back to space; hot earth is also a stable state, whereby no ice caps mean less reflection meaning hot earth; randomness comes from volcanoes, forest fires, etc
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org8354da9},plain]{Noise-induced pitchfork dynamics}
+\begin{itemize}
+\item Interesting noise-induced dynamics occur in the bistable region
+\begin{itemize}
+\item The randomness gives the ball a chance to jump out of one potential well and into the other, when the random nudges all add up in such a way as to push it up and over the unstable state
+\item This gives rise to lots of interesting effects such as coherence resonance, where adding more noise into a neruonal system can make it more orderly and well-behaved; or stochastic resonance, where adding noise into a neuronal system can make it more sensitive to some input signal
+\end{itemize}
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item For any initial condition, we will almost surely visit visit both potential wells in finite time
+\begin{itemize}
+\item Let's start the system at some arbitrary initial conditions
+\item Let's fix the \(\mu\) at some point that ensures bistability
+\item Let's fix the noise amount at any non-zero amount (ie. at least some noise)
+\item Even with huge distances between the potential wells, starting somewhere way away from either well, and tiny noise applied, with probability 1 the ball will visit the bottom of both potential wells within finite time
+\end{itemize}
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item We seek a stronger result; what insights can we gain into the timescales of the stochastic transitions?
+\begin{itemize}
+\item Stochastic transition is just the jump from one potential well to the other
+\item Intuitively, this will take a long time with small noise and deep potential wells, and be very fast with large noise and shallow potential wells
+\item Arrhenius' law gives us the order of the switching time as a function of the noise intensity and the potential well sizes
+\item Potential well sizes in turn are dictated by the bifurcation parameter \(\mu\), so Arrhenius' law for this system relates the timescale of stochastic transitions to the bifurcation parameter and noise intensity
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org8ae4a6b},plain]{A graphic example}
+\begin{itemize}
+\item The top of the figure is the same deterministic bifurcation diagram as we saw before
+\item At the bottom, we have example time series
+\item The red lines show the locations of the equilibria of the deterministic system; black lines show how the system behaves in time
+\item For small \(\mu\), the ball jumps very frequently between the potential wells; transition timescale is small
+\item For medium \(\mu\), the ball jumps occasionally between potential wells; transition timescale is medium
+\item For large \(\mu\), no jumps are seen over the 1000 units of simulation time
+\item We can see from the time series that the system seems to cluster around the deterministic equilibria
+\item There's a region of high trajectory density
+\item In the fast-transitions case the high-density region is still there, but the regions for the top and bottom metastables actually overlap
+\item Interesting idea: define some notion of high-density region, and use the distances between them as a proxy for the transition timescale
+\item High-density regions are shown in blue and green on the top plot
+\item They move further appart as the bifurcation parameter increases
+\item In the first case, they are seen to overlap, which explains why the system jumps between the two states so rapidly; in the last case, there is a large separation between the two, which explains why the system never jumps between metastables
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org33a63cd},plain]{Studying stochastic transitions}
+\begin{itemize}
+\item What methods can we use to study the high-density regions?
+\begin{itemize}
+\item We need a way of defining them mathematically, before we can hope to study their parameter dependence
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Fokker-Planck equations are inefficient
+\begin{itemize}
+\item Builds a probability density function for the system state, for all time
+\item It can be used to describe the probability of the system being at some point x, at some time t, for some initial conditions
+\item Inefficient!
+\item This essentially solves the stochastic differential equation at every point in phase space, which may be computationally inefficient when we're only interested in the local metastability of equilibria
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item can we find a more efficient way of defining them?
+\begin{itemize}
+\item With small noise intensities, the stochastic dynamics are very similar to their deterministic equivalent, over small timescales
+\item We have efficient methods for studying deterministic systems, so can we repurpose those to the small-noise case?
+\item If we can, we can come up with some nice elegant efficient algorithms for continuing the high-density regions
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org8556021},plain]{Continuation of metastable equilibria}
+Can we find a more efficient way of defining high-density regions?
+\vfill
+\begin{itemize}
+\item Linearise the system about each equilibrium point
+\begin{itemize}
+\item Assume that the system lies close to one of the deterministic equilibria
+\item Replace the deterministic component of the system with a linear approximation
+\item This gives us an Ornstein-Uhlenbeck process, for which we can calculate the variance
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Calculate the variance of the resulting stochastic process
+\begin{itemize}
+\item We can do this analytically, since we've linearised the original system
+\item This gives us a simple formula for the variance of the system state around the equilibrium we linearised around
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Choose a ball around the deterministic equilibria, such that sample paths stay within it with high probability
+\begin{itemize}
+\item The variance lets us determine how big this ball should be
+\item That's much like confidence intervals, where we specify confidence in terms of standard deviations from the mean; data are fairly likely to be within 1 sigma, more likely to be within 2 sigma, etc.
+\item Defining the ball size in terms of some variance multiplier (confidence level) therefore makes the `dense region' definition consistent across processes, and interpretable though its conventional statistical analogs
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:orgf16617f},plain]{Towards a stochastic continuation algorithm}
+We need three results to be able to use this definition in continuation
+\vfill
+\begin{itemize}
+\item Generalise variance ball construction to arbitrary-dimensional SDEs
+\begin{itemize}
+\item Take our definition of a variance ball from before, and extend it away from the 1d case, towards something we can use for SDEs of any dimension
+\item This forms section 3 of the work
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Efficiently compute the covariance matrix of the linearised SDE, at each point on the continuation curve
+\begin{itemize}
+\item Need to find a way to exploit whatever information is already available from the continuation procedure
+\item Forms section 4 of the work
+\end{itemize}
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item Define test-functions for overlapping stochastic neighbourhoods
+\begin{itemize}
+\item Define some way of testing whether any given pair of `high-density / high-confidence' neighbourhood balls overlap
+\item Covered in section 5
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Section 3}
+\label{sec:org439926d}
+\begin{frame}[label={sec:org4e7cb73},plain]{Section 3: metastability and linearization}
+\begin{itemize}
+\item We can linearise multidimensional processes easily
+\begin{itemize}
+\item This just extends the 1-d case to processes with multiple state variables
+\item Transform the variables so that the deterministic equilibrium is at the origin
+\item Taylor-expand around the origin
+\item Throw away the higher-order terms
+\item We're then left with a multi-dimensional Ornstein-Uhlenbeck process
+\end{itemize}
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item The covariance matrix is then given by the solution to an ODE
+\begin{itemize}
+\item I've skipped the full derivation because it's not very useful to anyone
+\item Essentially we repeat the moments derivation from the one-dimensional case, but instead use a Jacobian matrix where previously we used scalar gadients
+\item This would give us an integral equation, which we then differentiate to get an ODE for the covariance
+\item The time-invariant solution of this ODE is the covariance matrix of the linearised SDE
+\end{itemize}
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item The time-invariant solution is a solution of a Lyapunov equation
+\begin{itemize}
+\item As the equilibrium we linearised around is necessarily stable, the Lyapunov equation is guaranteed to be solvable
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Ellipsoids are defined with their principle axes scaled according to the inverse covariance matrix
+\begin{itemize}
+\item As with the 1d case, sample paths will exist within these ellipsoids with high probability, making them `trajectory-dense' regions
+\item The covariance matrix therefore exists, and allows us to define `ellipsoids' as a generalisation of the variance balls, whereby principal axes are scaled according to the inverse covariances
+\item The inverse is not guaranteed to exist, however the controllability theorem allows us to link the structure of the noise to whether or not the inverse exists
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{Section 4}
+\label{sec:org95acb9f}
+\begin{frame}[label={sec:org7fd8074},plain]{Section 4: The Lyapunov equation}
+We have established the covariance matrix is given by the solution to a Lyapunov equation. How do we solve it for a single equilibrium? And for a branch of equilibria?
+
+\begin{itemize}
+\item Solution methods are well-studied within control theory
+\begin{itemize}
+\item We can re-write the Lyapunov equation into a simple linear system of form Ax=b, and guarantee A is invertible
+\item This means the system is definitely solvable, but perhaps there's a more computationally efficient way of approaching this than entirely restructuring the equation
+\end{itemize}
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item The continuation consideration adds several new aspects to the problem
+\begin{itemize}
+\item We have access to the deterministic system Jacobian, as a result of the predictor-corrector steps of the continuation algorithm; this gives us one of the two necessary matrices
+\item The other matrix can be found using at most one matrix multiplication; for additive noise, it can be precomputed without any preexisting knowledge
+\item Since we're using the solution within parameter continuation, the covariance matrix at one parameter value is an excellent guess for the covariance matrix at another nearby parameter value. As such, we have excellent initial guesses for any iterative methods
+\end{itemize}
+\end{itemize}
+
+\vfill
+\begin{itemize}
+\item Covariance computation is actually fairly straightforward, with several methods available
+\begin{itemize}
+\item A good initial choice means iterative methods are an obvious choice
+\item Gauss-Seidel algo is a good choice, for when the system is cast into Ax=b form
+\item Smith's algorithm gives us an iterative method to solve the original Lyapunov equation, without having to restructure it into Ax=b form, but does not use the initial guess, so it might be slower
+\item There's also a direct method -- the Bartels-Stewart algo -- for solving the Lyapunov equation without iterations; this is useful to get the solution at the first continuation point, which can then be used as the initial guess for subsequent iterations
+\item Section 7 compares the algos; the iteration is fastest for weak to medium convergence tolerances
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgd49a2e5},plain]{Noise structure and degenerate ellipsoids}
+\begin{itemize}
+\item If the covariance matrix is noninvertible, we can't define ellipsoids
+\end{itemize}
+\vfill
+\begin{itemize}
+\item This can happen for certain system and noise structures
+\begin{itemize}
+\item Say we have an uncoupled linearisation; each state variable evolves independently of the others, in the linearisation
+\item If noise only acts on some state variables, there'll be some evolving stochastically, and some deterministically
+\item In this case, the ellipsoid becomes ill-defined
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Define density neighbourhood over the stochastic variables only
+\begin{itemize}
+\item Replace deterministic variables with their equilibrium value
+\item Place the standard ellipsoid ball over the stochastic subset
+\item Ellipsoid becomes well-defined again
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{Section 5}
+\label{sec:orge09654f}
+\begin{frame}[label={sec:orgc06a7d5},plain]{Problem 3: Ellipsoids and test functions}
+\begin{itemize}
+\item Distance between two ellipsoids indicates the timescale of their stochastic transitions; how do we compute it?
+\begin{itemize}
+\item It's a useful problem in robotics, satellite control, computational geometry, etc.
+\item Lots of different methods have been proposed as a result
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We choose a distance measure that doubles up as a test function
+\begin{itemize}
+\item Test functions are just some equation that we plug data into, and it interprets the data for us
+\item If the distance measure is >0, the ellipsoids are disjoint
+\item Distance measure = 0 means ellipsoids just touch, at a point
+\item Distance measure <0 means ellipsoids intersect
+\item This allows us to test for dynamical switching at some timescale
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item The distance is given by the solution to an optimization problem
+\begin{itemize}
+\item I don't particularly understand the optimization step
+\item Efficient algorithms are (apparently) available to solve it, and the paper outlines the key equations required to use them
+\item As previously, we can use the previous step's solution as a good initial guess for the optimization procedure
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{Section 6}
+\label{sec:org91f915d}
+\begin{frame}[label={sec:org2e4b7d3},plain]{Algorithm summary}
+Initialization step; for each equilibrium\ldots{}
+\vfill
+\begin{itemize}
+\item Find a stable equilibrium of the deterministic component of the system
+\begin{itemize}
+\item This is a standard problem. Could either solve though integration, or Newton's method
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Compute the linearisation of the deterministic system at that equilibrium
+\begin{itemize}
+\item Basically just change the variables so that the equilibrium is at the origin, then take the Jacobian
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Set up the Lyapunov equation for covariances, and solve using Bartels-Stewart algorithm
+\begin{itemize}
+\item This is the algo of choice as it doesn't require any initial guess
+\end{itemize}
+\end{itemize}
+
+
+\vfill
+This gives us both an equilibrium to start the continuation from, and a covariance matrix which we can then re-use as an initial guess for subsequent solvings of the Lyapunov equation
+
+The next step is to continue the equilibrium and covariance matrix under changes in a parameter
+\end{frame}
+
+\begin{frame}[label={sec:org3830811},plain]{Algorithm summary}
+Iteratively\ldots{}
+\begin{itemize}
+\item Take a predictor-corrector step, solving deterministic continuation equations at a new parameter value
+\begin{itemize}
+\item This is the same as with standard continuation; predict the next solution value (equilibrium point + regularisation terms), then refine the prediction using root finding methods
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Iteratively solve the Lyapunov equation
+\begin{itemize}
+\item Construct the Lyapunov equation for the current covariance matrix
+\item Use the previous solution as an initial guess
+\item Solve it iteratively, to get the current linearised covariance
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Construct a high-density ball, for some chosen confidence level
+\begin{itemize}
+\item An ellipsoid whose shape is given by the covariance matrix, and size is given by the confidence level; will be smaller in directions with lower variance, larger in directions with higher variance
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Solve an optimization problem for the distances between each pair of balls
+\begin{itemize}
+\item Use the distance between balls at the previous step as the initial guess for the current step
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orge03438d},plain]{Outputs}
+\begin{itemize}
+\item Deterministic equilibria
+\begin{itemize}
+\item These are the standard equilibria that the system would settle to, if it weren't for random effects
+\item Obtained by applying standard numerical continuation algorithms to the deterministic component
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Ellipsoids
+\begin{itemize}
+\item These are the confidence balls around each equilibrium
+\item They show where the sample path will very probably lie
+\item They're basically the stochastic version of an equilibrium
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Mutual distances
+\begin{itemize}
+\item The distance between pairs of ellipsoids
+\item These give an estimate of the rate of stochastic transition between pairs of metastable equilibria
+\item Big distances mean transitions are rare
+\item Small distances mean transitions are more frequent
+\item Zero or negative distance means transitions are very common
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Section 7, 8}
+\label{sec:org8fd8487}
+\begin{frame}[label={sec:orgf6a3ecc},plain]{Example results}
+\begin{itemize}
+\item Red, blue lines are stable equilibria of the deterministic system
+\item Red, blue circles are the high-confidence neighbourhoods, within which we expect the sample paths to lie
+\item Green line is an unstable saddle
+\item Fig b shows distance between ellipsoids; fig c shows mean stochastic transition rate; b predicts c very well
+\item Fig d squashes the main fig onto a plane
+\item Fig e,f are simulations of the system at the shown parameter value
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org431123f},plain]{Example results}
+\begin{itemize}
+\item Shown here are the dynamics of a predator prey model
+\item The dynamics are complex, as the noise follows a correlated, multiplicative format
+\item The deterministic system also undergoes Hopf bifurcation
+\item The continuation algo still shows up useful results
+\item The ellipsoids touch the coordinate axis; if a trajectory reached here, a species would go extinct
+\item This stochastic justification is used to overcome a paradox in population models, whereby they cease to settle to an equilibrium when resources are sufficiently abundant
+\begin{itemize}
+\item Justification is that stochastic effects mean a species would go extinct before that ever happened
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{Section 9}
+\label{sec:org950e8c8}
+\begin{frame}[label={sec:org5d62146},plain]{Closing remark: a special case}
+\begin{itemize}
+\item Ellipsoid separation is only a local heuristic for stochastic timescales
+\begin{itemize}
+\item Local heuristic: the balls are defined from a linearisation around the equilibrium
+\item The linear dynamics are only locally meaningful
+\item Outside that locality, they might give us a heuristic description of the behaviours, but we can't read into it any more than that
+\end{itemize}
+\item What if we could incorporate global information into the continuation?
+\begin{itemize}
+\item How about instead of a local heuristic, we look for something more robust?
+\end{itemize}
+\item Eyring-Kramer's law gives analytical switching rates in special cases
+\begin{itemize}
+\item This relies on Jacobian computation
+\item Jacobians are available from the predictor corrector step
+\item We can therefore tag on the Eyring-Kramer's formula to get some additional information, that encompasses global dynamics
+\item This is only available in the special case of a bistable gradient system
+\end{itemize}
+\end{itemize}
+\end{frame}
+\end{document}
