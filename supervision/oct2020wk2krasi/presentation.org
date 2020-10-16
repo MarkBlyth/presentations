@@ -1,0 +1,378 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: BSplines for CBC discretisation
+#+DATE: [2020-10-26 Mon]
+
+* Intro
+** Last time
+Proposals for project ideas, with a focus on
+\vfill
+   * Efficiency
+     * Avoiding high-dimensional discretisation
+     * Producing fast prediction/correction steps
+\vfill
+   * Noise-robustness
+     * Finding continuation solutions in the face of measurement noise
+     * Whether or not to consider stochasticity
+       
+** COMMENT Last time
+Proposals for project ideas, with a focus on
+\vfill
+   * Efficiency
+     *Neurons only have a finite lifespan, so we can't be taking days to run the experiments*
+     * Avoiding high-dimensional discretisation
+     *The correction step requires a Jacobian. If we have a high-dimensional discretisation, we'll get a large Jacobian. This must be calculated using experimental finite differences, which will be exceedingly slow if the Jacobian is large; therefore we need small discretisations*
+     * Producing fast prediction/correction steps
+     *More generally, we could also investigate other solution methods, even other equations, so that we can solve for non-invasive control in a time-efficient manner. Examples include EGO, or surrogate solvers*
+\vfill
+   * Noise-robustness
+     * Finding continuation solutions in the face of measurement noise
+     *If the output signal is noise-corrupted, eg. due to observation noise, there's a chance the solver will never converge, as the continuation equations become stochastic (even if the neuron dynamics aren't!). We need a discretisor and solver that can still get a solution when faced with measurement noise.*
+     * Whether or not to consider stochasticity
+     *If the neurons are assumed to be a stochastic dynamical system, it will presumably change how we approach the problem*
+       
+** This time
+Preliminary results for efficient splines-based discretisation
+\vfill
+   * Replace Fourier discretisation with splines discretisation
+     * Goal: more noise-robust, lower dimensional
+\vfill
+   * Was facing issues with numerical simulations
+\vfill
+   * New results from Friday: it works!
+     
+** COMMENT This time
+Preliminary results for efficient splines-based discretisation
+*Focuses on the first point: how do we produce a low-dimensional discretisation?*
+\vfill
+   * Replace Fourier discretisation with splines discretisation
+     * Goal: more noise-robust, lower dimensional
+     *Fourier requires many harmonics to discretise spiking signals; splines are more efficient. They're also very good at averaging out noise, whereas high-dimensional Fourier interestingly is not (on short signals, anyway)*
+\vfill
+   * Was facing issues with numerical simulations
+   *I actually started the spline discretisation quite a while back, but of course there were plenty of issues to overcome, mainly focussed around numerical methods, and software implementations*
+   *Software packages weren't behaving consistently, numerical issues were arising from various solver methods*
+\vfill
+   * New results from Friday: it works!
+   *I haven't had time to really put the method through its paces, and there's still some flaws with it that I'll discuss later, but for the first time there's a proper demonstration of how splines can be used for CBC*
+   
+*This time: I'll talk about what I did and why, highlight some of the challenges, and discuss the outstanding problems with the method*
+     
+* Using BSplines
+** Spline models
+Currently testing spline discretisation; what is this?
+\vfill
+   * Standard continuation: set up a BVP for a PO
+     * Continuation vector encodes discretised solution + regularisation constraints
+     * Orthogonal collocation usually used
+\vfill
+   * Control-based continuation: set up a variational problem
+     * Find a non-invasive control target
+     * Use a solving algo on discretised signals
+\vfill
+   * Splines are maximally smooth piecewise-polynomial models
+     * BSplines form a set of basis functions for spline models
+     * BSpline coefficients are used as signal discretisation
+       
+** COMMENT Spline models
+Currently testing spline discretisation; what is this?
+\vfill
+   * Standard continuation: set up a BVP for a PO
+     *A periodic orbit is a trajectory that repeats itself, so split it at one point, and then we have a boundary value problem from that point, back to itself*
+     * Continuation vector encodes discretised solution + regularisation constraints
+     * Orthogonal collocation usually used
+     *Split the domain up into a set of meshpoints, and find a set of basis functions and a list of coefficients, such that their linear combination solves the BVP at the meshpoints*
+     *Discretised solution then becomes the object of interest in the continuation problem; continuation algo tracks how it changes, as a parameter is varied*
+\vfill
+   * Control-based continuation: set up a variational problem
+     *We seek a function that, when used as a control target, results in a control action that is identically zero. Can't solve the problem directly /[or can we?]/, so instead we discretise it*
+     *Again, the discretised solution becomes the object of interest, and is embedded within a continuation algorithm to track under parameter change*
+     * Find a non-invasive control target
+     * Use a solving algo on discretised signals
+\vfill
+   * Splines are maximally smooth piecewise-polynomial models
+     *Select a set of `knot' points, link up adjacent points with a piece of polynomial, then choose the coefficients of each polynomial such that the overall curve is smooth to the highest-possible order*
+     *A more useful approach is to define a set of basis functions for the set of all possible spline curves, then simply fit the coefficients for these basis functions; this framework is analogous to more conventional discretisation techniques, such as using a Fourier basis*
+     * BSplines form a set of basis functions for spline models
+     * BSpline coefficients are used as signal discretisation
+       
+** The BSpline method
+Key goal: noninvasive control
+     * For proportional control, zero tracking error means zero control action
+     * Noninvasive \(\iff\) system output matches control target
+\vfill
+Algo summary:
+#+ATTR_LATEX: :overlay [<+->]
+     * Produce two initial discretisations by running the system uncontrolled
+     * Use secant pseudo-arclength continuation to track solution under parameter change
+       1. Extract discretisation from continuation vector
+       2. Translate discretisation into a control target
+       3. Run the system with that target
+       4. Discretise the output
+       5. Newton-solve for discretised input = discretised output
+       6. Repeat across target parameter range
+	  
+** COMMENT The BSpline method
+Key goal: noninvasive control
+    *That is, control that only changes the stabilities of natural system dynamics; stabilises existing equilibria and limit cycles, but doesn't alter their existence or location*
+     * For proportional control, zero tracking error means zero control action
+       *The proportional controllers feed back the tracking error, so if there's no tracking error, it doesn't feed anything back, and remains inactive*
+     * Noninvasive \(\iff\) system output matches control target
+       *...as no tracking error means no control action, meaning the system is behaving as if the controller isn't even there*
+\vfill
+Algo summary:
+#+ATTR_LATEX: :overlay [<+->]
+     * Produce two initial discretisations by running the system uncontrolled
+       *Take two close-by initial parameter values; run the system to convergence; discretise the outputs; this is used to form the two initial continuation vectors*
+     * Use secant pseudo-arclength continuation to track solution under parameter change
+       *Take a step in a direction approximately tangent to the solution family, and use that as a prediction for the next solution value; use a solver to refine this prediction; repeat*
+       *To do this, we need to run the controlled system. The predictor/corrector step works as follows*
+       1. Extract discretisation from continuation vector
+	  *Continuation vector contains both the discretisation, plus additional parameters for the regularisation terms, so we drop the additional parameters to get just the discretised periodic signal*
+       2. Translate discretisation into a control target
+	  *This is just undiscretising; eg. construct a model from the Fourier or BSpline coefficients specified in the discretisation*
+       3. Run the system with that target
+	  *In this case, I'm simulating, but for a real experiment this would mean loading the control target into a real-time controller, and setting the system running*
+       4. Discretise the output
+          *Take the measured system behaviour, and use it to construct a discretisation*
+	  *If the prediction turned out to be accurate, and solve the system, we can stop here. Realistically, it probably won't be, so instead of this step we would skip straight to the Newton corrector*
+       5. Newton-solve for discretised input = discretised output
+	  *Calculate a finite differences Jacobian, by running and re-running the experiment from small perturbations of the continuation vector; this part is slow!*
+          *Given the Jacobian, we can then perform a Newton update to get a new prediction; if the new prediction solves the system, we accept it; otherwise, we repeat the Jacobian and Newton steps until a solution is reached.*
+          *As I'll discuss later, Newton iterations aren't actually a very good method for doing this.*
+       6. Repeat across target parameter range
+	  *Keep going, keep taking predictor/corrector steps, until we've explored all the dynamics we're interested in.*
+	  
+* BSpline results + where the dragons be
+  
+** Results
+
+[[./success.pdf]]
+
+It works!
+
+** Results
+  * Results are for a harmonically forced Duffing oscillator
+    * Validation: an solve analtically for frequency-response curves
+    * Simplicity: system output is easy to Fourier- and spline-discretise
+\vfill
+  * Analytic results need computing through continuation
+    * For simplicity I didn't take the continuation route
+    * That's coming next!
+
+** Results
+
+[[./comparison.pdf]]
+
+It works!
+
+** The hard parts
+   * All spline curves require exterior knots
+     * `Extra' control points placed outside the range of the data
+     * Allows the spline curve to fit the data endpoints
+\vfill
+   * Periodic splines require careful treatment
+     * Coefficient vectors have a special structure
+     * Perturbations (prediction steps, finite differences) break that structure
+     * Can make the coefficient vectors perturbation-robust quite easily, but it requires custom code
+\vfill
+   * Periodic splines take periodic exterior knots, and periodic coefficients for exterior BSplines
+     * First \(k\) coeff's must equal last \(k\) coeffs
+     * This is easy to handle; SciPy tries to be very general, and ends up handling it badly
+#+begin_comment
+Was originally using SciPy for the spline fitting, as it's very efficient and very well tested
+    Issue: SciPy coeff vectors are very general, so that the same funcs can handle any sort of splines
+    This means finite differences breaks the first=last structure
+    My method sets the problem up specifically for the periodic case, which means the first=last structure can be inferred
+    Dropping the last coeffs therefore creates a coeff vector that's 
+#+end_comment
+
+** COMMENT The hard parts
+   * All spline curves require exterior knots
+     * `Extra' control points placed outside the range of the data
+     * Allows the spline curve to fit the data endpoints
+       *If we didn't have these, the spline model would go to zero at the first and last knots, regardless of the endpoint values of the data*
+       *By adding in additional knots, we can either get the model to fit the endpoints, or better, we can make a periodic model.*
+\vfill
+   * Periodic splines require careful treatment
+     * Coefficient vectors have a special structure
+       *To ensure periodicity, the first and the last \(k\) basis functions need to be the same, but shifted one period, and they need to have the same coefficients*
+       *The special structure therefore states that the exterior spline coefficients need to be the same both for the first and the last basis functions*
+     * Perturbations (prediction steps, finite differences) break that structure
+       *Perturbing either the first or the last coefficients only, will cause that structure to break, so that the spline model ceases to be periodic*
+     * Can make the coefficient vectors perturbation-robust quite easily, but it requires custom code
+       *Basically if our code is aware that it only ever has to deal with periodic splines, we can code up nice routines to do that*
+       *However the SciPy routines aim to be applicable to any spline model, and therefore it doesn't try to enforce any structure on the coefficient vectors, which means other parts of the code will break the periodicity requirement*
+\vfill
+   * Periodic splines take periodic exterior knots, and periodic coefficients for exterior BSplines
+     * First \(k\) coeff's must equal last \(k\) coeffs
+     * This is easy to handle; SciPy tries to be very general, and ends up handling it badly
+#+begin_comment
+Was originally using SciPy for the spline fitting, as it's very efficient and very well tested
+    Issue: SciPy coeff vectors are very general, so that the same funcs can handle any sort of splines
+    This means finite differences breaks the first=last structure
+    My method sets the problem up specifically for the periodic case, which means the first=last structure can be inferred
+    Dropping the last coeffs therefore creates a coeff vector that's 
+#+end_comment
+
+** The hard parts
+My Newton solver doesn't solve the continuation equations very well
+\vfill
+   * Accepted solution vectors don't accurately solve the system
+     * Convergence declared when solution stops changing
+     * Converged vector gives a solution error of \(\mathcal{O}(10^{-1})\)
+\vfill
+   * My DIY solver `jumps'
+     * Solution vector normally takes small parameter-steps
+     * Newton solver causes solution to take a very big parameter step, to somewhere wrong
+\vfill
+   * SciPy solvers overcome this...
+     * ...however SciPy quasi-Newton solvers have the same issue!
+     * Other methods work very well, but they're a black box
+     * No idea what they're doing, or how or why
+
+** COMMENT The hard parts
+My Newton solver doesn't solve the continuation equations very well
+   *Using a custom-coded Newton iteration for the correction step; chose to do a custom-coded one so that I could see exactly what was going on inside the continuation algo, and get fine-tuned control over the finite differences steps*
+\vfill
+   * Accepted solution vectors don't accurately solve the system
+      *We hope the converged solution will produce noninvasive control, as that's what the equations we're solving specify, however this doesn't actually happen; the converged vector doesn't actually map to zero when inputted into the continuation equations*
+     * Convergence declared when solution stops changing
+     * Converged vector gives a solution error of \(\mathcal{O}(10^{-1})\)
+\vfill
+   * My DIY solver `jumps'
+     * Solution vector normally takes small parameter-steps
+     * Newton solver causes solution to take a very big parameter step, to somewhere wrong
+       *I've got a plot on the next slide showing what I mean by this*
+       *It would make sense that this happens because of a bad Jacobian estimate. Probably this is the case, but also the Jacobians are always well-conditioned, with condition number typically below 50*
+\vfill
+   * SciPy solvers overcome this...
+      *Plugging the continuation equations into a SciPy solver gives results that do solve the continuation equations; it works properly*
+     * ...however SciPy quasi-Newton solvers have the same issue!
+       *Using a SciPy quasi-Newton solver still gives a solution that jumps to a far-off parameter value*
+       *This is quite satisfying in some respects, as it shows the scipy solvers share the same issues as mine, suggesting that my code isn't the problem*
+     * Other methods work very well, but they're a black box
+       *The Levenberg Marquard (????maybe????) method gives good results; its a popular solver in ML, if that means anything whatsoever; I have no idea how it works or why*
+     * No idea what they're doing, or how or why
+       *Not really what we want in terms of good science, or moving over to experiments*
+
+** Jumping solutions
+
+[[./jump.pdf]]
+
+(Actually using slightly older code, but same results apply)
+
+* Existence and uniqueness [main question]
+** Solution existence and uniqueness
+Under what conditions can we guarantee a solution to the CBC equations exists?
+   * Undiscretised case: solution definitely exists
+     * Infinite Fourier discretisation is an exact representation of continuous case; solution must exist
+     * Trucated Fourier is equivalent to infinite Fourier up to computational precision; solution /probably/ exists
+\vfill
+Solution to discretised equations must exist when discretisation is exact
+   * Can't guarantee splines are exact; how do we know if a solution exists?
+\vfill
+Generally, when can we guarantee discretising won't cause the system to become unsolvable?
+
+** COMMENT Solution existence and uniqueness
+Under what conditions can we guarantee a solution to the CBC equations exists?
+  *Originally I wondered if the solver errors were because a solution simply didn't exist, or was nonunique, as a result of the discretisation being inaccurate, so that got me thinking about existence and uniqueness*
+   * Undiscretised case: solution definitely exists
+       *This is just a natural periodic orbit of the system, and an associated parameter value*
+     * Infinite Fourier discretisation is an exact representation of continuous case; solution must exist
+       *If we can represent a continuous solution exactly, and a continuous solution exists, so too must its Fourier representation*
+     * Trucated Fourier is equivalent to infinite Fourier up to computational precision; solution /probably/ exists
+       *Probably because we can definitely compute one to within working precision, but rigorously speaking this might be a numerical quirk; possibly an actual solution doesn't exist*
+\vfill
+Solution to discretised equations must exist when discretisation is exact
+  *as discussed before in the Fourier context; if we have a continuous solution, and an exact representation of this solution in discretised form, we have a discretised solution too*
+   * Can't guarantee splines are exact; how do we know if a solution exists?
+  *if we lose the exactness guarantee, we can't be sure a solution does exist*
+\vfill
+Generally, when can we guarantee discretising won't cause the system to become unsolvable?
+
+
+* Next steps
+** Next steps
+   1. Testing spline discretisation more
+      * Try it out on a neuron model
+      * Try to break it!
+\vfill
+   2. Understand the solver issues
+      * Solvers are clearly crucial to good results
+      * Need to understand where the Newton problems are coming from
+\vfill
+   1. Compare splines to other methods
+      * Compare to Fourier, wavelets, collocation
+      * Compare in terms of noise-robustness, efficiency, achievable accuracy, ease of use
+
+* COMMENT Notes
+Intro
+    As of when I was writing the slides, everything came together wonderfully
+    Haven't yet had a chance to test it until it breaks, so no problems have arisen, and no hard questions this time...
+    New results to show, and currently not any problems with anything!
+
+    Last time:
+       List of potential project ideas
+       Key focus: 
+          Improving noise-robustness
+          Speeding up CBC with new solvers, better discretisation
+
+    The need for splines discretisation:
+       Fourier becomes too high-dimensional to be used efficiently
+       Finding the Jacobian becomes very slow
+       Solution is to either use an efficient (gradient-free?) solver, or to use a more efficient discretisation
+       
+    Current hard question: when does the discretisation approximation cease to have a solution?
+
+The BSpline procedure
+    BSplines as an alternative to Fourier:
+       Much like orthogonal collocation, Hermite polynomials, etc.
+       Construct a set of linearly independent basis funcs, then use them to discretise the continuation problem
+       BVP approach: 
+          Partition space into mesh points
+	  Find basis func coeffs such that the resulting func. satisfies ODE, BCs at meshpoints
+	  Used in `standard' continuation; BVP solution partially defines continuation vector
+       CBC approach:
+          Solve for control target [input] = observed system solution [output]
+          Do this by projecting observed signal onto basis functions
+          Basis func coeffs become discretisation
+          Solve for discretised input = discretised output
+      Can efficiently compute splines basis using Cox de Boor algo
+      Can fit splines model using OLS
+      *Can make the spline curve periodic*
+
+
+Results
+   Explain that I chose forced duffing because
+      Can get analytic solution
+         Allows me to validate the results
+      Nearly sinusoidal, so easy to use with both Fourier and splines
+      Show plots
+      Explain that the analytic results look weird because I'm being lazy
+
+Where it was going wrong
+   SciPy was trying to be too general
+   My code is specifically for periodic splines
+   Gives a more efficient discretisation
+   More importantly, guarantees that it plays well with finite differences, prediction/correction
+      SciPy relied on a special structure to its coefficient vectors
+      Perturbing the continuation vector (prediction, finite differences steps of prediction/correction) altered the coeff vec, which in turn broke this structure
+      My code maintains the structure under perturbation
+   This improved results, but didn't fix the problem
+   Using a SciPy solver, instead of my Newton solver, fixed everything
+      Black-box solver; no idea what its doing or why
+      No pure-Newton methods, but Broyden method for SciPy solver shows the same issues (jumping) as my Newton solver did
+
+Current priorities:
+   1. Testing it more
+      Try it out on a neuron model / something more nonlinear
+      Will require adapting it to adaptive knots
+   2. Understanding the solver issues
+      Solvers are clearly crucial to good results
+      Need to understand the whats and whys
+   3. Comparing it to other methods
+      Comparison of splines vs. Fourier, wavelets, collocation, in terms of noise-robustness, efficiency, achievable accuracy, ease of use
