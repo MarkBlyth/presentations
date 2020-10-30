@@ -1,0 +1,100 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Intro to programming
+#+DATE: [2020-09-28 Mon]
+
+* Presentation
+** Aims
+   :PROPERTIES:
+   :BEAMER_act: [<+->]
+   :END:
+All python-based; no assumed knowledge
+\vfill
+    * Understand basic principles of computer programming, eg. for communicating with devs
+\vfill
+    * Basic introduction to designing and building short computer programs
+\vfill
+    * Translate "problem statements" into computational algorithms
+\vfill
+    * Provide first steps in computing, to feed into more advanced units later on
+
+** Assessment
+   * Syntax test
+\vfill
+   * Caesar cipher project, set end of November
+\vfill
+   * PG TAs mark assignments
+
+** Teaching format
+   * Lectures Monday
+     * TAs are expected to keep up with these
+\vfill
+   * Drop-ins on Wednesday; 10 TAs
+\vfill
+   * 1h tutorials Friday
+     * Two sessions 9-10, 1-2, 9 students per group
+     * /*Must take attendance*/
+\vfill
+Any preferences for drop-ins?
+
+** Your role
+   * Check that students completed, understood weekly exercises
+   * Facilitate discussion around approaches, problems encountered
+\vfill     
+Ideas:
+   * Pick on students to share their solutions (eg. screen sharing)
+   * Build discussion about alternative approaches
+   * Make them explain what was hard, any problems they had, how they overcame them
+\vfill     
+Prep: 1 hour watch lecture video/slides, familarisation exercises.
+
+** If things go wrong
+    * You should ensure you get to know all your students
+\vfill     
+    * Any that are struggling academically: notify me
+\vfill     
+    * Any that are struggling personally: notify Hemma
+
+** HPT claims
+   1. Email me for approval; break down your hours into
+      * Preparation
+      * Labs
+      * Dropins
+      * Marking
+   2. Once approved, submit a claim on MyERP
+   3. Write in the box "I confirm I have had the authority and confirmation of Mark Blyth on *[date]* that the hours claimed have been completed."
+      
+\vfill
+Can claim 1.5h preparation time per week
+   
+** MyERP
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+Navigate to MyERP
+
+[[./icp_search.png]]
+   
+https://uob.sharepoint.com/sites/myerp/
+
+** MyERP
+
+[[./icp_login.png]]
+
+** MyERP
+
+[[./icp_claim.png]]
+
+** Sickness and annual leave
+
+   * Email me ASAP
+\vfill
+   * Put it on the group calendar
+
+** Questions?
+
+Slides and an outline document are all available on the icp2020tas sharepoint

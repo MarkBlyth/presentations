@@ -1,0 +1,215 @@
+* Lecture plan
+** Intro [no slides?]
+   * Who am I?
+   * What is my research?
+     * How does it link to what we're talking about?
+   * Disclaimer that MATCONT isn't strictly necessary
+     * XPP is all you need
+     * Can use MATCONT if you want though
+
+** Slides
+   * Intro to MATCONT
+     * MATLAB-based bifurcation analysis
+     * CL and GUI version; both do the same thing
+     * Fully integrated into MATLAB
+     * More sleek interface than XPP
+     * Less crash'y than XPP
+     * Does basically the same stuff though
+     * Personally found it easier to use, once you get the basics of the interface
+     * More features than XPP
+       * Show table of bifurcations it can continue or detect
+     * ODE only; no simulation or continuation of any other system classes
+   * Obtaining MATCONT
+     * Explain that it wouldn't be useful to live-demo the installation, so you've skipped through it
+     * Show where to find the instructions for installing it
+     * Screenshotted walk-through of where to get it from
+     * Screenshotted walk-through of extracting and installing it
+
+** Demo
+   * Using MATCONT
+     * Starting it
+     * Entering a model [PASTE IN THE FH MODEL!]
+     * What SSSNN means and why it's useful
+     * What the name, coordinates, parameters, etc. are
+     * Initializing some starter point
+     * Simulating a trajectory
+     * Plotting it
+     * Plotting it in state space, instead of temporally
+     * Continuing a point
+     * Showing the continuation on a bifurcation diagram
+     * Continuing periodic orbits from the Hopf points
+     * A note that results are stored in Systems directory, so that we can do whatever subsequent analysis and plotting we desire
+
+** PyDSTool
+   * Explain that it's a bit more in-depth as there's no GUI
+   * Explain the cases when no GUI can be an advantage
+   * Demo it through code screenshots on slides
+
+* Notes slides
+** Intro to MATCONT
+MATCONT is a MATLAB-based bifurcation analysis tool
+   * GUI version (demo'd here), and command-line version
+     * Both do the same thing; command-line is useful for big software projects, GUI version for standalone analyses
+   * Fully integrated into MATLAB
+     * Easier for some people; others won't really care
+   * More sleek interface than XPP, and less prone to crashing!
+     * This is really useful in practice
+     * Saves you from having to restart an analysis every time something goes wrong with XPP
+   * Personally I find it easier to use
+     * Makes a big difference, as you can spend more time thinking about the analysis, and less time spent fiddling with the software
+       
+** MATCONT vs XPP
+
+   * MATCONT's biggest appeal is that it's the most fully-featured ODE analysis tool ever
+   * Downside is that it /only/ works with ODEs
+   * XPP, PyDSTool can simulate lots of systems; MATCONT can't
+   * MATCONT has test functions to identify a vast range of bifurcations (many more than XPP)
+   * Sometimes that doesn't matter; eg. if you know what you're looking for, it's easy to identify a cusp bifurcation without needing the test functions
+   * PyDSTool let's us use custom test functions, so with a bit of coding and a bit of maths we could extend it to identify other bifurcations
+   * Out the box, MATCONT does more than all the others
+   * I find it the easiest one to use!
+
+** Obtaining MATCONT
+   
+[[./MATCONT_site.png]]
+
+Step 1: navigate to https://sourceforge.net/projects/matcont/
+
+** Obtaining MATCONT
+   
+[[./MATCONT_download.png]]
+
+Step 2: hit the download button and save somewhere memorable
+
+** Obtaining MATCONT
+   
+[[./MATCONT_extract.png]]
+
+Step 3: navigate to and extract the ZIP folder
+** Obtaining MATCONT
+   
+[[./MATCONT_extract2.png]]
+
+Step 3: navigate to and extract the ZIP folder
+
+** Obtaining MATCONT
+
+[[./MATCONT_open.png]]
+
+Step 4: open MATLAB and matcont.m
+
+** Obtaining MATCONT
+   
+[[./MATCONT_cd.png]]
+   
+Step 5: right-click, change current folder to ...Matcont
+
+** Obtaining MATCONT
+   
+[[./MATCONT_launch.png]]
+
+Step 6: launch MATCONT by typing `matcont' into the prompt
+
+** Issues
+
+MATCONT requires a compiler. If you can't run it, it'll likely be a compiler issue. The solution depends on your system. Google is your friend here.
+
+* Slides
+** Intro to MATCONT
+MATCONT is a MATLAB-based bifurcation analysis tool
+\vfill
+   * GUI version (demo'd here), and command-line version
+\vfill
+   * Both do the same thing; command-line is useful for big software projects, GUI version for standalone analyses
+\vfill
+   * Fully integrated into MATLAB
+\vfill
+   * More sleek interface than XPP, and less prone to crashing!
+     
+** MATCONT vs XPP
+
+|--------------------+------------+---------+----------|
+| Feature            | \matcont{} | XPPAUTO | PyDSTool |
+|--------------------+------------+---------+----------|
+| ODEs               | y          | y       | y        |
+| PDEs (discretized) | n          | y       | n        |
+| DDEs               | n          | y       | limited  |
+| SDEs               | n          | y       | limited  |
+| DAEs               | n          | y       | y        |
+| BVPs               | n          | y       | n        |
+| Hybrid systems     | n          | limited | y        |
+| Main language      | MATLAB     | C       | Python   |
+| Simulation tools   | y          | y       | y        |
+|--------------------+------------+---------+----------|
+
+** MATCONT vs XPP
+
+|-----------------------+-------------+------------+---------+----------------|
+| Bifurcation Type      | Codimension | \matcont{} | XPPAUTO | PyDSTool^{(2)} |
+|-----------------------+-------------+------------+---------+----------------|
+| Equilibrium           |           0 | C          | D,C     | D,C            |
+| Limit cycle           |           0 | C          | C       | C              |
+| Limit point           |           1 | D,C        | D,C     | D,C            |
+| Hopf                  |           1 | D,C        | D,C     | D,C            |
+| Limit point of cycles |           1 | D,C        | -       | D              |
+| Neimark-Sacker        |           1 | D,C        | D,C     | D,C            |
+| Period doubling       |           1 | D          | D,C     | D,C            |
+| Homoclinic            |           1 | C          | C       | -              |
+| Cusp                  |           2 | D          | -       | D              |
+| Bogdanov Takens       |           2 | D          | -       | D              |
+| Zero-Hopf             |           2 | D          | -       | D              |
+| Double Hopf           |           2 | D          | -       | D              |
+| Generalised Hopf      |           2 | D          | -       | D              |
+| Cusp point of cycles  |           2 | D          | -       | -              |
+| Chenciner             |           2 | D          | -       | -              |
+| Fold-Neimark-Sacker   |           2 | D          | -       | -              |
+| Flip-Neimark-Sacker   |           2 | D          | -       | -              |
+| Fold-Flip             |           2 | D          | -       | -              |
+| Double Niemark-Sacker |           2 | D          | -       | -              |
+| Generalised flip      |           2 | D          | -       | -              |
+|-----------------------+-------------+------------+---------+----------------|
+** Obtaining MATCONT
+   
+[[./MATCONT_site.png]]
+
+Step 1: navigate to https://sourceforge.net/projects/matcont/
+
+** Obtaining MATCONT
+   
+[[./MATCONT_download.png]]
+
+Step 2: hit the download button and save somewhere memorable
+
+** Obtaining MATCONT
+   
+[[./MATCONT_extract.png]]
+
+Step 3: navigate to and extract the ZIP folder
+** Obtaining MATCONT
+   
+[[./MATCONT_extract2.png]]
+
+Step 3: navigate to and extract the ZIP folder
+
+** Obtaining MATCONT
+
+[[./MATCONT_open.png]]
+
+Step 4: open MATLAB and matcont.m
+
+** Obtaining MATCONT
+   
+[[./MATCONT_cd.png]]
+   
+Step 5: right-click, change current folder to ...Matcont
+
+** Obtaining MATCONT
+   
+[[./MATCONT_launch.png]]
+
+Step 6: launch MATCONT by typing `matcont' into the prompt
+
+** Issues
+
+MATCONT requires a compiler. If you can't run it, it'll likely be a compiler issue. The solution depends on your system. Google is your friend here.
+** 

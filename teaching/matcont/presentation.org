@@ -1,0 +1,151 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: MatCont and PyDSTool
+#+DATE:
+
+
+* Slides
+** Intro to MATCONT
+MATCONT is a MATLAB-based bifurcation analysis tool
+\vfill
+   * GUI version (demo'd here), and command-line version
+\vfill
+   * Both do the same thing; command-line is useful for big software projects, GUI version for standalone analyses
+\vfill
+   * Fully integrated into MATLAB
+\vfill
+   * More sleek interface than XPP, and less prone to crashing!
+     
+** MATCONT vs XPP
+
+|--------------------+---------+---------+----------|
+| Feature            | MatCont | XPPAUTO | PyDSTool |
+|--------------------+---------+---------+----------|
+| ODEs               | y       | y       | y        |
+| PDEs (discretized) | n       | y       | n        |
+| DDEs               | n       | y       | limited  |
+| SDEs               | n       | y       | limited  |
+| DAEs               | n       | y       | y        |
+| BVPs               | n       | y       | n        |
+| Hybrid systems     | n       | limited | y        |
+| Main language      | MATLAB  | C       | Python   |
+| Simulation tools   | y       | y       | y        |
+|--------------------+---------+---------+----------|
+
+** MATCONT vs XPP
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+|-----------------------+-------------+---------+---------+----------|
+| Bifurcation Type      | Codimension | MatCont | XPPAUTO | PyDSTool |
+|-----------------------+-------------+---------+---------+----------|
+| Equilibrium           |           0 | C       | D,C     | D,C      |
+| Limit cycle           |           0 | C       | C       | C        |
+| Limit point           |           1 | D,C     | D,C     | D,C      |
+| Hopf                  |           1 | D,C     | D,C     | D,C      |
+| Limit point of cycles |           1 | D,C     | -       | D        |
+| Neimark-Sacker        |           1 | D,C     | D,C     | D,C      |
+| Period doubling       |           1 | D       | D,C     | D,C      |
+| Homoclinic            |           1 | C       | C       | -        |
+| Cusp                  |           2 | D       | -       | D        |
+| Bogdanov Takens       |           2 | D       | -       | D        |
+| Zero-Hopf             |           2 | D       | -       | D        |
+| Double Hopf           |           2 | D       | -       | D        |
+| Generalised Hopf      |           2 | D       | -       | D        |
+| Cusp point of cycles  |           2 | D       | -       | -        |
+| Chenciner             |           2 | D       | -       | -        |
+| Fold-Neimark-Sacker   |           2 | D       | -       | -        |
+| Flip-Neimark-Sacker   |           2 | D       | -       | -        |
+| Fold-Flip             |           2 | D       | -       | -        |
+| Double Niemark-Sacker |           2 | D       | -       | -        |
+| Generalised flip      |           2 | D       | -       | -        |
+|-----------------------+-------------+---------+---------+----------|
+** Obtaining MATCONT
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./MATCONT_site.png]]
+
+Step 1: navigate to https://sourceforge.net/projects/matcont/
+
+** Obtaining MATCONT
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./MATCONT_download.png]]
+
+Step 2: hit the download button and save somewhere memorable
+
+** Obtaining MATCONT
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./MATCONT_extract.png]]
+
+Step 3: navigate to and extract the ZIP folder
+** Obtaining MATCONT
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./MATCONT_extract2.png]]
+
+Step 3: navigate to and extract the ZIP folder
+
+** Obtaining MATCONT
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+[[./MATCONT_open.png]]
+
+Step 4: open MATLAB and matcont.m
+
+** Obtaining MATCONT
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./MATCONT_cd.png]]
+   
+Step 5: right-click, change current folder to ...Matcont
+
+** Obtaining MATCONT
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./MATCONT_launch.png]]
+
+Step 6: launch MATCONT by typing `matcont' into the prompt
+
+** Issues
+
+MATCONT requires a compiler. If you can't run it, it'll likely be a compiler issue. The solution depends on your system. Google is your friend here.
+
+** 
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+   
+   #+begin_center
+   live demo
+   #+end_center
+   
+** PyDSTool
+   
+  * Python-based continuation package
+  * Simulation and analysis routines for nonlinear dynamical systems
+  * More scope to integrate into scientific computing applications
+  * Steeper learning curve
+  * Developed by a Bristol alumnus!
+\vfill    
+https://github.com/robclewley/pydstool
