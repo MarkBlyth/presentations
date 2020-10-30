@@ -1,0 +1,178 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Knots, collocation, writing
+#+DATE: [2020-11-02 Mon]
+
+#+begin_comment
+  * Tried Newton CBC with more knots (20, instead of 5)
+    * It works a bit better, in that the solution solves the system to a higher degree of accuracy
+    * Output looks `curvier'
+    * Takes a lot longer to run
+    * Still `jumps'
+  
+  * Edited, formatted and submitted continuation paper
+
+  * Polished up the PyDSTool code
+
+  * Started writing annual review
+
+  * Dug into collocation references
+    * Currently pen-and-papering some collocation methods
+    * It's fun!
+    
+  * Next week's focus:
+    * Annual review write-up
+    * Lab group presentation
+    * Collocation maths
+
+  * Perhaps skip meeting after this, as I don't expect to have much actual research to show by then
+#+end_comment
+
+* Background
+** Week's activities
+   * Spline-Newton CBC with more knots
+     * Goal: more numerical stability
+     * Different results, but not really any better
+\vfill
+   * Updated continuation paper
+     * Edited, formatted, submitted
+\vfill
+   * Looked into collocation references
+\vfill
+   * Started annual review report
+     
+* More-knots CBC
+** Newton iteration issues
+  * Solution jumps
+    * Probably a finite-differences issue?
+    * But, Jacobian is always well-conditioned
+\vfill
+  * Converged solution doesn't actually solve continuation equations
+    * Newton iterations should, but don't, give a vector that, when passed to the continuation equations, give a zero output
+    * More iterations don't help
+    * Different convergence criteria don't improve things
+\vfill
+  * Idea: try more knots!
+    * More knots = more attainable accuracy = perhaps better chance of finding a solution
+    
+** Baseline: 5 knots
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+[[./5_knots_cbc.pdf]]
+
+  * Minimum 3 interior knots for a valid BSpline model
+  * Solution jumps
+  * Converged Newton-iteration vectors don't solve the continuation equations accurately
+    
+** 20 knots
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+[[./20_knots_cbc.pdf]]
+
+  * Simulation is notably slower to run
+  * Solution still jumps
+  * Converged Newton-iteration vectors solve system to higher accuracy than before
+
+** 30 knots
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+[[./30_knots_zoom.pdf]]
+
+  * Simulation is even slower to run
+  * Solution jumps at about the same place
+  * Converged Newton-iteration vectors again solve system to higher accuracy
+
+** Things to note
+  * SciPy solvers still get a solution with 5 knots
+    * Means the equations can be solved, but not by a Newton solver
+    * Doesn't quite make sense...
+      
+\vfill
+ * Solution is jumping after the second fold
+   * I'd have expected this to be one of the more numerically stable places
+    
+** Other things to try
+  * Adaptive stepsize
+    * Should allow greater accuracy around difficult regions (eg. folds)
+\vfill
+  * Adaptive knots
+    * Essential for `harder' (eg. neuronal) signals
+    * (Presumably) unimportant here
+\vfill
+  * Idea: Jacobian checking
+    * Use a secant predictor to estimate the next Jacobian
+    * If the finite-differences Jacobian differs much from the secant prediction, try FD again with a new stepsize
+    * Extension: adaptive-stepsize finite differences
+
+* New gain CBC
+** 5 knots, \(K_p = 2\)
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+[[./5_knots_cbc_kp_2.pdf]]
+
+Another thing to try: increasing the control gain
+  * Slight improvement in results
+
+** Effects of control gain
+
+  * Was originally using \(K_p = 1\)
+    * This worked fine for Duffing Fourier
+    * Keeping \(K_p\) as low as possible seems to give the best-possible accuracy
+\vfill
+  * Using \(K_p = 2\) delayed the `jump'
+    * Jump region is controllable with \(Kp=1\) for Fourier, but not splines
+    * Still doesn't explain why non-Newton solvers could find a solution at \(K_p=1\)!
+\vfill
+  * Intuitively, increasing \(K_p\) would make it /harder/ to find a correct solution, not easier
+    * In limit, large \(K_p\) means every control target solves the continuation equations, whether or not they're noninvasive
+    * Intuition: smaller \(K_p\) gives a larger gradient at the fixed-point, and therefore a more accurate solution can be found
+
+* Collocation
+  #+begin_comment
+Why I'm trying it
+  Let's me investigate spline continuation without weird control effects
+What is it?
+Why use it?
+Why I'm spending so long on it
+   Learning the orthogonal collocation method used in normal continuation
+   Then learning splines for solving BVPs
+   Then combining them
+   Then considering extras such as ensuring the spline model is periodic, choosing knots, choosing collocation points
+   Then finally, how to adaptively select knots, collocation points
+  #+end_comment
+  
+** Standard continuation
+
+Other work: considering a `standard' (non-control-based) continuation of the Duffing oscillator
+\vfill
+  * Removes any issue from controllers being weird
+  * Simplifies down to just a discretisation and predictor/corrector problem
+\vfill
+  * Plan of action:
+    1. Learn about collocation and periodic-orbit continuation */[in progress]/*
+    2. Learn about BSpline collocation for BVPs */[in progress]/*
+    3. Combine them
+    4. Add in the extras (BSpline periodicity structure, choice of knots, choice of collocation meshpoints, if any)
+    5. Code up and test
+    6. Make the step 4 extras adaptive
+
+* Next steps
+** Next steps
+   * Lab group presentation
+\vfill
+   * Annual review report
+\vfill
+   * Later...
+     * More collocation
+     * `Standard' continuation
+     * Adaptive algos
