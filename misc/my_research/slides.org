@@ -1,0 +1,25 @@
+#+OPTIONS: toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+DATE:
+
+* The problem
+  * We have lots of differential equations for modelling neurons
+  * Differential equations allow us to understand neural excitability, spiking and bursting in terms of bifurcations
+    * A bifurcation is a manifold in parameter space where system dynamics change
+  * Nonlinear dynamics gives us some excellent tools for studying these differential equation bifurcations
+    * This has given us lots of insights into neuronal dynamics
+  * Issue: all these insights are from mathematical models, not real cells!
+    * What if the models don't properly capture the physics? What if neuronal dynamics are more diverse than our models claim?
+
+* The goal
+  * Nonlinear dynamics uses numerical continuation to study bifurcations in models
+  * Control-based continuation (CBC) extends numerical continuation for use with physical systems
+    * Demonstrated successfully on nonlinear mechanical systems
+    * Yet to be tested on biological experiments
+  * Goal: use control-based continuation to perform an experimental bifurcation analysis of neurons
+    1. Develop the CBC methodology for applications to biological systems
+    2. Design an experimental setup for controlling live neurons
+    3. Perform an experimental bifurcation analysis of living cells

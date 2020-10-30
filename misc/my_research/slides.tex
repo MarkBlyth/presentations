@@ -1,0 +1,65 @@
+% Created 2020-10-26 Mon 12:35
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\author{Mark Blyth}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={Mark Blyth},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+
+\begin{frame}[label={sec:orgd214be2}]{The problem}
+\begin{itemize}
+\item We have lots of differential equations for modelling neurons
+\item Differential equations allow us to understand neural excitability, spiking and bursting in terms of bifurcations
+\begin{itemize}
+\item A bifurcation is a manifold in parameter space where system dynamics change
+\end{itemize}
+\item Nonlinear dynamics gives us some excellent tools for studying these differential equation bifurcations
+\begin{itemize}
+\item This has given us lots of insights into neuronal dynamics
+\end{itemize}
+\item Issue: all these insights are from mathematical models, not real cells!
+\begin{itemize}
+\item What if the models don't properly capture the physics? What if neuronal dynamics are more diverse than our models claim?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org2e23df2}]{The goal}
+\begin{itemize}
+\item Nonlinear dynamics uses numerical continuation to study bifurcations in models
+\item Control-based continuation (CBC) extends numerical continuation for use with physical systems
+\begin{itemize}
+\item Demonstrated successfully on nonlinear mechanical systems
+\item Yet to be tested on biological experiments
+\end{itemize}
+\item Goal: use control-based continuation to perform an experimental bifurcation analysis of neurons
+\begin{enumerate}
+\item Develop the CBC methodology for applications to biological systems
+\item Design an experimental setup for controlling live neurons
+\item Perform an experimental bifurcation analysis of living cells
+\end{enumerate}
+\end{itemize}
+\end{frame}
+\end{document}
