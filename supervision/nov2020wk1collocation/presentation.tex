@@ -1,4 +1,4 @@
-% Created 2020-10-30 Fri 12:49
+% Created 2020-10-30 Fri 14:11
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,20 +30,13 @@
 \maketitle
 
 \section{Background}
-\label{sec:orgddfbb1e}
-\begin{frame}[label={sec:org81147a2}]{Week's activities}
+\label{sec:org5e54efc}
+\begin{frame}[label={sec:orgcce9bfc}]{Week's activities}
 \begin{itemize}
 \item Spline-Newton CBC with more knots
 \begin{itemize}
 \item Goal: more numerical stability
 \item Different results, but not really any better
-\end{itemize}
-\end{itemize}
-\vfill
-\begin{itemize}
-\item Updated continuation paper
-\begin{itemize}
-\item Edited, formatted, submitted
 \end{itemize}
 \end{itemize}
 \vfill
@@ -57,22 +50,22 @@
 \end{frame}
 
 \section{More-knots CBC}
-\label{sec:org1938be4}
-\begin{frame}[label={sec:org7f4e2ae}]{Newton iteration issues}
-\begin{itemize}
-\item Solution jumps
-\begin{itemize}
-\item Probably a finite-differences issue?
-\item But, Jacobian is always well-conditioned
-\end{itemize}
-\end{itemize}
-\vfill
+\label{sec:org0f96608}
+\begin{frame}[label={sec:org5c0c013}]{Newton iteration issues}
 \begin{itemize}
 \item Converged solution doesn't actually solve continuation equations
 \begin{itemize}
 \item Newton iterations should, but don't, give a vector that, when passed to the continuation equations, give a zero output
 \item More iterations don't help
 \item Different convergence criteria don't improve things
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Solution jumps
+\begin{itemize}
+\item Jacobian is always well-conditioned
+\item Probably a finite-differences issue?
 \end{itemize}
 \end{itemize}
 \vfill
@@ -84,7 +77,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org47d787e},plain]{Baseline: 5 knots}
+\begin{frame}[label={sec:org0b37d27},plain]{Baseline: 5 knots}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./5_knots_cbc.pdf}
 \end{center}
@@ -96,7 +89,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orga8d5313},plain]{20 knots}
+\begin{frame}[label={sec:orgb81d58b},plain]{20 knots}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./20_knots_cbc.pdf}
 \end{center}
@@ -108,7 +101,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd2ac0eb},plain]{30 knots}
+\begin{frame}[label={sec:org338e3bc},plain]{30 knots}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./30_knots_zoom.pdf}
 \end{center}
@@ -120,7 +113,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orga435a3a}]{Things to note}
+\begin{frame}[label={sec:orgf096a34}]{Things to note}
 \begin{itemize}
 \item SciPy solvers still get a solution with 5 knots
 \begin{itemize}
@@ -138,7 +131,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgc15725d}]{Other things to try}
+\begin{frame}[label={sec:orgd9a5006}]{Other things to try}
 \begin{itemize}
 \item Adaptive stepsize
 \begin{itemize}
@@ -165,32 +158,15 @@
 \end{frame}
 
 \section{New gain CBC}
-\label{sec:orgf00e530}
-\begin{frame}[label={sec:orgaad3693},plain]{5 knots, \(K_p = 2\)}
-\begin{center}
-\includegraphics[width=.9\linewidth]{./5_knots_cbc_kp_2.pdf}
-\end{center}
-
+\label{sec:org8d269a0}
+\begin{frame}[label={sec:org585025d}]{Effects of control gain}
 Another thing to try: increasing the control gain
-\begin{itemize}
-\item Slight improvement in results
-\end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:org73ce33b}]{Effects of control gain}
+\vfill
 \begin{itemize}
 \item Was originally using \(K_p = 1\)
 \begin{itemize}
 \item This worked fine for Duffing Fourier
-\item Keeping \(K_p\) as low as possible seems to give the best-possible accuracy
-\end{itemize}
-\end{itemize}
-\vfill
-\begin{itemize}
-\item Using \(K_p = 2\) delayed the `jump'
-\begin{itemize}
-\item Jump region is controllable with \(Kp=1\) for Fourier, but not splines
-\item Still doesn't explain why non-Newton solvers could find a solution at \(K_p=1\)!
+\item Keeping \(K_p\) as low as possible seems to give the best-possible accuracy with Fourier
 \end{itemize}
 \end{itemize}
 \vfill
@@ -203,9 +179,39 @@ Another thing to try: increasing the control gain
 \end{itemize}
 \end{frame}
 
+\begin{frame}[label={sec:orgbc90727},plain]{5 knots, \(K_p = 2\)}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./5_knots_cbc_kp_2.pdf}
+\end{center}
+
+\begin{itemize}
+\item Unexpected: slight improvement in results
+\item Using \(K_p = 2\) delayed the `jump'
+\begin{itemize}
+\item Jump region is controllable with \(Kp=1\) for Fourier, but not splines
+\end{itemize}
+\item \alert{Still doesn't explain why non-Newton solvers could find a solution at \(K_p=1\)!}
+\begin{itemize}
+\item If the SciPy solver can find a solution at \(K_p = 1\), why can't a Newton solver?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org864fc78},plain]{20 knots, \(K_p = 2\)}
+\begin{center}
+\includegraphics[width=.9\linewidth]{./20_knots_kp_2.pdf}
+\end{center}
+
+\begin{itemize}
+\item Solution takes a huge leap at the end, but it's a correct leap
+\item It works, but doesn't seem like it should; opposite result to what was expected
+\item \alert{Still doesn't explain what was going wrong with \(K_p = 1\)}
+\end{itemize}
+\end{frame}
+
 \section{Collocation}
-\label{sec:org12e0767}
-\begin{frame}[label={sec:orgc3102a0}]{Standard continuation}
+\label{sec:org55fea93}
+\begin{frame}[label={sec:orga731761}]{Standard continuation}
 Other work: considering a `standard' (non-control-based) continuation of the Duffing oscillator
 \vfill
 \begin{itemize}
@@ -227,8 +233,8 @@ Other work: considering a `standard' (non-control-based) continuation of the Duf
 \end{frame}
 
 \section{Next steps}
-\label{sec:orgefb1b43}
-\begin{frame}[label={sec:orge955673}]{Next steps}
+\label{sec:orgea63103}
+\begin{frame}[label={sec:org532f1ef}]{Next steps}
 \begin{itemize}
 \item Lab group presentation
 \end{itemize}

@@ -6,39 +6,11 @@
 #+TITLE: Knots, collocation, writing
 #+DATE: [2020-11-02 Mon]
 
-#+begin_comment
-  * Tried Newton CBC with more knots (20, instead of 5)
-    * It works a bit better, in that the solution solves the system to a higher degree of accuracy
-    * Output looks `curvier'
-    * Takes a lot longer to run
-    * Still `jumps'
-  
-  * Edited, formatted and submitted continuation paper
-
-  * Polished up the PyDSTool code
-
-  * Started writing annual review
-
-  * Dug into collocation references
-    * Currently pen-and-papering some collocation methods
-    * It's fun!
-    
-  * Next week's focus:
-    * Annual review write-up
-    * Lab group presentation
-    * Collocation maths
-
-  * Perhaps skip meeting after this, as I don't expect to have much actual research to show by then
-#+end_comment
-
 * Background
 ** Week's activities
    * Spline-Newton CBC with more knots
      * Goal: more numerical stability
      * Different results, but not really any better
-\vfill
-   * Updated continuation paper
-     * Edited, formatted, submitted
 \vfill
    * Looked into collocation references
 \vfill
@@ -46,14 +18,14 @@
      
 * More-knots CBC
 ** Newton iteration issues
-  * Solution jumps
-    * Probably a finite-differences issue?
-    * But, Jacobian is always well-conditioned
-\vfill
   * Converged solution doesn't actually solve continuation equations
     * Newton iterations should, but don't, give a vector that, when passed to the continuation equations, give a zero output
     * More iterations don't help
     * Different convergence criteria don't improve things
+\vfill
+  * Solution jumps
+    * Jacobian is always well-conditioned
+    * Probably a finite-differences issue?
 \vfill
   * Idea: try more knots!
     * More knots = more attainable accuracy = perhaps better chance of finding a solution
@@ -113,6 +85,18 @@
     * Extension: adaptive-stepsize finite differences
 
 * New gain CBC
+** Effects of control gain
+
+Another thing to try: increasing the control gain
+\vfill
+  * Was originally using \(K_p = 1\)
+    * This worked fine for Duffing Fourier
+    * Keeping \(K_p\) as low as possible seems to give the best-possible accuracy with Fourier
+\vfill
+  * Intuitively, increasing \(K_p\) would make it /harder/ to find a correct solution, not easier
+    * In limit, large \(K_p\) means every control target solves the continuation equations, whether or not they're noninvasive
+    * Intuition: smaller \(K_p\) gives a larger gradient at the fixed-point, and therefore a more accurate solution can be found
+
 ** 5 knots, \(K_p = 2\)
    :PROPERTIES:
    :BEAMER_opt: plain
@@ -120,22 +104,22 @@
    
 [[./5_knots_cbc_kp_2.pdf]]
 
-Another thing to try: increasing the control gain
-  * Slight improvement in results
-
-** Effects of control gain
-
-  * Was originally using \(K_p = 1\)
-    * This worked fine for Duffing Fourier
-    * Keeping \(K_p\) as low as possible seems to give the best-possible accuracy
-\vfill
+  * Unexpected: slight improvement in results
   * Using \(K_p = 2\) delayed the `jump'
     * Jump region is controllable with \(Kp=1\) for Fourier, but not splines
-    * Still doesn't explain why non-Newton solvers could find a solution at \(K_p=1\)!
-\vfill
-  * Intuitively, increasing \(K_p\) would make it /harder/ to find a correct solution, not easier
-    * In limit, large \(K_p\) means every control target solves the continuation equations, whether or not they're noninvasive
-    * Intuition: smaller \(K_p\) gives a larger gradient at the fixed-point, and therefore a more accurate solution can be found
+  * *Still doesn't explain why non-Newton solvers could find a solution at \(K_p=1\)!*
+    * If the SciPy solver can find a solution at \(K_p = 1\), why can't a Newton solver?
+
+** 20 knots, \(K_p = 2\)
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+
+   [[./20_knots_kp_2.pdf]]
+   
+  * Solution takes a huge leap at the end, but it's a correct leap
+  * It works, but doesn't seem like it should; opposite result to what was expected
+  * *Still doesn't explain what was going wrong with \(K_p = 1\)*
 
 * Collocation
   #+begin_comment
