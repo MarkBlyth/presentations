@@ -1,4 +1,4 @@
-% Created 2020-10-30 Fri 14:11
+% Created 2020-11-04 Wed 09:52
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:org5e54efc}
-\begin{frame}[label={sec:orgcce9bfc}]{Week's activities}
+\label{sec:org742cc8f}
+\begin{frame}[label={sec:org6695432}]{Week's activities}
 \begin{itemize}
 \item Spline-Newton CBC with more knots
 \begin{itemize}
@@ -50,8 +50,8 @@
 \end{frame}
 
 \section{More-knots CBC}
-\label{sec:org0f96608}
-\begin{frame}[label={sec:org5c0c013}]{Newton iteration issues}
+\label{sec:orgee4e00c}
+\begin{frame}[label={sec:org18b7fbc}]{Newton iteration issues}
 \begin{itemize}
 \item Converged solution doesn't actually solve continuation equations
 \begin{itemize}
@@ -77,7 +77,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org0b37d27},plain]{Baseline: 5 knots}
+\begin{frame}[label={sec:orgc29e5cb},plain]{Baseline: 5 knots}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./5_knots_cbc.pdf}
 \end{center}
@@ -89,7 +89,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb81d58b},plain]{20 knots}
+\begin{frame}[label={sec:org9235877},plain]{20 knots}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./20_knots_cbc.pdf}
 \end{center}
@@ -101,7 +101,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org338e3bc},plain]{30 knots}
+\begin{frame}[label={sec:org88cf10b},plain]{30 knots}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./30_knots_zoom.pdf}
 \end{center}
@@ -113,12 +113,12 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgf096a34}]{Things to note}
+\begin{frame}[label={sec:org6113814}]{Things to note}
 \begin{itemize}
 \item SciPy solvers still get a solution with 5 knots
 \begin{itemize}
-\item Means the equations can be solved, but not by a Newton solver
-\item Doesn't quite make sense\ldots{}
+\item Means the equations can be solved, but not by the Newton solver
+\item Presumably then, finite differences is unable to find an accurate gradient?
 \end{itemize}
 \end{itemize}
 
@@ -131,7 +131,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd9a5006}]{Other things to try}
+\begin{frame}[label={sec:org9b8f27f}]{Other things to try}
 \begin{itemize}
 \item Adaptive stepsize
 \begin{itemize}
@@ -158,8 +158,8 @@
 \end{frame}
 
 \section{New gain CBC}
-\label{sec:org8d269a0}
-\begin{frame}[label={sec:org585025d}]{Effects of control gain}
+\label{sec:org8930d19}
+\begin{frame}[label={sec:org1e39b62}]{Effects of control gain}
 Another thing to try: increasing the control gain
 \vfill
 \begin{itemize}
@@ -173,13 +173,14 @@ Another thing to try: increasing the control gain
 \begin{itemize}
 \item Intuitively, increasing \(K_p\) would make it \emph{harder} to find a correct solution, not easier
 \begin{itemize}
+\item Smaller gains mean bigger proportional errors mean more difference between invasive and noninvasive targets, between solutions and non-solutions
 \item In limit, large \(K_p\) means every control target solves the continuation equations, whether or not they're noninvasive
 \item Intuition: smaller \(K_p\) gives a larger gradient at the fixed-point, and therefore a more accurate solution can be found
 \end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgbc90727},plain]{5 knots, \(K_p = 2\)}
+\begin{frame}[label={sec:org860db2f},plain]{5 knots, \(K_p = 2\)}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./5_knots_cbc_kp_2.pdf}
 \end{center}
@@ -195,9 +196,11 @@ Another thing to try: increasing the control gain
 \item If the SciPy solver can find a solution at \(K_p = 1\), why can't a Newton solver?
 \end{itemize}
 \end{itemize}
+\vfill
+Idea: what's the solution basin of attraction?
 \end{frame}
 
-\begin{frame}[label={sec:org864fc78},plain]{20 knots, \(K_p = 2\)}
+\begin{frame}[label={sec:org727a869},plain]{20 knots, \(K_p = 2\)}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./20_knots_kp_2.pdf}
 \end{center}
@@ -210,8 +213,8 @@ Another thing to try: increasing the control gain
 \end{frame}
 
 \section{Collocation}
-\label{sec:org55fea93}
-\begin{frame}[label={sec:orga731761}]{Standard continuation}
+\label{sec:org7b0cb54}
+\begin{frame}[label={sec:orgbb6050d}]{Standard continuation}
 Other work: considering a `standard' (non-control-based) continuation of the Duffing oscillator
 \vfill
 \begin{itemize}
@@ -233,22 +236,19 @@ Other work: considering a `standard' (non-control-based) continuation of the Duf
 \end{frame}
 
 \section{Next steps}
-\label{sec:orgea63103}
-\begin{frame}[label={sec:org532f1ef}]{Next steps}
-\begin{itemize}
-\item Lab group presentation
-\end{itemize}
-\vfill
+\label{sec:org6338b8c}
+\begin{frame}[label={sec:orgba86097}]{Next steps}
 \begin{itemize}
 \item Annual review report
 \end{itemize}
 \vfill
 \begin{itemize}
-\item Later\ldots{}
+\item Then\ldots{}
 \begin{itemize}
 \item More collocation
 \item `Standard' continuation
-\item Adaptive algos
+\item Investigate solution basin of attraction?
+\item Adaptive CBC algos
 \end{itemize}
 \end{itemize}
 \end{frame}

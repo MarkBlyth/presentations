@@ -64,8 +64,8 @@
 
 ** Things to note
   * SciPy solvers still get a solution with 5 knots
-    * Means the equations can be solved, but not by a Newton solver
-    * Doesn't quite make sense...
+    * Means the equations can be solved, but not by the Newton solver
+    * Presumably then, finite differences is unable to find an accurate gradient?
       
 \vfill
  * Solution is jumping after the second fold
@@ -94,6 +94,7 @@ Another thing to try: increasing the control gain
     * Keeping \(K_p\) as low as possible seems to give the best-possible accuracy with Fourier
 \vfill
   * Intuitively, increasing \(K_p\) would make it /harder/ to find a correct solution, not easier
+    * Smaller gains mean bigger proportional errors mean more difference between invasive and noninvasive targets, between solutions and non-solutions
     * In limit, large \(K_p\) means every control target solves the continuation equations, whether or not they're noninvasive
     * Intuition: smaller \(K_p\) gives a larger gradient at the fixed-point, and therefore a more accurate solution can be found
 
@@ -109,6 +110,11 @@ Another thing to try: increasing the control gain
     * Jump region is controllable with \(Kp=1\) for Fourier, but not splines
   * *Still doesn't explain why non-Newton solvers could find a solution at \(K_p=1\)!*
     * If the SciPy solver can find a solution at \(K_p = 1\), why can't a Newton solver?
+\vfill
+Idea: what's the solution basin of attraction?
+#+begin_comment
+This makes it look like the solution has a narrow basin of attraction within which the Newton solver will converge; inaccuracy in previous solutions cascades, and, compounded with finite differences issues, causes a jump
+#+end_comment
 
 ** 20 knots, \(K_p = 2\)
    :PROPERTIES:
@@ -152,11 +158,10 @@ Other work: considering a `standard' (non-control-based) continuation of the Duf
 
 * Next steps
 ** Next steps
-   * Lab group presentation
-\vfill
    * Annual review report
 \vfill
-   * Later...
+   * Then...
      * More collocation
      * `Standard' continuation
-     * Adaptive algos
+     * Investigate solution basin of attraction?
+     * Adaptive CBC algos
