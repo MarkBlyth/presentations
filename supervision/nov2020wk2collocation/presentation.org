@@ -1,0 +1,133 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Collocation, collocation, collocation
+#+DATE: [2020-11-16 Mon]
+
+* Background
+** Week's work
+   * Collocation methods for standard continuation
+\vfill
+   * Annual review
+\vfill
+   * Brainwave: collocation methods for CBC
+
+* Annual review
+** Annual review
+Very positive! Main take-aways:
+\vfill
+    1. It's worth looking into how collocation could be used in CBC
+    2. Differentiation matrices, spectral, pseudospectral methods might let us find a Jacobian without finite differences
+    3. Next project should work towards some grand unifying goal
+       * Physiologists have lots of good experimental techniques for studying neurons; a CBC project would need to find a physiologically useful question to answer
+       * Alternatively, could explore the theoreticals of CBC -- noise-robustness, efficiency, accuracy, higher-codimension continuation, etc., to work answer an experimental nonlinear dynamics question
+       * Challenge is to find an overall question to answer that is useful its target community
+
+* Collocation
+** Collocation
+    * Deriving collocation equations for generic boundary value problems
+\vfill
+    * Re-read Kuznetsov Elements; realised I'm making things harder than they need to be
+    * Wikipedia suggested scalar coefficients, separate BSpline basis functions for each dimension
+    * More standard method: vector coefficients, scalar basis funcs shared across dimensions
+\vfill
+    * Re-deriving the collocation equations with scalar basis funcs
+\vfill
+    * Realising CBC could use collocation
+    * Deriving CBC collocation equations
+
+** Discretisations
+CBC discretisation:
+   1. Project the input signal onto a set of basis functions
+   2. Project the output signal onto a set of basis functions
+   3. Solve for equality between input and output coefficients
+\vfill
+AUTOesque discretisation:
+   1. Construct a boundary-value problem for the periodic orbit
+   2. Construct a mesh across the domain of the independent variable
+   3. Construct an approximate BVP solution-form
+   4. Find the basis func. coeff's s.t. the BVP is solved exactly at the meshpoints
+
+** Generalisations
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+Collocation doesn't seem applicable to CBC
+   * It's a method for solving differential equations
+   * We don't have access to any differential equations, only the IO map
+\vfill
+  * Consider the CBC IO map
+    * Maps some periodic control-target to some periodic system response
+    * We can consider the controlled system as some nonlinear operator on the space of periodic functions
+    * We seek a function that solves the operator's fixed-point problem
+\vfill
+  * Consider the boundary value problem
+    * The ODE represents some (possibly nonlinear) differential operator
+    * We seek a function that satisfies the differential operator, and some boundary conditions
+\vfill
+  * More abstract'ly: collocation helps solve an operator problem; CBC gives us an operator problem
+
+** Collocation for CBC
+Choose some points along our control target; find coefficients s.t. those points remain unchanged by the IO map
+\vfill
+   * Let \(C_T\) be the space of \(T\)-periodic functions
+   * Let \(N:C_T\to C_T\) be a nonlinear operator defined by the controlled system
+   * We seek \(x(t)\) s.t. \(N\left(x(Tt)\right) = x(Tt)\), \(t\in[0,1]\)
+   * Define a collocation mesh \(\xi_1 = 0 < \xi_2 < \dots < \xi_n = 1\)
+   * Assume a solution of form \(x(t) = \sum\beta_iB_i(t)\)
+   * Mandate solution correctness at collocation points
+     * \(N\left(\sum\beta_iB_i(\xi_i)\right) = \sum\beta_iB_i(\xi_i)\), \(i\in\{1,2,\dots,n\}\)
+   * Solve for \(\beta_i\) satisfying the above
+     
+\vfill
+We're free to choose basis func's \(B_i\); lots of collocation literature, lots of basis func choices
+
+** Collocation vs the standard method     
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+Standard method: basis func. coeff's are the object of interest; input and output functions are a means to an end
+  * We seek the basis function coefficients that remain unchanged when passed through the IO map
+  * We don't really care what the input and output functions are, because if their coefficients are the same, so are the signals
+  * This ceases to solve the undiscretised problem when we have any discretisation error
+\vfill
+Collocation: coefficients are a means to an end; input and output functions are the object of interest
+  * We seek coefficients s.t. chosen points remain unchanged by the IO map
+  * Coefficients are just the parameters we adjust to find this fixed-point; we don't care about their values
+  * The discretisation can be inexact and we can still find a solution!
+
+** Why doubt the standard method?
+   * The standard method is valid when the discretisation and un-discretisation operators are each other's inverse
+     * Can transform between functions, discretisations, and back, with zero error
+     * We assume the solution to a discretised map is representative of a solution to the undiscretised map
+     * We can prove /[quite easily]/ that this assumption breaks when there's discretisation error
+\vfill
+   * Not been an issue so far, as Fourier discretisation can be made exact to working precision on the comparatively simple signals used so far
+\vfill
+   * Bonus: collocation is thoroughly tried-and-tested; accepted method because it's very accurate and computationally efficient
+     
+** Challenges of collocation
+   * Noise-robustness
+     * We're requiring the signals to be exactly equal at the collocation points; this removes all the noise-filtering abilities of the basis functions
+     * Surrogates would fix this!
+     * Alternatively: collocate statistically -- model noise and find the statistically optimal coefficients
+\vfill
+   * Differentiation
+     * Perhaps there's alternative methods to finite-differences?
+     * Differentiation matrices? Spectral methods? Generalised secant methods?
+\vfill
+Interesting aside: take the infinite limit of number of collocation points; we then get the `minimally invasive' control reformulation I've discussed previously
+
+* Next steps
+** Next steps
+   * Take a break from /[but don't abandon!]/ standard-continuation, BSpline discretisation using the `standard' CBC discretisation method
+\vfill
+   * Try CBC BSpline discretisation using collocation
+   * Compare collocation basis functions
+\vfill
+   * Then... numerical methods
+     * Efficient collocation-system solvers, Jacobian estimation
+\vfill
+Target result: demonstrate efficient CBC discretisation using collocation methods
