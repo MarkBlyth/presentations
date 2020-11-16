@@ -1,0 +1,267 @@
+#+OPTIONS: toc:nil
+#+LATEX_CLASS: article
+#+AUTHOR: Mark Blyth
+#+TITLE: MARK'S NOTES THAT MUSTN'T BE PRESENTED
+#+DATE: [2020-11-04 Wed]
+
+* Background
+** Today's agenda
+
+Been writing my annual review recently.
+This presentation is aimed at giving an overview of that, as it nicely sums up what I've been up to so far, and what I want to get up to in the future.
+Wasn't quite sure how much depth to go into, so if you have any questions, stop me at any point and ask!
+
+  * *A brief summary of things*
+
+  * More CBC
+
+  * Results so far
+
+  * Current work
+
+  
+* A brief summary of things
+** What am I doing?
+   * Neurons are interesting
+     * Biological perspective: excitable cell; lots of reaction networks that produce surprisingly subtle functionalities within the cells
+     * Philosophical perspective: individual cells are phenomenologically simple, yet collect them together into a brain and suddenly consiousness emerges. How? Why? Where from?
+     * Mathematical perspective: neurons recieve their computational abilities from their intricate bifurcation structure, making them an excellent problem to study in nonlinear dynamics
+
+   * Nonlinear dynamics teaches us lots about neurons
+     * We have lots of good neuron models
+     * These models predict all sorts of different behaviours, and can, and do!, explain experimental observations
+     * As mathematicians, we tend to focus entirely on the model; even if it's not a good electrophysiological representation of a neuron, it doesn't necessarily matter as long as it has some interesting dynamics
+
+   * Models are wrong
+     * All models are wrong, but some are useful
+     * The best models of the neurons are the cells themselves
+     * What if we could perform our favourite analyses not on phenomenological models, but on the cells themselves?
+     * Double win: we get interesting nonlinear dynamics to play with, /and/ the results are biologically useful!
+
+** How am I doing it?
+   * Models are often analysed using numerical continuation
+     * Nonlinear dynamics are usually hard to study
+     * Instead of pen-and-papering everything, we can outsource the labour to a computer
+     * Numerical continuation lets us take something we can easily find, eg. equilibria, and track them to spot things that are harder to find, eg. bifurcations
+     * Very powerful tool; very widely used
+
+   * Numerical continuation needs a model
+     * The model encodes our assumptions about how the cells work
+     * If the assumptions are bad, the model will be unrepresentative, and the continuation results won't match reality
+     * What if instead, we could run the same analysis without a model?
+
+   * Control-based continuation doesn't
+     * CBC let's us perform continuation experiments without the need for a model
+     * If a system is observable and controllable, it's CBCable
+     * My overall goal is to study neurons using CBC
+
+** What needs to be done?
+  * Make it fast
+    * Neurons have a finite lifespan
+    * We could leave a mechanical system oscillating for days on end, but if we tried that with neurons, they would die
+    * There's some very slow steps in CBC; new mathematical techniques might allow some big speed-ups here
+
+  * Make it noise-robust
+    * CBC relies on experimental meausurements, which are often subject to lots of measurement noise
+    * The CBC algo, solvers, etc. must therefore be robust in the face of noise
+    * Furthermore, we could reasonably decide to model the neuron cells themselves as being a random dynamical system
+    * Considerations of stochastic dynamics would be a whole new kettle of fish, and potentially a very interesting and useful one!
+    * Stochastic continuation would be very useful eg. in aeroelastic flutter; perhaps treat turbulent fluid flow as a random influence, and see how the deterministic results change when randomness is considered
+
+  * Make it happen
+    * Everything so far has been in silico
+    * That means I've been simulating mathematical models, instead of using real cells
+    * Of course, the end goal is to move beyond models, so I'll need to consider how these methods would need to change for an experiment
+
+** How are those TODOs progressing?
+   * Efficiency
+     * Current work; lots of problems, lots of progress
+       * Currently studying how alternative discretisations could be employed to speed things up
+       * Lots going wrong, but in research that seems to be a sign of good progress...
+       * Very recently demonstrated it working for the first time; still lots of open questions, lots of issues about it not working how it should
+
+   * Noise-robustness
+     * One paper under review
+       * Has been discussed in my previous research update
+       * Essential idea is to take time-series data, fit a nonparametric regression model to it, and use that model in place of the data
+       * If we choose the models well, they'll accurately separate signal from noise
+       * Acts like an adaptive filter, allowing us to keep all the signal information, and none of the random fluctuations
+       * Downside is that I'd consider it to have a very limited set of usage cases; most of the time it wouldn't be a useful thing to do
+     * Other ideas under consideration
+       * Idea that's been mentioned a while ago but I'm yet to do anything with
+       * Replace continuation equations with a different set of equations that encodes exactly the same thing
+       * New equations should be noise-robust, and robust against discretisation approximation errors
+       * Big bonus: new equations can be solved efficiently with gradient-free methods, which will improve point 1 of efficiency
+       * Second big bonus: efficient solver methods are probabilistic, so will likely perform better in the face of noise
+
+   * Experiments
+     * Minireview of literature
+       * Had a look at microfluidic methods, electrode-based methods
+       * Compared single-cell and multicell microfludidic approaches, in terms of captured nonlinear dynamics, and experimental viability
+     * Some practical experience
+       * Helped build some other microfluidics in the clean room, to get an understanding of how it's done and what they look like
+   
+* More CBC
+** Today's agenda
+  * A brief summary of things
+
+  * *More CBC*
+
+  * Results so far
+
+  * Current work
+
+  
+
+** Control-based continuation
+This has been explained many times before, in the lab group meetings, so I'll keep things brief here and give only the very high-level overview.
+
+   * CBC works by tracking non-invasive control targets
+     * This is a control target that corresponds to something the system was already doing
+     * The controller therefore doesn't change how the system was behaving
+     * The only difference between the controlled and uncontrolled system, in this case, is that unstable equilibria and periodic orbits are stabilised, so they become visible
+     * Since they become visible, we can see how they move when we change a parameter
+     * This `seeing how they move' step is done with a continuation algo, in much the same way as with `normal' continuation
+
+   * It has been tested on `nice' systems, but biological systems aren't nice
+     * By `nice', I mean...
+       * Deterministic: no randomness within the dynamics
+       * Low noise in the observations
+       * `Simple' signals, with few high-frequency components; well-approximated by a shifted sine wave, as the dynamics are only weakly nonlinear
+     * Biological systems, such as neurons, don't follow the niceness rules
+       * Dynamics may be stochastic
+       * There's often quite a lot of measurement noise
+       * The signals are from a strongly nonlinear oscillator; have lots of high-frequency components; very very different to a sine wave
+
+   * Discretisation is a key part of this
+     * Finding and tracking the noninvasive control targets requires us to solve for the fixed point of some map
+     * This map maps from a function to a function
+     * Instead of working with the continuous, infinite-dimensional map, we instead approximate it with a finite, lower-dimensional map, in a process called discretisation
+     * We then attempt to solve the finite-dimensional equations using standard numerical methods, and hope that the results of the discretised case correspond to a solution of the original, continuous problem
+     * I don't know if these hopes are actually valid, and nor would I know how to prove that
+       
+I'll get back to the topic of discretisation later, as that's a key part of my current research.
+     
+* Results so far
+** Today's agenda
+   
+I have a couple of results so far.
+These are a tutorial paper, currently under review, and a conference paper, also currently under review.
+I'll talk briefly about these here.
+
+  * A brief summary of things
+
+  * More CBC
+
+  * *Results so far*
+
+  * Current work
+
+  
+
+** Paper 1: `Tutorial of \dots'
+#+begin_center
+Tutorial of numerical continuation for systems and synthetic biology
+#+end_center
+
+  * Already mentioned that numerical continuation is a very standard, widespread tool in nonlinear dynamics
+  * I spent a long time playing around with different continuation softwares while learning about neuronal dynamics
+  * This paper aims to bridge the gap between biologists and mathematicians
+  * Aims to expose numerical continuation, and some key ideas from nonlinear dynamics, to researchers without a nonlinear dynamics background
+  * Uses lots of examples to give a conceptual, high-level overview of the topic, so that readers can go on to understand work that builds on continuation, bifurcation theory, and so on
+
+** Paper 2: `Bayesian local \dots'
+   
+#+begin_center
+Bayesian local surrogate models for the control-based continuation of multiple-timescale systems
+#+end_center
+
+   * Noise-robustness is important in CBC
+     * A point I touched on earlier
+     * Lots of ways noise could enter the system
+     * We can't treat noise as a negligable side-issue; we must pay active attention to dealing with it
+     * This paper aims to do that, by using an adaptive filtering method
+
+   * Surrogate modelling is a possible route towards noise-robust experiments
+     * Instead of running CBC using raw noise-corrupted experimental measurements, we could instead filter the data
+     * Filtering needs to be done carefully!
+       * If we whack the data through a simple low-pass filter, we'll cut off the all-important high-frequency information
+     * Instead of using a simple low-pass filter, let's use a complicated one!
+     * Take the time series data
+     * Fit a nonparametric regression model to it
+     * With a well-chosen model, we can filter out the noise
+     * This works because a statistical model of the time series will describe the data as signal + noise; we fit a model to the signal part of it, and throw away the noise residuals
+     * We can then use the surrogate in place of the original data, to perform whichever analyses we wanted to do
+     * We can discretise the surrogate more accurately than we can the original data
+
+* Current work
+** Today's agenda
+
+That's a very brief summary of what I'm trying to acheive and what I've finished working on so far.
+Now we're going to move on to what I'm currently working on, and what I want to achieve next.
+
+  * A brief summary of things
+
+  * More CBC
+
+  * Results so far
+
+  * *Current work*
+
+  
+    
+** Periodic splines discretisation
+   * Discretisation is important
+     * The continuation equations are infinite-dimensional
+     * We have a map that takes a function as its input, and gives a function as its output
+     * We're searching for a function that remains unchanged when passed through this map
+     * Such a function exists, but to find it we need to reduce the problem to something more tractable
+     * This is where discretisation comes in
+     * We approximate the infinite-dimensional problem with a finite-dimensional problem
+     * The finite-dimensional problem is then tackled using standard numerical methods
+
+   * Efficiency is also important
+     * Another point I touched on earlier
+     * We want the experiments to run quickly, so that our cells survive
+     * A big issue in making this happen is the gradient step
+     * We're using numerical solvers on our continuation equatiosn
+     * Virtually all numerical solvers require a gradient to work
+     * Finding the gradient of an experimental system requires finite differences
+     * This means perturbing the input vector slightly, and noting how the output vector changes
+     * More elements in the input vector means more time spent perturbing, running to convergence, and measuring
+     * This all takes time
+     * Therefore, to speed things up, we want the fewest elements possible in our vector
+     * IE. we need a low-dimensional discretisation
+
+   * Splines could be efficient discretisors
+     * Neuronal signals have lots of high-frequency energy
+     * This HF energy is what gives the signals their spiking shapes
+     * The issue with this is that Fourier discretisation, as used so far in CBC, would require huge numbers of Fourier harmonics
+     * This gives a big discretisation, which means slow finite differences, and inefficient experiments
+     * Spline models are smooth piecewise-polynomial models
+     * We can make them periodic, too
+     * We can fit very complex curves by connecting the dots with pieces of polynomial
+     * This makes them a good discretisor candidate!
+     * Ideal: replace the Fourier basis functions with spline basis functions, for a novel discretisation
+     * This is my current work
+     * Bonus: spline discretisation might be more noise-robust, too
+     * Or it might not be
+
+** Current issues
+
+   * Newton solvers don't converge on a solution
+     * The discretised continuation equations are a set of nonlinear equations whereby we put in some vector, and get a vector as an output
+     * If the vector represents a noninvasive control target, the continuation equations will give the zero-vector as their output
+     * Therefore, the Newton iterations seek some input vector that solves these equations, and we know we've solved them when we plug the solution in and get zero out
+     * Unfortunately, the Newton iterations converge on a vector that doesn't actually solve the system
+     * The steps become negligable, but the resulting vectors don't solve the equations
+     * This is a problem, as it means the accepted results are wrong
+     * Nevertheless, a solution must exist, as it can be found using non-Newton solving methods
+     * My current hunch is that the issues are arising as a result of difficulties in calculating the gradient accurately
+
+   * The solution curve becomes numerically unstable
+     * As seen in the diagram, the solution jumps shortly after the second fold
+     * The real (analytic) solution does not jump, so clearly this is the result of something going wrong with the numerics
+     * My hope is that if I can find a solution to the gradient problem, it will fix this too
+
+   * Current work is therefore trying to fix this, so that I can test out the novel discretisation methods on neuronal data; all my discretisor experiments so far are on the weakly nonlinear Duffing oscillator

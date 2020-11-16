@@ -1,0 +1,124 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: A year in the life of Mark
+#+DATE: [2020-11-04 Wed]
+
+* Background
+** Today's agenda
+  * *A brief summary of things*
+\vfill
+  * More CBC
+\vfill
+  * Results so far
+\vfill
+  * Current work
+\vfill
+  
+* A brief summary of things
+** What am I doing?
+   * Neurons are interesting
+\vfill
+   * Nonlinear dynamics teaches us lots about neurons
+\vfill
+   * Models are wrong
+
+** How am I doing it?
+   * Models are often analysed using numerical continuation
+\vfill
+   * Numerical continuation needs a model
+\vfill
+   * Control-based continuation doesn't
+     
+** What needs to be done?
+  * Make it fast
+\vfill
+  * Make it noise-robust
+\vfill
+  * Make it happen
+
+** How are those TODOs progressing?
+   * Efficiency
+     * Current work; lots of problems, lots of progress
+\vfill
+   * Noise-robustness
+     * One paper under review
+     * Other ideas under consideration
+\vfill
+   * Experiments
+     * Minireview of literature
+     * Some practical experience
+   
+* More CBC
+** Today's agenda
+  * A brief summary of things
+\vfill
+  * *More CBC*
+\vfill
+  * Results so far
+\vfill
+  * Current work
+\vfill
+  
+** Control-based continuation
+   * CBC works by tracking non-invasive control targets
+\vfill
+   * It has been tested on `nice' systems, but biological systems aren't nice
+\vfill
+   * Discretisation is a key part of this
+     
+* Results so far
+** Today's agenda
+  * A brief summary of things
+\vfill
+  * More CBC
+\vfill
+  * *Results so far*
+\vfill
+  * Current work
+\vfill
+  
+
+** Paper 1: a tutorial
+
+#+begin_center
+/*Tutorial of numerical continuation for systems and synthetic biology*/
+#+end_center
+
+** Paper 2: on noise-robustness
+   
+#+begin_center
+/*Bayesian local surrogate models for the control-based continuation of multiple-timescale systems*/
+#+end_center
+\vfill
+   * Noise-robustness is important in CBC
+\vfill
+   * Surrogate modelling is a possible route towards noise-robust experiments
+
+* Current work
+** Today's agenda
+  * A brief summary of things
+\vfill
+  * More CBC
+\vfill
+  * Results so far
+\vfill
+  * *Current work*
+\vfill
+  
+** Periodic splines discretisation
+   * Discretisation is important
+\vfill
+   * Efficiency is also important
+\vfill
+   * Splines could be efficient discretisors
+
+** Current issues
+
+[[./5_knots_cbc.pdf]]   
+
+   * Newton solvers don't converge on a solution
+
+   * The solution curve becomes numerically unstable
