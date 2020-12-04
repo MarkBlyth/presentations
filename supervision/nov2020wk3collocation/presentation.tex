@@ -1,0 +1,308 @@
+% Created 2020-11-30 Mon 09:33
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usetheme{UoB}
+\author{Mark Blyth}
+\date{\textit{[2020-11-30 Mon]}}
+\title{Collocation for control-based continuation}
+\hypersetup{
+ pdfauthor={Mark Blyth},
+ pdftitle={Collocation for control-based continuation},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Intro}
+\label{sec:org96b2791}
+\begin{frame}[label={sec:orgf6fc485}]{Summary}
+\begin{itemize}
+\item Previous results: discussing how we could use BSplines for discretisation
+\begin{itemize}
+\item Lower-dimensional discretisations mean more speed
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Results: it's incredibly numerically finicky
+\begin{itemize}
+\item Numerical solvers struggle to get accurate results
+\item Takes a lot of trial and error to get close to a correct solution curve
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item This time: can we use an alternative discretisation?
+\end{itemize}
+\end{frame}
+
+\section{CBC problem formulation}
+\label{sec:orgd4e067e}
+\begin{frame}[label={sec:org33993e1}]{CBC goal}
+Say we have a system \(\dot{y} = g(y,\mu)\)
+\vfill
+\begin{itemize}
+\item Let \(y_s(\cdot/T_s)\) be a \(T_s\)-periodic solution, for parameter \(\mu_s\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Goal: given \((y_0, \mu_0, T_0)\), trace out solution family \(\Gamma = \{(y_s, \mu_s, T_s):s\in\mathbb{R}\}\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We seek noninvasive control targets to achieve this
+\begin{itemize}
+\item Noninvasive = target that can be tracked with zero control action
+\item Zero control action = system operating under its free dynamics
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgec896d5}]{Finding noninvasive control}
+\begin{itemize}
+\item The controlled system maps control target \(y_\text{in}\) to output \(y_\text{out}\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Denote this input-output, or IO map, by \(Y(y_s, T_s, \mu_s)\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Assume a proportional controller
+\end{itemize}
+\vfill
+\begin{itemize}
+\item A fixed-point of \(Y\) is noninvasive
+\begin{itemize}
+\item Fixed point means system output exactly matches control target
+\item Zero tracking error means zero proportional feedback
+\item Zero proportional feedback means controller is switched off
+\end{itemize}
+\end{itemize}
+\vfill
+We can use the IO map fixed-point-problem for our continuation equations!
+\end{frame}
+
+\begin{frame}[label={sec:orgd76f1a1}]{Solving the IO map}
+\begin{itemize}
+\item We want to solve the fixed-point problem \(y^*_s = Y(y^*_s, T_s, \mu_s)\)
+\begin{itemize}
+\item IO map is evaluated by running the controlled system; slow!
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Continuous problem; not numerically tractable
+\begin{itemize}
+\item To apply standard numerical methods, we must first discretise the system
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We seek some discretisation of the map
+\begin{itemize}
+\item Goal: find a finite-dimensional problem that we can pass to a numerical solver
+\item Select a discretised problem that also solves the continuous problem
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Collocation for CBC}
+\label{sec:org9cf54cc}
+\begin{frame}[label={sec:org6153527}]{Discretisation with Galerkin projections}
+Discretisation method used by all current CBC applications
+\vfill
+\begin{itemize}
+\item Take some signal \(y(t)\in\mathbb{R}\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Let \(\beta_i\), \(B_i(t)\), \(i=-n,\dots,0,\dots,n\) be the coefficients, basis functions of its \(n-\)truncated Fourier series
+\end{itemize}
+\vfill
+\begin{itemize}
+\item \(\beta_i\) is our discretisation, and \(\tilde{y} = \sum_{-n}^n \beta_iB_i(t)\) is our reconstruction of \(y\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item If \(\tilde{y} = Y(\tilde{y}, T_s, \mu_s)\), then \(\beta_i^\text{in} = \beta_i^\text{out}\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item To solve the fixed-point problem, we find the basis function coefficients that remain unchanged when passed through the IO map
+\begin{itemize}
+\item \(2n+1\)-dimensional problem; numerically tractable!
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org6a1ff6c}]{Issues with current CBC discretisation}
+\begin{itemize}
+\item Evaluation of continuation equations is \emph{slow}
+\begin{itemize}
+\item Newton iterations require a Jacobian, which requires finite differences
+\item This means we need to run physical system to convergence, many times
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We can only find the noninvasive solution \(y\) using Galerkin discretisation when \(y\in span\{B_1, B_2, \dots B_m\}\)
+\begin{itemize}
+\item This limits our choice of basis functions
+\item We might still be able to find an approximate solution when this doesn't hold, but I wouldn't know how to prove or disprove this
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgd6e38b4}]{BSpline discretisation}
+\begin{itemize}
+\item We can speed up prediction-correction by reducing number of evaluations
+\begin{itemize}
+\item Easily achievable with lower-dimensional discretisation
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item One option: use more `efficient' basis functions
+\begin{itemize}
+\item A Fourier basis is inefficient for neuronal signals; can we find more efficient basis functions?
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Discretisation with BSplines is very numerically difficult; hard to find an accurate solution, even when playing with
+\begin{itemize}
+\item Continuation stepsize
+\item Finite differences stepsize
+\item Number of basis functions
+\item Convergence tolerance
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Another option: can we use non-Fourier basis functions with another discretisation method?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org0919a72}]{Collocation}
+Instead of solving the problem exactly, by requiring the input and output discretisations to be exactly equal, we could solve it approximately
+\vfill
+\begin{itemize}
+\item Collocation defines a discrete approximation of the problem, that we can solve exactly
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We can always find an approximate solution when using collocation \emph{[I think]}
+\begin{itemize}
+\item Collocation solution will \emph{[hopefully]} be easier to find
+\item Conjecture: the collocation solution will be identical to the Galerkin projection solution in cases where Galerkin projection works
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Collocation discretisation -- hopefully less numerically fiddly
+\item Non-fourier basis functions -- lower-dimensional discretisation: faster!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org50baf68}]{Collocation setup}
+\begin{itemize}
+\item We approximate the solution with \(y_\text{in} = \sum \beta_i B_i(t)\), for some basis functions \(B_i(t)\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We split the signal period into a mesh \(\left[\xi_1=0 < \xi_2 < \dots < \xi_{n}=T_s\right]\)
+\end{itemize}
+\vfill
+\begin{itemize}
+\item We solve for \(\beta_i\) such that \(y_\text{in}(\xi_i) = y_\text{out}(\xi_i)\)
+\begin{itemize}
+\item We also add any phase constraints, periodicity constraints into the system
+\item Here, \(y_\text{out}(t) = Y(\sum\beta_iB_i(t), T_s, \mu_s)\)
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Collocation solution solves the fixed-point problem exactly, at the collocation meshpoints
+\begin{itemize}
+\item We assume it's a good approximation between meshpoints
+\item Resulting \(\beta_i\) give our signal discretisation for continuation
+\item Resulting function \(\sum\beta_i B_i(t)\) gives a control target
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgf31c4a6}]{Comparison of methods}
+\begin{itemize}
+\item Galerkin methods require us to translate from signal to discretisation, eg. using FFT
+\item Collocation does not, which offers a slight speed-up
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Galerkin basis functions will help filter noise off
+\item Collocation offers no noise-filtering
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Collocation automatically aims to find the best approximation; it should hopefully be robust to cases where a solution can only be found to a limited accuracy
+\item Galerkin methods aim for a correct solution straight away; this makes them harder to apply when we're limited in solution accuracy, eg. by not having enough Fourier harmonics
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgc1677c0}]{Potential collocation pitfalls}
+\begin{itemize}
+\item Collocation is not noise-robust
+\begin{itemize}
+\item We're searching for equality between input and output signals
+\item If we have measurement error, output values at the meshpoints are a random variable
+\item Instead of searching for equality, we would need a maximum-likelihood estimation on \(\beta_i\)
+\item Alternatively, use a surrogate model to filter the noise off!
+\end{itemize}
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Collocation finds an approximate solution
+\begin{itemize}
+\item We can only guarantee the discretised problem to be solved at the meshpoints
+\item Collocation solution may deviate from true solution between meshpoints, in which case we wouldn't have noninvasive control
+\item Could implement a solution-checker, by measuring the distance between input and output functions
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Where next?}
+\label{sec:org60f7ef2}
+\begin{frame}[label={sec:orgd77df3c}]{Next steps}
+\begin{itemize}
+\item Code up a collocation CBC simulation
+\end{itemize}
+\vfill
+\begin{itemize}
+\item See if it works!
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Perform numerical experiments to compare its solution accuracy against Galerkin discretisation
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Test its noise-robustness with surrogates
+\end{itemize}
+\end{frame}
+\end{document}
