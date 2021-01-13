@@ -1,0 +1,324 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Multi-timescale systems and slow-fast analysis
+#+DATE:
+
+  #+begin_comment
+State the goal of choosing this paper:
+
+    * Quite an interesting paper as it introduces some rather mathematical concepts in a biologically relevant way
+    * I'll try to do the same:
+      * To highlight some of the rich dynamics one might see in a multiscale system
+      * To explain why these multiscale dynamics are interesting biologically
+  #+end_comment
+
+* 1 Intro
+** Why multiple timescales?
+Biological systems consist of interacting parts operating over many timescales
+\vfill
+    * Accurate models need a combination of slowly and rapidly changing variables
+    * Doing anything useful with these models requires ways of understanding timescale interactions
+\vfill
+Simplest example
+\[\dot{x} = f(x,y)\]
+\[\dot{y} = \varepsilon g(x,y)\]
+
+** Subsystems and timescale separations
+   
+   * Consider \(\varepsilon\to0\)
+   * Let \(\tau = \varepsilon t\)
+\vfill
+
+*** Fast subsystem                                                    :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+    
+Fast subsystem:
+\begin{align}
+\frac{\mathrm{d}x}{\mathrm{d}t} &= f(x,y) \\ \nonumber
+\frac{\mathrm{d}y}{\mathrm{d}t} &= 0
+\end{align}
+
+*** Slow subsystem                                                    :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+Slow subsystem:
+\begin{align}
+f(x,y) &= 0 \\ \nonumber
+\frac{\mathrm{d}y}{\mathrm{d}\tau} &= g(x,y)
+\end{align}
+
+** COMMENT NOTES
+   
+   * Fast subsystem is an ODE
+   * y variable becomes a parameter to the ODE
+   * Dynamics of the fast subsystem can be investigated by looking at the bifurcations it undergoes when y changes
+
+   * Slow subsystem is a DAE
+
+** Example systems
+Mathematically interesting, and biologically useful: we can express lots of biology like this
+\vfill
+   * Pulsing behaviours
+     * Heart beats, neuron spikes, hormone pulses
+\vfill
+   * Mixed-mode oscillations
+     * Chemical systems, neuron voltage dynamics, pituitary cells
+\vfill
+   * Can classify neurons based on their fast subsystem topology
+     
+* 2 Relaxation oscillations and canards
+** A test model
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+van-der-Pol oscillator is the classic planar slow-fast system; we consider a topologically equivalent bio model
+
+\begin{align}
+\frac{\mathrm{d}V}{\mathrm{d}t} &= -(I_{Ca} + I_{Kdr} + I_{KATP} + I_{Ks} + I_l) \\ \nonumber
+\frac{\mathrm{d}s}{\mathrm{d}t} &= \frac{s_\infty(V) - s}{\tau_s}
+\end{align}
+
+#+ATTR_LATEX: :width .7\textwidth
+[[./dynamics.png]]
+
+** COMMENT NOTES
+   * V models the membrane potential of an electrophysiologically active pancreatic beta cell
+     * *Fast variable*
+   * I_Ca is the calcium current
+     * Assumed to be very fast to change, so we replace it with its steadystate value
+   * K_dr is the rectifying (downstroke) current
+     * It needs its dynamics including to model spikes, as the spikes arise as a result of the slower downstroke / rectifying current
+     * *We again replace it with a steady-state value, simply to get a planar system*
+   * KATP is the ATP-modulated potassium current, used by cells to sense glucose metabolism
+     * We can get ATP oscillations in beta cells, but that's not what we're interested in here, so assume it has a constant conductance
+   * Ks is another potassium ion channel
+     * This is our channel of interest, a slow-activating ion channel
+     * *Slow variable*
+   * I_l is the leakage, all other ion movements
+
+   * No sodium currents in mouse beta cells, so none in our model either
+
+   * Plot shows a simulation of the model
+   * Fast variable (voltage) shown on top, with square-wave dynamics
+   * Slow variable (ionic current) shown on bottom, with sawtooth dynamics
+** Planar dynamics
+
+Behaviours shown are typical of slow-fast systems
+   * States settle to equilibrium of fast subsystem
+   * Equilibrium evolves, disappears, reappears through changes in slow subsystem
+
+[[./phaseplane.png]]
+
+** COMMENT NOTES
+
+Explain nullclines, etc.
+*Mention critical manifold*
+
+* 3 Bursting
+** Higher dimensions
+   * Higher-dimensional models can also show relaxation oscillations, plus more
+   * Unlike the planar case, the fast subsystem attractor might no longer satisfy \(f(x,y)=0\)
+\vfill
+Consider our neuron model again, without the steadystate assumption on \(I_{Kdr}\)
+
+\begin{align}
+\frac{\mathrm{d}V}{\mathrm{d}t} &= -(I_{Ca} + I_{Kdr} + I_{KATP} + I_{Ks} + I_l) \\ \nonumber
+\frac{\mathrm{d}s}{\mathrm{d}t} &= \frac{s_\infty(V) - s}{\tau_s} \\
+\frac{\mathrm{d}n}{\mathrm{d}t} &= \frac{n_\infty(V) - n}{\tau_n} \nonumber
+\end{align}
+
+** Bursting
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+Our new model produces bursting oscillations!
+
+#+ATTR_LATEX: :width .8\textwidth
+[[./burst.png]]
+
+** COMMENT NOTES
+   
+   * Voltage-like variable alternates between a fast-spiking active phase, and a quiescent rest phase
+   * Our fast Kdr current follows the same behaviour
+   * The slow s-current changes very gradually, at a much slower rate
+   * Changes in the s-current / slow subsystem are what drive the transition between active and resting phases
+
+** Busting phase plane
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   
+#+ATTR_LATEX: :width .8\textwidth
+[[./burstplane.png]]
+
+** COMMENT NOTES
+   
+Not going to go into too much depth here since I've talked about bursting dynamics rather a lot
+
+  * Three panels show the fast-subsystem phase plane, for various slow subsystem values (smallest, middle, largest)
+  * At smallest s, we have only a stable limit cycle, yielding spikes
+  * At largest s, we have only a stable equilibrium, yielding quiescence
+  * Inbetween, we have both, so the system stays wherever it started off at
+
+  * Bursting arises because the equilibrium/limit cycle periodically disappear, causing the system to jump to the other stable set, and reversing the change of s
+    
+** Higher dimensional models
+
+What happens if we have two slow variables?
+
+\begin{align}
+\frac{\mathrm{d}V}{\mathrm{d}t} &= -(I_{Ca} + I_{Kdr} + I_{Ks1} + I_{Ks2} + I_l) \\ \nonumber
+\frac{\mathrm{d}n}{\mathrm{d}t} &= \frac{n_\infty(V) - n}{\tau_n} \\ \nonumber
+\frac{\mathrm{d}s_1}{\mathrm{d}t} &= \frac{s_{1\infty}(V) - s_1}{\tau_{s1}} \\ \nonumber
+\frac{\mathrm{d}s_2}{\mathrm{d}t} &= \frac{s_{2\infty}(V) - s_2}{\tau_{s2}} \nonumber
+\end{align}
+
+Same model as earlier, only we now have two fast variables \(V\) and \(n\), slow variable \(s_1\), and super-slow variable \(s_2\)
+
+** Higher dimensional models
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   * Previously, the slow variable switched spiking on and off
+   * Now, the very-slow variable switches the system from bursting to either quiescence or tonic spiking
+   * The slow-variable oscillates, and changes direction during the active phase
+     
+     
+#+ATTR_LATEX: :width .74\textwidth
+[[./phantomts.png]]
+
+** More dimensions = more robustness
+Planar bursting requires
+   * Bistability in the fast subsystem
+   * The slow-subsystem nullcline to intersect in the right place
+\vfill
+This limits the region of parameter space in which bursting can occur
+   * Not very good -- biology is noisy and imprecise; if we need very specific values, things probably won't work
+   * Adding additional slow dynamics makes things more robuts
+   * Interpretation: instead of shifting the state around, the slow variables shift the entire bifurcation diagram back and forth
+* 4 Robust non-planar canards
+** Canards
+   * Canards cause a rapid transition from quiescence to spiking
+   * Solution follows fast-subsystem unstable manifold
+     * Torus canards follow branches of UPO
+   * Canards are non-robust in planar systems
+     * Appear in exponentially small region of parameter space
+   * Complicated maths shows that these canards can appear robustly in non-planar systems
+
+#+ATTR_LATEX: :width .85\textwidth
+[[./planarcanard.png]]
+
+
+** Mixed-mode oscillations
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   * Canards arise from the existence of a folded node singularity
+   * The same structure allows mixed-mode oscillations
+     * System oscillates between bigger and smaller oscillations
+
+#+ATTR_LATEX: :width .7\textwidth
+[[./mmo.png]]
+
+
+** COMMENT NOTES
+
+  * Here we see mixed mode oscillations in a HH neuron
+  * Alternates between three big spikes, and one little subthreshold oscillation
+  * These dynamics appear in the HH equation at lower temperatures
+  * That could be interesting biologically
+    * Crab chewing is regulated by a bursting neuron
+    * The dynamics of this neuron change with temperature, much like this example
+    * That means the crabs can't eat when the sea gets too warm
+    * Global warming is killing the crabs because their neuronal dynamics have changed
+
+* Why are biologists interested in these dynamics?
+** Why are biologists interested?
+
+An example: the spinal cord
+\vfill
+   * Synaptic coupling is all excitory
+     * Expectation: active network, due to positive feedbacks
+     * Reality: mostly silent, occasional activity; /why?/
+   * Proposed model: synaptic depression; cells that fire together unwire
+     * Model shows relaxation oscillations
+   * Predictions from multiscale analysis:
+     * Electrical perturbations will cause shift between activity and quiescence
+     * Length of active, quiescent phase depends on perturbation timings
+   * Predictions confirmed experimentally, elucidating spinal cord neurology
+     
+
+** COMMENT NOTES
+   * Excitory means one neuron spiking will encourage its attached neurons to spike
+     * Opposite is inhibitory, where neuron spikes encourage neighbours not to spike
+   * Synaptic depression means synapse weakens when neurons either side of it fire together; no relation to excitation and inhibition
+   * Relaxation oscillations suggest the dynamics arise from a slow subsystem modulating a fast subsystem; we can artificially alter this behaviour by injecting current, causing a perturbation when we want it, rather than when the slow subsystem wants it
+   * This causes the system to jump between the two bistable branches, just like it would when a branch reaches a fold
+   * Perturbing early in the cycle means the next phase will be short, as it's already near the bifurcation point
+   * These model predictions were all demonstrated in experiments, meaning the model managed to explain why it do be like that
+
+     
+** COMMENT Why are biologists interested?
+Example 2: insulin production
+\vfill
+   * Modulated by bursting in pancreatic \(\beta\)-cells
+     * Silent at low glucose levels
+     * Burst at higher glucose levels
+     * More glucose = more time in active phase
+   * Model:
+     * More glucose = more ATP
+     * ATP activates Ca^{2+} pumps
+     * Active pumps mean Ca^{2+} accumulation takes longer in active phase, and is removed faster in silent phase
+   * More glucose then means longer active phase, shorter silent phase
+     * This explains all the obseved dynamics!
+   * Modelling predicted that the behaviours arise from interaction between ATP and Ca^{2+} pumps
+
+     
+** Practical issues
+   
+   * How do we identify how many timescales are present?
+   * How do we identify what those timescales are?
+   * How do we determine whether those timescales are distinct?
+   * How do we best partition multiple timescales, when it's not obvious what should be fast, medium, or slow?
+
+
+** COMMENT NOTES
+   
+   * How do we identify how many timescales are present?
+     * The models so far can be partitioned into slow and fast timescales
+     * We might need three timescales, or even more!
+     * Without prior knowledge of the system, there's no easy way to determine the number of timescales, or the dimensionality of each subsystem
+   * How do we identify what those timescales are?
+     * Nondimensionalisation can be used to extract the true timescales, if we have fitted a model
+     * This relies on having a fitted model, though!
+   * How do we determine whether those timescales are distinct?
+     * This may come down to arbitrary decisions
+     * If widening the timescale separation doesn't fundamentally change what goes on, they're probably distinct
+     * If it changes things slightly, it becomes a judgement call
+     * We would typically choose whether the timescales are distinct based on whether that assumption helps elucidate dynamics
+     * This is a judgement call, rather than any objective truth
+   * How do we best partition multiple timescales, when it's not obvious what should be fast, medium, or slow?
+     * Lots of slow variables makes the system hard to analyse; want to class as few variables as possible as being slow
+     * Lots of fast variables might not elucidate the dynamics
+     * What to do depends on the system in question, so it's again a bit of a judgement call
+
+#+begin_comment
+Highlight the practical issues here
+
+   * Identifying how many timescales is hard
+   * Identifying what those timescales are is hard
+   * Identifying whether those timescales are actually distinct is hard
+   
+Say we've fitted a model, and there's several different timescales; how do we best partition them?
+   * 3 fast 1 slow: doesn't capture results
+   * 1 fast 3 slow: hard to work with, can't really eludicate dynamics
+   * 1 fast 2 medium 1 slow: easier to work with, captures the results well
+What if we had even more variables?
+   * Could we have a spectrum of timescales? Or is that a stupid idea?
+#+end_comment
