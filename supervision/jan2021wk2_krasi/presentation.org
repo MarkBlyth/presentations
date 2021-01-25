@@ -1,0 +1,251 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Discretisation: the beginning of the end?
+#+DATE: [2021-01-18 Mon]
+
+#+begin_comment
+TODO:
+   * Run through presentation
+   * Look for anything missing from last 2 months' work
+   * Assuming all the past stuff was forgotten, what needs repeating and reiterating?
+   * What needs more detail to be properly understood?
+#+end_comment
+
+#+begin_comment
+High-level overview:
+   Last time:
+       collocation and Galerkin discretisation for CBC
+   Since then:
+       coded up collocation numerical continuation, tested with BSplines, but yet to do it with CBC;
+       also, systematically tested Galerkin BSpline;
+       found why I think its being numerically awkward;
+       tried to fix it
+   Tried to fix it with adaptive stepsizes; challenge is finding new hyperpars, and execution time
+   /Brief/ summary of year-plan, PhD plan
+   Questions regarding two possible thesis directions
+   
+Tentative goal: that conference with a student paper competition
+   Demonstrate BSpline CBC on a slow-fast system
+   vdP oscillator would be the prototypical slow-fast system
+   Being autonymous, it requires a phase constraint
+   Immediate goal:
+       get stepsizes working so I can be assured of CBC success;
+       get adaptive/intelligent BSpline knot selection working, because that'll be essential for BSplines to outperform Fourier at dimensionality;
+       implement a PLL phase constraint (or a standard derivative one?) for autonynous-system CBC;
+       test results on vdP model;
+       write up results!
+       Then, package code up into something easily readable, usable and reusable
+   Then... test out collocation CBC, wavelets, BayesOpt, ... and come up with a recipe book / adaptive-discretisation method, as proposed by Krasi last meeting
+   And...
+     Once I can discretise slow-fast systems, see what slow/fast analysis methods can be translated into a CBC framework
+     Then, use that for analysing and classifying bursters
+   Or...
+     Look into system identification, model identification, inverse problems
+     Use CBC bifurcation diagram to fit a neuron model
+     ...And to identify ion channels?
+   [Insert questions here re. biological realities vs. mathematical toys]
+#+end_comment
+
+* Background
+** Summary
+
+Fourier/Galerkin discretisation is inefficient for neuronal signals, so we need something better
+\vfill
+Last time:
+    * BSpline/Galerkin is numerically finicky
+    * Orthogonal collocation cold be a suitable alternative method
+\vfill
+This time:
+    * Collocation progress
+    * Progress on BSpline finickiness
+    * Work plan for the year
+      
+** COMMENT Summary
+
+   * Continuing POs requires a way of discretising them
+   * We want the discretisation to be low-dimensional, so that we can run the computations quickly
+   * We need lots of fourier harmonics to describe neuron signals; let's try something better
+   * Proposal was BSplines, but they have been hard to use in simulations
+   * Last time I also suggested how collocation might be used; this is the tried-and-tested standard method for numerical PO continuation
+      
+* Collocation
+** Collocation progress
+   
+   * Implemented `standard' orthogonal collocation
+     * Lagrange polynomial basis functions,  no control aspect
+\vfill
+   * Reformulated for BSpline basis functions
+     * Using Lagrange polynomials gives a picewise-polynomial solution, much like splines
+     * Key difference is spline basis includes smoothness requirements too, potentially useful for CBC
+     * Spline knots define solution mesh, simplifying problem slightly
+     * Numerically, both work nicely; can't rigorously say which one is better or worse
+\vfill
+   * Finished during Christmas; yet to build into a control-based continuation
+   
+** COMMENT Collocation progress
+   
+   * Implemented `standard' orthogonal collocation, as it would be used in AUTO or similar
+   * Motivation for this is twofold:
+     * Studying how collocation could be used in CBC
+     * Studying how BSpline discretisation might work or not-work, without the added complexity of controllers
+   * Initially, uses a mesh with lagrange polynomials over each interval; almost like splines, only without smoothness
+   * I adapted it to use BSplines instead, which is similar to running the standard method with the requirements of a maximally smooth solution
+   * This all worked very nicely; no major insights into BSpline discretisation, though...
+   
+** Collocation progress
+Numerical continuation of periodic orbits from a Hopf normal form
+#+ATTR_LATEX: :width .64\textwidth
+[[./collocation.pdf]]
+
+* TODO More BSplines
+#+begin_comment
+Put in some diagrams of where it works and where it doesn't
+#+end_comment
+** Testing BSpline/Galerkin
+BSpline/Galerkin struggles on some parts of the solution curve; why? Tested...
+    * Control gains: no major impact, within a sweetspot
+      * Big enough to stabilise UPOs, small enough to preserve numerical accuracy
+    * Solvers: SciPy and my DIY Newton
+      * No difference, good to see; my solver is significantly slower
+      * Suggests issues are from prediction/correction setup or existence-and-uniqueness, rather than Jacobian estimation
+    * Stepsizes: has a big impact with Fourier/Galerkin
+      * Fourier/Galerkin can be made to fail in the same way as BSpline/Galerkin, when bad stepsizes are chosen
+      * BSpline/Galerkin can't be made to work well when varying stepsizes
+      * /Maybe an adaptive stepsize is needed!/
+
+** COMMENT Testing BSpline/Galerkin
+   * Collocation was motivated by the difficulty in using BSplines with the usual Galerkin discretisation used in CBC
+   * While I knew the experiments would fail regularly, I didn't know exactly where, when or why
+   * Hard to fix a problem when you don't know what it is, so I did some systematic testing of possible culprites
+     
+Control gains:
+   * Can't do a control-based continuation if we can't control the system
+   * Perhaps the control gain was simply too small for the job?
+   * Alternatively, I expected a big control gain would lead to loss of accuracy, so maybe it was actually too big?
+   * Experiments revealled that there's a sweetspot zone, and the Kp I was testing lay right in the middle, so it's not really an issue
+     
+Solvers:
+   * We should get the same results regardless of what solver is used
+   * In practice, if the Jacobian is hard to numerically compute, some methods might outperform others
+   * They all worked the same, so the issue doesn't seem to be one of finite difference and jacobian approximation
+   * If it's not down to the steps themselves, then either...
+     * No solution exists
+     * A solution exists, but we start too far from it to converge
+   * Played with stepsize to investigate the last point
+     * I'd already done this with BSplines, and not seen any major successes
+     * Tried it instead with Fourier/Galerkin
+     * I could make Fourier/Galerkin fail by changing the stepsize; when it failed, it looked to fail in a similar place to BSplines
+     * Maybe then, it's the stepsize that's the issue?
+     * Perhaps I didn't succeed with BSpline stepsize because there's no one right value; maybe it needs to be small sometimes, and large elsewhere
+       * Maybe BSplines need adaptive stepsizes to succeed?
+
+** Adaptive stepsize methods
+   * Consider a prediction \(p(h)\), obtained for stepsize \(h\)
+   * Newton correction \(c(h) = p(h) - J_f^{-1}|_{p(h)}f\left(p(h)\right)\)
+   * Size of first step \(\delta(h)=\|J_{f}^{-1}|_{p(h)}f(p(h))\|\) estimates the error of the prediction
+   * If \(\delta\) is too big, shorten the stepsize and try again
+   * If \(\delta\) is too small, lengthen the stepsize for next time
+   * Bonus: use an asymptotic expansion to choose the best stepsize
+** Adaptive stepsize methods
+   * We can quantify the `speed of approach' with contraction rate \(\kappa\)
+     \[\kappa(h) := \frac{\|\text{second Newton step}\|}{\|\text{first Newton step}\|}\]
+   * By asymptotic expansion, \(\kappa(h) = \varkappa h^2 + \mathcal{O}(h^3)\)
+\vfill
+Strategy:
+   * Choose target contraction rate
+   * After each step, estimate the stepsize \(h=\sqrt{\frac{\kappa}{\varkappa}}\) that would have given our contraction rate
+   * Use that, stepsize from \(\delta\) asymptotic expansion, and current stepsize to choose next stepsize
+     
+** Adaptive stepsize results
+   * Monitoring contraction rate, and size of the first Newton correction
+   * This gives a lot of extra hyperparameters: min, max stepsize; initial stepsize; nominal contraction rate and predictor error
+     * Getting results means choosing sensible values for all of these, which isn't easy!
+   * Can't use the adaptive method with a pre-rolled solver; Newton Jacobian estimation is painfully slow; takes a long time to test hyperparameters
+     * Broyden update is the way to go
+\vfill
+No results so far; Newton solver diverges at first fold bifurcation, with or without adaptive stepsizes
+
+** Solver divergence
+Issue: Newton solver diverges at first fold; doesn't happen with Fourier discretisation
+   * Wasn't previously an issue as I'd run only 1 Newton step
+     * Interesting that it does happen; probably a result of the control aspect
+   * Convergence criteria: \(\|x_n - x_{n-1}\|<\mathrm{tol} ~~or f(x_n)<\mathrm{tol}\)
+     * With Fourier, \(x_n, f(x_n) \in \mathcal{O}(\mathrm{small})\)
+     * With BSplines, \(x_n, f(x_n) \in \mathcal{O}(1)\)
+   * Using the same tolerance implicitly applies looser convergence requirements to Fourier
+   * Proposals:
+     * Use relative tolerances instead, eg. \(\sum_i\left(\frac{x^i_n-x^i_{n-1}} {x^i_n} \right)^2\)
+     * Or, take the best solution from the first \(n\) iterations
+
+** TODO COMMENT Adaptive stepsize results
+   * Alongside monitoring contraction rate, I also monitor the size of the first Newton correction
+     * If the first step is really big, we've started a long way from the solution, so we should reduce the stepsize
+     * If the first step is really small, we've started very close to the solution, so we can afford to increase the stepsize
+   * Challenge is, we now have to define a lot more than just the stepsize
+     * Getting good results requires choosing sensible values for all the parameters
+     * This requires lots of trial and error
+   * Trial and error is slow because my Newton solver is slow, so I don't have any results yet
+
+* Current work-plan
+** Immediate plan
+Demonstrate how BSplines can be used for efficient CBC on slow-fast systems
+\vfill
+   * Check that adaptive stepsizes /do/ make splines work
+   * Switch Duffing for van der Pol oscillator
+   * Implement an appropriate (CBC-inspired or numerical-inspired) phase constraint
+   * Implement intelligent / adaptive BSpline knot selection
+     * BSpline knots generally need careful placement to be an efficient discretisor
+   * If it all works, write it up!
+\vfill
+Perhaps focus more on how CBC can be used on slow/fast systems, and less on discretisation
+     
+** Mid-term plan
+Lots of other discretisations could work
+\vfill
+    * Try collocation, wavelets, surrogate-based
+    * Produce a recipe book of discretisation methods, suggesting which to use when
+    * Develop an algo for the experiment to choose its best discretisor at each step?
+\vfill
+Covers similar research to the other proposed paper, challenge would be making it a unique contribution
+
+* Year work-plan + questions
+** Long-term plan
+Automated neuronal identification and classification
+\vfill
+   * Option 1: classify bursters from their fast subsystem bifurcations
+     * Approach 1: try to implement slow/fast analysis methods in a CBC framework
+     * Approach 2: use feedback control to gather data for fitting cubic Lienard model; analyse fitted model to extract classification
+     * Challenge: can't study each subsystem individually, on a real experiment
+   * Option 2: couple CBC to model identification procedure, and fit a `generic' HH-model
+     * Can hopefully discover a cell's ion channels and their kinetics, without any a priori knowledge
+     * Challenge: lots of different gating and conductance dynamics; a general model might be too general to accurately fit
+     * Simplification: use voltage, current, dynamic clamp results as prior information; CBC then becomes an enhanced model fitting method
+
+** Some questions
+   :PROPERTIES:
+   :BEAMER_opt: plain
+   :END:
+   * Are these ideas biologically useful?
+     * Burster classifications are interesting mathematically, but are they of biological significance?
+     * Is a classification experiment of interest to experimenters, or is it more a mathematical toy?
+   * Lots of interesting dynamics can appear in bursters and multi-timescale systems
+     * Mixed-mode oscillations, canards, torus canards, noise-induced bursting
+     * Are these dynamics important biologically, or are they more mathematical curiosities?
+     * Would slow-fast CBC be missing key biological dynamics by ignoring these behaviours?
+   * Is slow/fast enough? Do we need additional (medium, or super-slow) timescales?
+     * Seen some papers using 3 timescales; are two-timescale models too simple to capture real dynamics?
+   * Are burster classifications limited to single cells, or could the same methods reveal information about networks?
+
+* Next steps
+** Next steps
+This wek: NODYCON slides and presentation; then...
+\vfill
+   * Try adaptive stepsizes to demonstrate splines success on Duffing oscillator
+\vfill
+   * Generalise code to work on van der Pol oscillator
+     * Implement a phase constraint, and knot selection
+\vfill
+   * Test it all out!
