@@ -1,0 +1,481 @@
+% Created 2021-01-26 Tue 09:58
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\newenvironment{note}{\color{red}\bfseries ZZZ}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Mark Blyth}
+\date{}
+\title{NODYCON Presentation}
+\hypersetup{
+ pdfauthor={Mark Blyth},
+ pdftitle={NODYCON Presentation},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\(\dot{x} = f(x)\)
+
+\(\dot{x} = f(x) + u(x, x^*)\)
+
+\(u \equiv 0 \implies\) system operates under natural dynamics
+
+\(u = k_p(x^* - x)\)
+
+\(x_i = f(t_i) + \varepsilon_i\)
+
+\(\varepsilon_i \sim \mathcal{N}(0, \sigma^2)\)
+
+\section{4 mins Overview}
+\label{sec:orge460c03}
+\subsection{Numerical Continuation}
+\label{sec:orga34ee9f}
+
+\begin{itemize}
+\item Numerical continuation is the defacto numerical bifurcation analysis method
+\begin{itemize}
+\item \textbf{Talk a bit about what it is, how it works, what insights and results have been obtained through numerical continuation}
+\end{itemize}
+\item Numerical continuation requires a model
+\begin{itemize}
+\item \textbf{The reason for this is is that numerical continuation is a method for tracing out implicitly defined manifolds, for example a curve representing the equilibrium position of a system at some given parameter value}
+\item \textbf{To trace out an implicitly defined manifold, we need an implicit definition, here provided by a model of the system dynamics}
+\end{itemize}
+\item However in lots of real-world situations, a usable model isn't going to be available
+\begin{itemize}
+\item Model isn't suitable for use with the traditional continuation packages
+\begin{itemize}
+\item Agent-based simulations, where we don't have any sort of differential equations to describe the system
+\item Models that are computationally very expensive to run
+\end{itemize}
+\item Or the model doesn't exist
+\begin{itemize}
+\item Physical experiments
+\item Any time we have a real system and we're unable to fully capture its physics using equations, either because its too complicated, or we don't know enough about it
+\end{itemize}
+\item We still want to study the dynamics of these systems, and continuation is the best tool we have for studying dynamics, so a natural question to ask is whether there's a way we can apply numerical continuation to the cases where an appropriate model isn't available
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Control-based continuation [KEEP IT SHORT!]}
+\label{sec:org1e3ab4f}
+
+\begin{itemize}
+\item Control-based continuation, or CBC, is a reformulation of the traditional continuation paradigm
+\begin{itemize}
+\item While it can't help with computationally expensive models, \ldots{}
+\item It does allow us to define a continuable problem on blackbox and physical systems
+\item It allows us to apply continuation methods where our models are either not in the nice form we'd hope for with continuation, or don't exist at all
+\end{itemize}
+
+\item\relax [REALLY HIGH-LEVEL OVERVIEW OF HOW cbc WORKS: AIMS TO STABILISE STABLE AND UNSTABLE POs USING FEEDBACK CONTROL, AND TRACK THE SYSTEM'S FREE DYNAMICS BY TRACKING THE CONTROL TARGETS THAT LEAVE THE CONTROLLER SWITCHED OFF]
+\begin{itemize}
+\item We take a system, which we assume can be modelled by an ODE x dot equals f x
+\item We append a control term u to it
+\item This control term tries to drive the system to follow some control target x star
+\item When u=0 for all time, the system is operating under its free, uncontrolled dynamics
+\item Therefore any control target that can be tracked with zero control action must represent the natural, free dynamics of the system
+\item If we assume proportional control then u = kp( x star - x), and u is zero when the system exactly tracks its control target
+\item If the system were to deviate slightly from its target, the controller would push it back to where it should be, meaning unstable features have been stabilised and can also be observed!
+\item We call this noninvasive control; stabilises POs and equilibria, without changing their locations in phase space
+\item This gives us a zero-problem to work with -- when there's zero difference between the control target and the system output, our controller remains switched off, and the system is operating under its natural dynamics
+\item The CBC zero problem can be embedded into a standard continuation algorithm, to trace out dynamical features of interest
+\end{itemize}
+
+\item These dynamical features are typically limit cycles and equilibria
+\item For periodic orbits, these control targets are functions, so, much like with standard continuation, we need to discretise them if we want to track them
+\begin{itemize}
+\item\relax [While in principle there's no reason why they have to be Fourier], the coefficients of a signal's trucated Fourier series are used in all CBC experiments so far, for discretising the signal
+\item Multiple-timescale systems typically show rapid shifts in their output signals, which require large numbers of [higher-frequency] fourier harmonics to capture them
+\end{itemize}
+\end{itemize}
+
+
+\subsection{The role of discretisation}
+\label{sec:orgd38d6f4}
+
+\begin{itemize}
+\item All continuation methods use nonlinear solvers for prediction-correction steps
+\begin{itemize}
+\item Typically Newton or Newton-Broyden
+\item For periodic orbits CBC, our nonlinear solvers look for the function that can be tracked with zero control action
+\end{itemize}
+
+\item Functions cannot be used as solver inputs and outputs; instead, they must be discretised
+\begin{itemize}
+\item The solver is looking for noninvasive control targets, but these are functions and the solver can only handle simple vectors
+\item To run the solvers, we must therefore first translate the input function to a vector, apply the solver, then translate its output to a function
+\item These transformations are discretisations of the functions
+\item They give us a vector-valued representation of the functions, which \emph{can} be used with the solvers
+\end{itemize}
+
+\item CBC applications use Fourier discretisation
+\begin{itemize}
+\item The system output is projected onto its first \(n\) Fourier modes, and the projection coefficients are used as the signal discretisation
+\item We could use other methods, but there are some good motivations for Fourier
+\begin{itemize}
+\item First, Fourier explicitly encodes periodicity; this is useful since we're modelling periodic system behaviours
+\item Second, the Fourier basis functions have global support, which (one would hope) means they are as effective as possible at averaging out noise
+\item It's easy to find noninvasive control: simply find the control target fourier coefficients that produce identical system output fourier coefficients
+\end{itemize}
+\end{itemize}
+
+\item Multiple-timescale systems typically require many Fourier harmonics
+\begin{itemize}
+\item For the systems studied so far with CBC, signals have been well-described with comparatively few Fourier harmonics
+\item For example, a duffing-like oscillator with nonlinear stiffening; it shows off nonlinear behaviours, but the output signal is comparatively sinusoidal
+\item This doesn't hold for multiple-timescale systems
+\item Even the simplest examples, such as the van der Pol oscillator, show regular transitions between behaviours which require many Fourier harmonics to caputre
+\item This is a problem\ldots{}
+\end{itemize}
+
+\item Larger numbers of Fourier harmonics cause less noise-robustness
+\begin{itemize}
+\item This means it's hard to apply CBC to multiscale systems as it's difficult to discretise signals to a high degree of accuracy
+\item \textbf{Insert fig from section 1.2 here}
+\item Fourier have infinite support so we would expect them to filter off noise better than other basis functions, so if we were to change the discretisation we would likely see these effects becoming even worse
+\end{itemize}
+
+\item We can't fitler the noise off using simple filters
+\begin{itemize}
+\item Filters impart a phase shift on the signal, which, while not necessarily problematic, is an extra inconvenience when dealing with phase conditions
+\item Filters indiscriminately remove high-frequency information, meaning both noise and important signal information are lost
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Surrogate models and surrogate data}
+\label{sec:org18900ce}
+
+\begin{itemize}
+\item We can't apply simple filters to the data, and we can't use the raw data as is, otherwise we'll have inaccurate discretisations; instead, we propose a surrogates-based approach
+\begin{itemize}
+\item We don't consider the data themselves, as they're noise-corrupted
+\item Instead, we assume symmetric noise, and fit a nonparametric regression model to the data
+\item This model is used in place of -- as a surrogate to -- the real data
+\item The surrogate is then discretised instead of the data
+\item By choosing the surrogate carefully, we hope to separate the data into signal and noise, thus retaining all the high-frequency information, while avoiding any impact from noise
+\item This means that any subsequent analyses will be more noise-robust
+\end{itemize}
+
+\item Surrogates are a statistical regression model
+\begin{itemize}
+\item We use word `model' in the manner typical to the statistical community -- it refers simply to a regressor, rather than an attempt to capture the physics of the system
+\item As such, we follow a standard statistical regression procedure
+\end{itemize}
+\item Let \(x_i\) be the value of the signal as sampled at time \(t_i\)
+\item Let \(\varepsilon_i\) be the random noise that was imposed on the true, underlying noise-free signal at time \(t_i\)
+\item We assume that \(\varepsilon_i\) are symmetric i.i.d. with zero-mean
+\begin{itemize}
+\item \textbf{We've stated normal distribution, but actually these methods will usually still get good resuls for any elliptical distribution}
+\item Basically, knowing past noise values doesn't tell us anything about the current noise values,
+\item All the noise terms are statistically like all the others,
+\item And since they're symmetric and zero-mean, the noise, on average, doesn't increase or decrease the average signal value
+\item Samples are given by \(x_i = f(t_i) + \varepsilon_i\), where \(f(t)\) is the true, noise-free underlying signal, which we want to study, but don't have access to
+\end{itemize}
+
+\item A well-fitted model allows us to separate samples into signal and noise
+\begin{itemize}
+\item ​That's the core idea with this surrogates approach
+\item If we can accurately fit this model, then f(t) captures the true, noise-free signal
+\item We can then evaluate f(t), and use the results in place of our noise-corrupted samples
+\item This gives us surrogate data which is \emph{not} noise-corrupted, so can be used to create noise-robust analyses!
+\end{itemize}
+
+\item The challenge now is to find some function \(f(t)\) that is\ldots{}
+\begin{itemize}
+\item sufficiently general to describe a wide range of signals
+\item and also handle the high statistical nonstationarity expected in multiple timescale systems
+
+\item Nonstationarity loosely means that the behaviours of the signal aren't constant
+\item For example, it might exhibit MMOs, and alternate between large and small amplitude oscillations
+\item Or it might simply act like a square-wave, such as the vdP oscillator, in which case it alternates beween slowly changing and rapidly changing
+\item The key challenge is to find a regression model that can describe nonstationary oscillations, while also being able to separate signal from noise; this turns out to be quite challenging
+\end{itemize}
+\end{itemize}
+
+\section{3 mins Meet the surrogates}
+\label{sec:orgc4d59ce}
+\subsection{GPR}
+\label{sec:orgef80547}
+\begin{itemize}
+\item Gaussian processes generalise the normal distribution to infinite dimensions
+\begin{itemize}
+\item With the standard multivariate normal, any individual variable is normally distributed, and any collection of variables has a multivariate joint distribution
+\item This is how Gaussian processes are defined too, only instead of having a finite collection of variables, we have infinitely many
+\item This allows us to access our variables using a continuous index set, such as time or spatial position
+\item And, as such, GPs represent a probability distribution over functions
+\end{itemize}
+
+\item Gaussian process regression is a nonparametric function-space regression method
+\begin{itemize}
+\item For a given set of priors, we can use Bayes' rule to condition on data, to update our beliefs about what functions can be used to describe the data
+\item This is particularly useful for us, as, while we often have some knowledge of what a signal will look like, we don't usually know exactly what model-form would best describe it
+\begin{itemize}
+\item Rather, the whole point of CBC is that we can use it when we don't know any models!
+\end{itemize}
+\item Since it's Bayesian, we can incorporate our prior beliefs about the signal shape\ldots{}
+\item \ldots{}but, being nonparametric, we don't need to specify an exact model-form for what our signals will look like
+\end{itemize}
+
+\item Bayesian methods require priors; GP priors are covariance functions
+\begin{itemize}
+\item A prior is a belief about how we expect the data to behave, before we've seen any data
+\item After we've seen some data, we combine it with our prior to produce a new, updated belief
+\item GP priors, also called kernels, specify how similar the function value is to near-by datapoints, at any given point on the curve
+\item They can be used to determine, for example, how smooth the latent function is, what amplitude we expect it to have, and how much noise we have in our observations
+\item The challenge in using GPR is finding which kernel best encodes beliefs about the data in question
+\end{itemize}
+
+\item Here we compare periodic and non-periodic RBF and Matern 3/2, and Matern 5/2 kernels
+\begin{itemize}
+\item RBF kernel represents a distribution over C-infinity --smooth functions
+\item The Matern family of kernels are a generalisation of this to lower degrees of smoothness
+\item Matern 3/2 is once-differentiable and Matern 5/2 is twice-differentiable
+\item Relaxing the smoothness requirement tends to work well for real data
+\item Periodic kernels also encode a periodicity assumption, and restrict our function priors to functions of a given period
+\end{itemize}
+\end{itemize}
+
+
+FIGURE:
+\begin{itemize}
+\item Each kernel prior is a Gaussian process; this means they also represent a distribution over functions
+\item As a result, we can sample from this distribution
+\item To do this, we don't actually extract a random function from the distribution
+\item Instead, we select a set of timpoints, and compute the evaluation of a randomly sampled function at these timepoints
+\item That means we don't have to explicitly consider infinite-dimensional distributions, which keeps the problem numerically tractable
+\item The figure shows a single function sampled from each of the prior distributions
+\item For consistency, each prior has the same lengthscale (changeability), and variance (amplitude)
+\item Loosely stated, the Matern kernels are seen to be a lot more flexible than the RBF kernel, which turns out to be useful for capturing the rapid changes in the outputs of multiscale systems
+\end{itemize}
+
+\subsection{BARS}
+\label{sec:org231e417}
+
+\begin{itemize}
+\item Spline regressors are maximally smooth piecewise-polynomial curves
+\begin{itemize}
+\item They are a popular within the statistical community as a regression method
+\item The simplest way to form a spline curve is to interpolate a set of datapoints
+\item To do this, we\ldots{}
+\begin{itemize}
+\item divide the domain into subintervals, so that each subinterval starts and ends at a consecutive datapoint
+\item place a section of polynomial across each subinterval
+\item then solving for the coefficients that cause each section of polynomial to
+\begin{itemize}
+\item smoothly meet its neighbouring polynomial sections
+\item and to pass through the datapoint at the start and end of its subinterval
+\end{itemize}
+\end{itemize}
+\item Typically we use cubic polynomials
+\item This turns out to be a numerically reliable interpolation method, however we might have lots of noisy data that we want to smooth, rather than interpolate exactly
+\item In this case, BSplines are an easier tool to work with
+\end{itemize}
+
+\item BSplines are a set of basis functions over an associated set of spline curves
+\begin{itemize}
+\item Any spline curve can be expressed as a linear combination of BSplines
+\item The basis functions are defined from a set of scalar-valued knots, which partition the domain into the subintervals we saw before
+\item Once we have the basis functions, we can fit a spline curve using, for example, least squares, maybe with an additional smoothness penalty
+\end{itemize}
+
+\item Choosing good BSpline knots can be hard
+\begin{itemize}
+\item \ldots{}and it's important to choose good knots, as they have a big impact on the result
+\item However, there's accepted no best way of doing this
+\item For smoothing large amounts of data, it is often acceptable to use evenly-spaced knots
+\item This doesn't work so well when the data sometimes change rapidly, though
+\item An alternative is free-knot splines, where we choose the knots based on the data themselves
+\end{itemize}
+
+\item Bayesian inference can be used to choose knots and coefficients
+\begin{itemize}
+\item This is called Bayesian free-knot splines
+\item It proposes a set of sensible prior beliefs about the data
+\item Then combines these with observed data to produce a probability distribution over possible numbers and locations of spline knots
+\item We can then draw samples from this distribution using reversible jump MCMC
+\item \ldots{}and use these samples to estimate a distribution over spline functions
+\item We then evaluate these curves at our chosen datapoints to get a distribution over function values
+\item If we're wanting point-estimates instead of distributions, as we do here, we simply take the mean
+\end{itemize}
+\end{itemize}
+
+
+FIGURE:
+\begin{itemize}
+\item The figure compares BSplines with two other spline methods
+\begin{itemize}
+\item Cardinal BSplines, where the knots are evenly spaced
+\item Smoothing BSplines; this is as implemented in SciPy, so it chooses the number and location of knots to achieve some target smoothness value
+\end{itemize}
+\item It uses a fairly standard test function
+\begin{itemize}
+\item It's good for multiple-timescale systems as it shows a rapid change
+\item However, fig doesn't appear in the paper because this is purely an illustative example of how splines behave!
+\end{itemize}
+\item All splines methods have their strengths and weaknesses
+\begin{itemize}
+\item Bayesian free-knot splines require an MCMC engine, which makes them more computationally intensive
+\end{itemize}
+\item However, we're always using fairly small amounts of data, so in this example BARS wasn't noticably slower than the other methods
+\item The main takeaway from the plot is that it's able to fit the data a lot better than the other methods, as it\ldots{}
+\begin{itemize}
+\item chooses its knots based on a combination of smoothing (by explicitly modelling the noise),
+\item \ldots{}and accuracy, in how well it matches the data
+\end{itemize}
+\item Treating the data in a probabilistic, Bayesian manner gives better results than not!
+\end{itemize}
+
+\section{2 mins Comparison of their results}
+\label{sec:org726ce5a}
+\subsection{Testing the surrogates}
+\label{sec:org3fdb2b1}
+
+\begin{itemize}
+\item Surrogates are tested on noise-corrupted outputs from simulations of two multiple-timescale models
+\begin{itemize}
+\item Here we consider
+\begin{itemize}
+\item van der Pol oscillator
+\begin{itemize}
+\item Models relaxation oscillations, which are a widely applicable phenomenon
+\item Very simple planar model, keeps things nice and easy
+\item We take the time series of the first state variable as the system output
+\item Comparatively simple output signal
+\end{itemize}
+\item Hodgkin-Huxley neuron
+\begin{itemize}
+\item van der Pol was chosen because it was easy, HodgkinHuxley was chosen because it was hard
+\item The output shows periodic spikes: it alternates between a slow drift and a short sharp oscillation
+\item It's a good practical example of multiple-timescale dynamics
+\item It also makes for a challenging test of the surrogates, as the rapid changes in the signal make it statistically very nonstationary, which breaks the assumptions of simpler regression models
+\item We chose the voltage-like state variable as the system output, since this is what would be measured in real experiments
+\end{itemize}
+\end{itemize}
+
+\item Goodness-of-fit is quantified by fitting the models to noisy data, then comparing the actual and predicted values at unseen datapoints
+\begin{itemize}
+\item We simulate the vdP and HH models
+\item Evaluate the simulated trajectories at a set of evenly spaced time points
+\item Noise-corrupt the output samples,
+\item Then fit the surrogate to the results.
+\item Next, we evaluate both the surrogate and the noise-free trajectory simulation at another set of timepoints, different to those used when fitting the model
+\item The mean-square prediction error is calculated over these points, to quantify the goodness-of-fit
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\# TABLES HERE \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+
+Discussion:
+\begin{itemize}
+\item With GPR, periodic kernels almost always outperform non-periodic kernels
+\begin{itemize}
+\item This is to be expected -- since the regressor repeats periodically, we effectively have less model to fit, for the same amount of data
+\item This makes it easier to distinguish between signal and noise
+\item Fitting periodic kernels can be challenging, as we need an accurate value for the period if we want a good fit
+\item Fortunately, an accurate period is also a requirement within the continuation step, so this information will already be available
+\end{itemize}
+
+\item Besides this, none of the kernels stand out as being best
+\begin{itemize}
+\item There's no one kernel that always outperforms all the others
+\end{itemize}
+
+\item A major point to note is that all the tested kernels are stationary, and assume constant statistical properties
+\begin{itemize}
+\item The signals themselves alternate between slow and rapid changes
+\item Our kernels are forced to compromise, and produce priors that can encode the rapid changes
+\item However this means they are less able to filter out noise when the signal moves slowly
+\item One approach to resolving this is to use nonstationary kernel
+\item \ldots{}which provide more flexibility for describing the signals
+\item However, nonstationary kernels are often slower to fit and harder to use than their stationary counterparts, so instead\ldots{}
+\item We took another approach, and used free-knot splines
+\item Free-knot splines aren't a gaussian process method, but they can model nonstationary signals
+\end{itemize}
+
+\item As a result, BARS outperforms most gaussian process regressors on the noisy van der Pol signal,
+\begin{itemize}
+\item And all GPRs with noisy Hodgkin-Huxley data
+\item As a rule of thumb, BARS outperforms GPR when the data are more noisy, and more dynamically jumpy
+\item Stationary GPR outperforms BARS when data are less noisy, and less dynamically jumpy
+\item Nonstationary GPR has the potential to outperform both, however we deemed it impractical
+\end{itemize}
+
+\item In terms of practicalities,
+\begin{itemize}
+\item The priors for free-knot splines include the number of knots, and the noise distribution
+\item It's very easy to come up with good priors, and even if they're not perfect, we still get good results
+\item This makes BARS very easy to apply, once it has been coded up
+\item On the other hand, it is harder to relate kernels to signal priors
+\item While experience will suggest general desirable properties of a kernel, for a given signal, the only way to really know which one is best is to test them out
+\end{itemize}
+\end{itemize}
+
+\section{{\bfseries\sffamily TODO} 1 min Conclusion -- which to pick when; wider context -- future work, collocation}
+\label{sec:org72dd3b7}
+\begin{itemize}
+\item CBC is a method for analysing the bifurcation structure of black-box and physical systems
+\begin{itemize}
+\item Typically we would use numerical continuation to track points of interest, when an appropriate model is available
+\item When an appropriate model is \emph{not} available, we can still attempt the same style of analysis using control-based continuation
+\end{itemize}
+
+\item Oscillatory dynamics require discretising to be tracked
+\begin{itemize}
+\item Just like with numerical continuation, we use nonlinear solvers to find and follow our features of interest
+\item The solvers can't be applied to the oscillations themselves, as they are functions
+\item Instead, we set up a discretisation scheme and run our solvers on that instead
+\end{itemize}
+
+\item It is difficult to accurately Fourier-discretise noisy multiple-timescale signals
+\begin{itemize}
+\item The signals typically contain large amounts of high-frequency energy
+\item Which in turn requires large numbers of Fourier harmonics
+\item However the Fourier discretisation loses its noise-averaging power when many harmonics are used
+\item If we can't accurately discretise the signals, it becomes a lot harder to track them
+\end{itemize}
+
+\item Bayesian regression models can be used instead to average out the noise
+\begin{itemize}
+\item If we choose the regression models well, we can obtain noise-free data by sampling the regression models
+\item This gives us the possibility of producing more accurate results, as we split the data processing into explicit filtering and discretising steps, instead of hoping that the discretisor also filters
+\item Non-Bayesian methods may also work, however the Bayesian approach gives us the double-benefit of
+\begin{itemize}
+\item good fits to the data when we can encode our prior beliefs about it
+\item and nonparametric regressors, so we don't need to specify an exact description of the signal
+\end{itemize}
+\end{itemize}
+
+\item Future work includes alternatives to Fourier discretisation, however these are often even less noise-robust
+\begin{itemize}
+\item There are lots of other possible discretisation schemes
+\item These include replacing the Fourier series with a different set of basis functions,
+\item Or applying a collocation scheme instead
+\item The collocation discretisation is particularly susceptible to noise-corruption, as the basis functions are not used for averaging the signal
+\item Therefore, if collocation is to work, it will require a noise-filtering step such as this
+\end{itemize}
+\end{itemize}
+\end{document}
