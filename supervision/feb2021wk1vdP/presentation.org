@@ -1,0 +1,168 @@
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+BEAMER_THEME: UoB
+#+AUTHOR: Mark Blyth
+#+TITLE: Autonymous CBC
+#+DATE: [2021-02-05 Fri]
+
+#+begin_comment
+   * Implemented some code for vdP CBC
+   * Getting splines to work will require either huge numbers of BSplines, or adaptive knots
+   * Tested it out in the Fourier case instead
+   * Fourier had some numerical issues
+     * Ended up with a singular Jacobian for some FDSS
+     * Can't Newton-update with a singular Jacobian
+     * SciPy solvers also didn't work
+     * Didn't put too much effort into finding out why
+       * Would probably see the same errors in the splines case
+       * Splines has nicer numbers (consistently O(1)) and fewer of them (lower-dimensional discretisation)
+       * That means it would be easier to debug the errors with splines than with Fourier
+       * Decided to skip the numerics checking and just use splines instead
+   * Adaptive knots BSplines will hopefully be a lot easier to use, and to calculate Jacobians from
+     * Larger coefficients
+     * More uniform order of magnitude across the coefficients
+     * Fewer coefficients
+   * Decided to jump into adaptive knots instead
+   
+Implementing adaptive splines first
+   * Discuss how I adaptive-knots
+   * Explain that we optimize at the start, then re-optimize throughout, as we don't know what the signals look like before we've reached them, so we can't optimize over the entire set of possible signals; must make do with local information instead
+   * Need to re-discretise the signal at each step, otherwise we're comparing apples and oranges
+
+Also read an interesting paper on islets
+   * Put a quick summary in
+   * Discuss implications for CBC
+   * Recommend starting experiments really simply with non-bursters
+   
+Spent some time writing notes on discretisors
+   * In progress, nothing to show yet
+#+end_comment
+
+* Background
+** Week's activities
+   * Implemented van der Pol (vdP) CBC with Fourier
+     * Doesn't work
+\vfill
+   * Implemented adaptive-knots splines
+     * Requried to make BSpline CBC work with vdP
+\vfill
+   * Implemented vdP CBC with BSplines
+     * Doesn't work
+\vfill
+   * Read about practical bursters
+\vfill
+   * Wrote some notes on discretisors
+     
+     
+** Reading
+Read about why single cells don't burst but populations do
+   * Bursting requires quite specific parameter values
+   * Real cells have enough variation in these parameters that it's rare to find one that can burst
+   * Coupled cells can take on the dynamics of their averaged parameter values
+     * Individual cells rarely lie within the bursting parameter range
+     * Collections of cells average out their parameter values and allow bursting
+\vfill
+Issue: bursts in networks are a bit messy
+   * Individual cells in the network no longer show nice neat bursts
+   * Can't define any nice neat control target
+   * Limits the scope to which CBC can be applied
+     
+** Noisy bursts
+
+[[./burst.png]]
+\vfill
+  * These results are from simulations
+  * Question for Krasi is how biologically realistic this is
+    * Can we ever get `nice' bursts in real cells?
+
+
+* Extended CBC
+** Autonymous CBC
+   * Continuation vector contains parameter, period, discretisation
+     * Initialisation parameters chosen by user
+     * Initialisation period determined by zero-crossings
+     * Initialisation discretisation found by discretising uncontrolled system output at initial parameters
+\vfill
+   * Continuation equations enforce...
+     * Input discretisation = output discretisation
+     * Pseudo-arclength condition
+     * Integral phase condition, with previous accepted solution as a reference \(v(t)\)
+\vfill
+\[\Psi[x^*] = \int_0^1 \left\langle x^*\left(\frac{t}{T_{x^*}}\right),  \dot{v}\left(\frac{t}{T_v}\right) \right\rangle \mathrm{d}t\]
+
+** Fourier vdP
+Not much benefit to nonadaptive-knots vdP BSpline CBC
+    * vdP signal is very nonlinear; nonadaptive would need lots of coefficients
+    * If we're using lots, may as well use the simpler Fourier method
+\vfill
+Tested out vdP-Fourier
+    * Didn't work, Jacobian somehow ended up singular
+    * SciPy solvers didn't work either
+\vfill
+Didn't put much effort into testing why this happens
+    * Splines would be easier to test
+      * Nicer numbers (consistently \(\mathcal{O}(1)\))
+      * Fewer of them (lower-dimensional discretisation)
+    * Decided to skip the numerics checking and jump straight to splines
+
+** Part 1: initialising adaptive knots
+BSplines need adaptive knots to be useful on vdP; this works as follows
+\vfill
+Choose good knots at initialisation
+   * Let \(\xi\) be a knot vector, \(x_0\) be the initialiser signal, \(\hat{x}(\xi)\) its least-squares spline approximation
+   * Find \(\mathrm{argmin }\xi \quad \|x_0 - \hat{x}(\xi)\|_2^2\), over signal samples
+     * Initialise knots as uniformly distributed random variables
+     * Numerically optimize
+     * Repeat lots of times to avoid local minima
+     * Choose the best result
+
+** Part 2: Adapting the adaptive knots
+Knots are updated after each prediction/correction step
+\vfill
+   * Initial knots will already be a good guess of optimal knots
+     * They were optimal for the previous signal
+     * We assume optimal knot set changes smoothly with signal
+   * Run a single optimization step
+     * Fit knots to the newly accepted output signal
+   * Update current knots to newly optimized result
+     
+** Part 3: Using adaptive knots
+Must re-discretise at each prediction/corrector step
+\vfill
+   * Discretisation must be consistent between all vectors in any given prediction/corretion step
+   * Take accepted solutions from previous two results and project on to the current knot set
+   * Use the rediscretised solutions for secant prediction
+\vfill
+Goodness-of-fit of each knot optimization result gives us a good check that the discretisation is still valid
+   * If goodness-of-fit becomes bad, we might need more knots in the discretisation
+   * I hold discretisation size fixed, but it could easily be varied
+
+** Adaptive-BSpline autonymous CBC
+   It doesn't work very well
+   
+[[./fail.pdf]]
+   
+** Possible issues and improvements
+Code is only just finished
+   * Haven't had time to test stepsizes, Jacobian methods, solvers, etc.
+   * Might be as simple as a different stepsize
+
+** Phase constraints
+Maybe the continuation equations aren't very good?
+   * No particular reason why Galerkin projections should be robust at estimating period
+     * Counter-argument: it's worked fine for other people!
+   * Phase constraint makes the coefficients similar to their previous values; doesn't encode anything particularly interesting or meaningful
+     * Must be specified to get a unique solution, however doesn't encode anything interesting; doesn't help us find a solution in a numerically robust way
+\vfill
+   * Collocation is a good way to find oscillation periods
+     * Keeps extending a solution boundary around the limit cycle, until it finds the period that makes the two boundaries meet
+     * Phase constraint encodes where to put one of the boundaries
+\vfill
+Collocation might be a generally more robust way of doing things
+
+* Next steps
+** Next steps
+   * Play some more with the code and see if anything interesting can be made to happen
+   * If it can't, try collocation instead
+   * Also, keep reading and writing
