@@ -1,4 +1,4 @@
-% Created 2021-02-05 Fri 17:40
+% Created 2021-02-06 Sat 12:05
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation]{beamer}
 \usepackage[utf8]{inputenc}
@@ -30,8 +30,8 @@
 \maketitle
 
 \section{Background}
-\label{sec:orgee8d360}
-\begin{frame}[label={sec:org2644f96}]{Week's activities}
+\label{sec:org42acd46}
+\begin{frame}[label={sec:org71c6ecf}]{Week's activities}
 \begin{itemize}
 \item Implemented van der Pol (vdP) CBC with Fourier
 \begin{itemize}
@@ -63,7 +63,7 @@
 \end{frame}
 
 
-\begin{frame}[label={sec:orge41fcce}]{Reading}
+\begin{frame}[label={sec:orge947dd8}]{Reading}
 Read about why single cells don't burst but populations do
 \begin{itemize}
 \item Bursting requires quite specific parameter values
@@ -83,7 +83,7 @@ Issue: bursts in networks are a bit messy
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb11a5cc}]{Noisy bursts}
+\begin{frame}[label={sec:orgabc66ac}]{Noisy bursts}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./burst.png}
 \end{center}
@@ -99,8 +99,8 @@ Issue: bursts in networks are a bit messy
 
 
 \section{Extended CBC}
-\label{sec:org9899f34}
-\begin{frame}[label={sec:org507bf4f}]{Autonymous CBC}
+\label{sec:orgdc996a6}
+\begin{frame}[label={sec:org5a2a3c0}]{Autonymous CBC}
 \begin{itemize}
 \item Continuation vector contains parameter, period, discretisation
 \begin{itemize}
@@ -122,7 +122,7 @@ Issue: bursts in networks are a bit messy
 \[\Psi[x^*] = \int_0^1 \left\langle x^*\left(\frac{t}{T_{x^*}}\right),  \dot{v}\left(\frac{t}{T_v}\right) \right\rangle \mathrm{d}t\]
 \end{frame}
 
-\begin{frame}[label={sec:orgd605a04}]{Fourier vdP}
+\begin{frame}[label={sec:orgd24e781}]{Fourier vdP}
 Not much benefit to nonadaptive-knots vdP BSpline CBC
 \begin{itemize}
 \item vdP signal is very nonlinear; nonadaptive would need lots of coefficients
@@ -146,7 +146,7 @@ Didn't put much effort into testing why this happens
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org91031e6}]{Part 1: initialising adaptive knots}
+\begin{frame}[label={sec:orgf70df23}]{Part 1: initialising adaptive knots}
 BSplines need adaptive knots to be useful on vdP; this works as follows
 \vfill
 Choose good knots at initialisation
@@ -162,7 +162,7 @@ Choose good knots at initialisation
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgdf1ac76}]{Part 2: Adapting the adaptive knots}
+\begin{frame}[label={sec:org7c8ea01}]{Part 2: Adapting the adaptive knots}
 Knots are updated after each prediction/correction step
 \vfill
 \begin{itemize}
@@ -179,7 +179,7 @@ Knots are updated after each prediction/correction step
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org8b28410}]{Part 3: Using adaptive knots}
+\begin{frame}[label={sec:orgff425d2}]{Part 3: Using adaptive knots}
 Must re-discretise at each prediction/corrector step
 \vfill
 \begin{itemize}
@@ -195,7 +195,7 @@ Goodness-of-fit of each knot optimization result gives us a good check that the 
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgfe217db}]{Adaptive-BSpline autonymous CBC}
+\begin{frame}[label={sec:orga99fd13}]{Adaptive-BSpline autonymous CBC}
 It doesn't work very well
 
 \begin{center}
@@ -203,44 +203,78 @@ It doesn't work very well
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org130ae56}]{Possible issues and improvements}
-Code is only just finished
+
+\begin{frame}[label={sec:org775a7b3}]{vdP system is comparatively simple}
+No folds to traverse
 \begin{itemize}
-\item Haven't had time to test stepsizes, Jacobian methods, solvers, etc.
-\item Might be as simple as a different stepsize
+\item No need for the pseudo-arclength condition
+\item Can remove it to simplify the continuation system
+\item Increment the parameter, solve for the BSpline coefficients
+\end{itemize}
+\vfill
+No unstable periodic orbits
+\begin{itemize}
+\item Can do away with secant prediction
+\begin{itemize}
+\item Simulate the system at a target parameter value
+\item Discretise its output
+\item Use that as the prediction
+\item We can do this easily if we remove the PAC and hold the parameter fixed
+\end{itemize}
+\item The system output is a noninvasive control target
+\begin{itemize}
+\item If its discretisation is not a solution to the continuation equations, \emph{no solution must exist}
+\end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd5d5052}]{Phase constraints}
-Maybe the continuation equations aren't very good?
+\begin{frame}[label={sec:org5a57bd2}]{Tests to try}
+No pseudo-arclength condition
 \begin{itemize}
-\item No particular reason why Galerkin projections should be robust at estimating period
-\begin{itemize}
-\item Counter-argument: it's worked fine for other people!
-\end{itemize}
-\item Phase constraint makes the coefficients similar to their previous values; doesn't encode anything particularly interesting or meaningful
-\begin{itemize}
-\item Must be specified to get a unique solution, however doesn't encode anything interesting; doesn't help us find a solution in a numerically robust way
-\end{itemize}
+\item Makes things simpler
+\item Should make it easier for the correction steps to converge, as we're simply fitting the shape of the signal
+\item If we can't solve this, it's probably because a solution doesn't exist
 \end{itemize}
 \vfill
+Starting from a known solution
 \begin{itemize}
-\item Collocation is a good way to find oscillation periods
-\begin{itemize}
-\item Keeps extending a solution boundary around the limit cycle, until it finds the period that makes the two boundaries meet
-\item Phase constraint encodes where to put one of the boundaries
+\item Use the discretised, known noninvasive control as a prediction
+\item See what the correction steps do, if anything
+\item If the prediction doesn't immediately solve the (PAC-free) system, a solution definitely doesn't exist
 \end{itemize}
-\end{itemize}
-\vfill
-Collocation might be a generally more robust way of doing things
 \end{frame}
+
+\begin{frame}[label={sec:org66f6999}]{If a solution doesn't exist\ldots{}}
+Currently solving\ldots{}
+\begin{itemize}
+\item Input coefficients = output coefficients
+\item Pseudo arclength condition = 0
+\item Phase condition = 0
+\end{itemize}
+\vfill
+Alternative: 
+\begin{itemize}
+\item Minimise \(\|\)input coefficients - output coefficients\(\|\)
+\item Or minimise \(\|\)input function - output function\(\|\), such that\ldots{}
+\item Pseudo arclength condition = 0
+\item Phase condition = 0
+\end{itemize}
+\vfill
+Use Lagrange multipliers to make an unconstrained optimisation problem, and perhaps BayesOpt for an efficient solution method
+\end{frame}
+
 
 \section{Next steps}
-\label{sec:org5260373}
-\begin{frame}[label={sec:org5f4b524}]{Next steps}
+\label{sec:orgdfe604c}
+\begin{frame}[label={sec:orgbb8b436}]{Next steps}
 \begin{itemize}
 \item Play some more with the code and see if anything interesting can be made to happen
-\item If it can't, try collocation instead
+\item If it can't, try the proposed tests to see if a solution actually exists
+\item If it doesn't try\ldots{}
+\begin{itemize}
+\item Collocation
+\item Invasiveness minimisation
+\end{itemize}
 \item Also, keep reading and writing
 \end{itemize}
 \end{frame}

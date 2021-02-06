@@ -143,12 +143,54 @@ Goodness-of-fit of each knot optimization result gives us a good check that the 
    
 [[./fail.pdf]]
    
-** Possible issues and improvements
+
+** vdP system is comparatively simple
+No folds to traverse
+    * No need for the pseudo-arclength condition
+    * Can remove it to simplify the continuation system
+    * Increment the parameter, solve for the BSpline coefficients
+\vfill
+No unstable periodic orbits
+     * Can do away with secant prediction
+       * Simulate the system at a target parameter value
+       * Discretise its output
+       * Use that as the prediction
+       * We can do this easily if we remove the PAC and hold the parameter fixed
+     * The system output is a noninvasive control target
+       * If its discretisation is not a solution to the continuation equations, /no solution must exist/
+	 
+** Tests to try
+No pseudo-arclength condition
+   * Makes things simpler
+   * Should make it easier for the correction steps to converge, as we're simply fitting the shape of the signal
+   * If we can't solve this, it's probably because a solution doesn't exist
+\vfill
+Starting from a known solution
+     * Use the discretised, known noninvasive control as a prediction
+     * See what the correction steps do, if anything
+     * If the prediction doesn't immediately solve the (PAC-free) system, a solution definitely doesn't exist
+       
+** If a solution doesn't exist...
+Currently solving...
+   * Input coefficients = output coefficients
+   * Pseudo arclength condition = 0
+   * Phase condition = 0
+\vfill
+Alternative: 
+   * Minimise \(\|\)input coefficients - output coefficients\(\|\)
+   * Or minimise \(\|\)input function - output function\(\|\), such that...
+   * Pseudo arclength condition = 0
+   * Phase condition = 0
+\vfill
+Use Lagrange multipliers to make an unconstrained optimisation problem, and perhaps BayesOpt for an efficient solution method
+
+
+** COMMENT Possible issues and improvements
 Code is only just finished
    * Haven't had time to test stepsizes, Jacobian methods, solvers, etc.
    * Might be as simple as a different stepsize
 
-** Phase constraints
+** COMMENT Phase constraints
 Maybe the continuation equations aren't very good?
    * No particular reason why Galerkin projections should be robust at estimating period
      * Counter-argument: it's worked fine for other people!
@@ -164,5 +206,8 @@ Collocation might be a generally more robust way of doing things
 * Next steps
 ** Next steps
    * Play some more with the code and see if anything interesting can be made to happen
-   * If it can't, try collocation instead
+   * If it can't, try the proposed tests to see if a solution actually exists
+   * If it doesn't try...
+     * Collocation
+     * Invasiveness minimisation
    * Also, keep reading and writing
